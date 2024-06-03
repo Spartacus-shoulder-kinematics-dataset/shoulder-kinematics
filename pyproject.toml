@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spartacus"
+version = "0.0.1"
+description = "Shoulder dataset"
+authors =[
+    {name ="Pierre Puchaud", email="pierre.puchaud@umontreal.ca"},
+    {name ="Alexandre Naaim", email="alexandre.naaim@univ-lyon1.fr"},
+    {name ="Florent Moissenet", email="florent.moissenet@unige.ch"},
+    ]
+readme = "README.md"
+keywords =["database",
+    "reference",
+    "kinematics",
+    "dataset",
+    "biomechanics",
+    "shoulder",
+    "gold-standard",
+    "humerus",
+    "upper-limb",
+    "clavicle",
+    "scapula"]
+dependencies = [
+    "numpy", "pandas", "matplotlib", "plotly", "biorbd>=1.9.9", "dash>=2.15.0", "colorcet", "seaborn"
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GPL-3.0",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.10"
+
+[project.urls]
+"Homepage" = "https://github.com/Ipuch/spartacus-shoulder-kinematics-dataset"
+"Bug Tracker" = "https://github.com/Ipuch/spartacus-shoulder-kinematics-dataset/issues"
+
+[tool.setuptools.packages.find]
+where = ["spartacus"]
+
+[tool.setuptools.package-data]
+"*" = ["*.csv"]

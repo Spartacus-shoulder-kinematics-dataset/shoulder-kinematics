@@ -1,0 +1,2 @@
+recursive-include spartacus/data *.csv
+recursive-include spartacus/dataset *.csv

@@ -135,3 +135,88 @@ dmypy.json
 .idea/modules.xml
 
 .idea/shoulder-kinematic-dataset.iml
+
+.idea/
+.xlsx
+
+*.xlsx
+
+*.dig
+
+data/*.png
+figures/*.png
+figures/Bourne et al 2004/*.png
+
+*.pdf
+
+spartacus/dataset/only_dataset_raw_old.csv
+sandbox/
+spartacus/dataset/confident_data.csv
+
+spartacus/dataset/corrected_confident_data.csv
+
+examples/frontal elevation.html
+
+examples/frontal elevation.png
+
+examples/horizontal flexion.html
+
+examples/horizontal flexion.png
+
+examples/internal-external rotation 0 degree-abducted.html
+
+examples/internal-external rotation 0 degree-abducted.png
+
+examples/internal-external rotation 90 degree-abducted.html
+
+examples/internal-external rotation 90 degree-abducted.png
+
+examples/sagittal elevation.html
+
+examples/sagittal elevation.png
+
+examples/scapular elevation.html
+
+examples/scapular elevation.png
+
+plots/old/Yoshida et al. 2023/
+
+plots/old/Teece et al. 2008/
+
+plots/old/Oki et al. 2012/
+
+plots/old/Matsumura et al. 2013/
+
+plots/old/Matsuki et al. 2012/
+
+plots/old/Lawrence et al. 2014/
+
+plots/old/Kozono et al. 2017/
+
+plots/old/Kolz et al. 2020/
+
+plots/old/Kijima et al. 2015/
+
+plots/old/Fung et al. 2001/
+
+plots/old/Chu et al. 2012/
+
+plots/old/Cereatti et al. 2017/
+
+plots/old/Bourne 2003/
+
+examples/already_isb_by_joint_proportion.csv
+
+examples/already_isb_true_proportion.csv
+
+examples/equivalent_by_joint_proportion.csv
+
+examples/equivalent_overall_proportion.csv
+
+examples/excluded_study.csv
+
+examples/is_isb_joint.csv
+
+spartacus/dataset/dataset_clean_old.csv
+
+plots/
