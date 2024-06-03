@@ -10,6 +10,27 @@ We will try to keep it updated as much as possible. If you have any suggestions,
 
 We assume the continuity of the data between articles. For example, if the same data is used in two articles, and some information is missing in the last one, we pick the information in the previous article.
 
+# Still a work in progress but citable
+Moissenet, F., Puchaud, P., Naaïm, A., Holzer, N., & Begon, M. (2024). Spartacus-shoulder-kinematics-dataset/shoulder-kinematics congress (0.1.0). Zenodo. https://doi.org/10.5281/zenodo.11455521
+
+```
+@software{moissenet_2024_11455521,
+  author       = {Moissenet, Florent and
+                  Puchaud, Pierre and
+                  Naaïm, Alexandre and
+                  Holzer, Nicolas and
+                  Begon, Mickael},
+  title        = {{Spartacus-shoulder-kinematics-dataset/shoulder- 
+                   kinematics congress}},
+  month        = jun,
+  year         = 2024,
+  publisher    = {Zenodo},
+  version      = {0.1.0},
+  doi          = {10.5281/zenodo.11455521},
+  url          = {https://doi.org/10.5281/zenodo.11455521}
+}
+```
+
 # Table of Contents
 [The dataset columns](#The-dataset-columns)
  - [Metadata](##Metadata)
