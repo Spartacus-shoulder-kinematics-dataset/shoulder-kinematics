@@ -1,0 +1,20 @@
+cff-version: 1.1.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: Moissenet
+  given-names: Florent
+  orcid: https://orcid.org/0000-0001-6479-1911
+- family-names: Puchaud
+  given-names: Pierre
+  orcid: https://orcid.org/0000-0002-9335-630X
+- family-names: Naaïm
+  given-names: Alexandre
+  orcid: https://orcid.org/0000-0003-3857-0159
+- family-names: Holzer
+  given-names: Nicolas
+- family-names: Begon
+  given-names: Mickael
+  orcid: https://orcid.org/0000-0002-4107-9160
+title: Spartacus-shoulder-kinematics-dataset/shoulder-kinematics congress
+version: 0.1.0
+date-released: 2024-06-03
