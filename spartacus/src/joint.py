@@ -1,4 +1,4 @@
-from .enums import EulerSequence, JointType, Segment, BiomechOrigin
+from .enums_biomech import EulerSequence, JointType, Segment, BiomechOrigin
 from .legend_utils import isb_rotation_biomechanical_dof
 
 

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from .biomech_system import BiomechCoordinateSystem
-from .enums import JointType, Segment, BiomechOrigin, Correction
+from .enums_biomech import JointType, Segment, BiomechOrigin, Correction
 from .joint import Joint
 from .utils import (
     get_is_isb_column,

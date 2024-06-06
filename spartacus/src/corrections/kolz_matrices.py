@@ -1,5 +1,5 @@
 import numpy as np
-from ..enums import Correction
+from ..enums_biomech import Correction
 
 
 def get_kolz_rotation_matrix(correction: Correction, orthonormalize: bool = True) -> np.ndarray:

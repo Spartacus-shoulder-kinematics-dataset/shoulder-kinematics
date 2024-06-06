@@ -1,7 +1,7 @@
-import pytest
+
 from spartacus.src.biomech_system import BiomechCoordinateSystem
 
-from spartacus.src.enums import CartesianAxis, BiomechDirection, BiomechOrigin, Segment
+from spartacus.src.enums_biomech import CartesianAxis, BiomechDirection, BiomechOrigin, Segment
 
 
 def test_risk_routine():

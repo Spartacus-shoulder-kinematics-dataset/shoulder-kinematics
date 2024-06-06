@@ -10,7 +10,7 @@ from .constants import (
     AUTHOR_DISPLAYED_STUDY,
 )
 from .dataframe_interface import DataFrameInterface
-from ..src.enums import JointType
+from ..src.enums_biomech import JointType
 
 
 def get_color(article):

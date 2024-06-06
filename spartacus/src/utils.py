@@ -1,7 +1,7 @@
 import biorbd
 import numpy as np
 
-from .enums import Segment
+from .enums_biomech import Segment
 
 
 def mat_2_rotation(R: np.ndarray) -> biorbd.Rotation:

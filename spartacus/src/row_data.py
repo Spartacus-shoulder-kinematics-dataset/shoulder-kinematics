@@ -21,15 +21,17 @@ from .corrections.angle_conversion_callbacks import (
 )
 from .corrections.kolz_matrices import get_kolz_rotation_matrix
 from .deviation import Deviation
-from .enums import (
+from .enums_biomech import (
     Segment,
     Frame,
     Correction,
-    DataFolder,
     EulerSequence,
     BiomechDirection,
     BiomechOrigin,
     JointType,
+)
+from src.enums import (
+    DataFolder,
 )
 from .joint import Joint
 from .load_data import load_euler_csv

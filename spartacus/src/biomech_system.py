@@ -1,7 +1,7 @@
 import collections
 import numpy as np
 
-from .enums import CartesianAxis, BiomechDirection, BiomechOrigin, Segment
+from .enums_biomech import CartesianAxis, BiomechDirection, BiomechOrigin, Segment
 from .utils import compute_rotation_matrix_from_axes
 
 
