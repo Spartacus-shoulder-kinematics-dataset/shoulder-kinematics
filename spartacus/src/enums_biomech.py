@@ -60,10 +60,11 @@ class BiomechDirection(Enum):
         return sign[self]
 
 
-class BiomechOrigin:
+class AnatomicalLandmark:
     """Enum for the biomechanical origins of the segment"""
 
     class Thorax(Enum):
+
         STERNAL_NOTCH = "SN"
         T7 = "T7"
         IJ = "IJ"

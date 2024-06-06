@@ -1,7 +1,6 @@
-
 from spartacus.src.biomech_system import BiomechCoordinateSystem
 
-from spartacus.src.enums_biomech import CartesianAxis, BiomechDirection, BiomechOrigin, Segment
+from spartacus.src.enums_biomech import CartesianAxis, BiomechDirection, AnatomicalLandmark, Segment
 
 
 def test_risk_routine():
@@ -11,7 +10,7 @@ def test_risk_routine():
         antero_posterior_axis=CartesianAxis.plusX,
         infero_superior_axis=CartesianAxis.plusY,
         medio_lateral_axis=CartesianAxis.plusZ,
-        origin=BiomechOrigin.Thorax.IJ,
+        origin=AnatomicalLandmark.Thorax.IJ,
     )
 
     assert all_good.is_isb() == True
@@ -24,7 +23,7 @@ def test_risk_routine():
         antero_posterior_axis=CartesianAxis.plusY,
         infero_superior_axis=CartesianAxis.plusX,
         medio_lateral_axis=CartesianAxis.plusZ,
-        origin=BiomechOrigin.Thorax.IJ,
+        origin=AnatomicalLandmark.Thorax.IJ,
     )
 
     assert mislabeled.is_isb() == False
@@ -37,7 +36,7 @@ def test_risk_routine():
         antero_posterior_axis=CartesianAxis.minusX,
         infero_superior_axis=CartesianAxis.minusY,
         medio_lateral_axis=CartesianAxis.minusZ,
-        origin=BiomechOrigin.Thorax.IJ,
+        origin=AnatomicalLandmark.Thorax.IJ,
     )
     assert wrong_sens.is_isb() == False
     assert wrong_sens.is_mislabeled() == False
@@ -49,7 +48,7 @@ def test_risk_routine():
         antero_posterior_axis=CartesianAxis.minusY,
         infero_superior_axis=CartesianAxis.plusZ,
         medio_lateral_axis=CartesianAxis.plusX,
-        origin=BiomechOrigin.Thorax.IJ,
+        origin=AnatomicalLandmark.Thorax.IJ,
     )
 
     assert mislabeled_and_wrong_sens.is_isb() == False

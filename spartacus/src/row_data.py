@@ -27,7 +27,7 @@ from .enums_biomech import (
     Correction,
     EulerSequence,
     BiomechDirection,
-    BiomechOrigin,
+    AnatomicalLandmark,
     JointType,
 )
 from src.enums import (
@@ -132,7 +132,7 @@ class RowData:
                 x=BiomechDirection.from_string(self.row[segment_cols[0]]),
                 y=BiomechDirection.from_string(self.row[segment_cols[1]]),
                 z=BiomechDirection.from_string(self.row[segment_cols[2]]),
-                origin=BiomechOrigin.from_string(self.row[segment_cols[3]]),
+                origin=AnatomicalLandmark.from_string(self.row[segment_cols[3]]),
                 segment=segment_enum,
             )
             # second check
@@ -195,7 +195,7 @@ class RowData:
             self.joint = Joint(
                 joint_type=JointType.from_string(self.row.joint),
                 euler_sequence=EulerSequence.from_string(self.row.euler_sequence),  # throw a None
-                translation_origin=BiomechOrigin.from_string(self.row.origin_displacement),
+                translation_origin=AnatomicalLandmark.from_string(self.row.origin_displacement),
                 translation_frame=Frame.from_string(self.row.displacement_cs, self.row.joint),
             )
 
@@ -211,7 +211,7 @@ class RowData:
             self.joint = Joint(
                 joint_type=JointType.from_string(self.row.joint),
                 euler_sequence=EulerSequence.from_string(self.row.euler_sequence),
-                translation_origin=BiomechOrigin.from_string(self.row.origin_displacement),
+                translation_origin=AnatomicalLandmark.from_string(self.row.origin_displacement),
                 translation_frame=Frame.from_string(self.row.displacement_cs, self.row.joint),
             )
 
@@ -246,14 +246,14 @@ class RowData:
             x=BiomechDirection.from_string(self.row[self.parent_columns[0]]),
             y=BiomechDirection.from_string(self.row[self.parent_columns[1]]),
             z=BiomechDirection.from_string(self.row[self.parent_columns[2]]),
-            origin=BiomechOrigin.from_string(self.row[self.parent_columns[3]]),
+            origin=AnatomicalLandmark.from_string(self.row[self.parent_columns[3]]),
             segment=self.parent_segment,
         )
         self.child_biomech_sys = BiomechCoordinateSystem.from_biomech_directions(
             x=BiomechDirection.from_string(self.row[self.child_columns[0]]),
             y=BiomechDirection.from_string(self.row[self.child_columns[1]]),
             z=BiomechDirection.from_string(self.row[self.child_columns[2]]),
-            origin=BiomechOrigin.from_string(self.row[self.child_columns[3]]),
+            origin=AnatomicalLandmark.from_string(self.row[self.child_columns[3]]),
             segment=self.child_segment,
         )
 

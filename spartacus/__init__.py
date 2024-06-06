@@ -3,7 +3,7 @@ from .src.enums_biomech import (
     EulerSequence,
     JointType,
     BiomechDirection,
-    BiomechOrigin,
+    AnatomicalLandmark,
     Segment,
 )
 from src.enums import (
