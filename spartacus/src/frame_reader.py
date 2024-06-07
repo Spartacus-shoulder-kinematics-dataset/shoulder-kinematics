@@ -114,12 +114,16 @@ class Frame:
     @property
     def has_isb_landmarks(self) -> bool:
         if self.segment == Segment.SCAPULA:
-            return all([landmark in self.landmarks for landmark in AnatomicalLandmark.Scapula.isb()])
+            return set(self.landmarks) == set(AnatomicalLandmark.Scapula.isb())
+        if self.segment == Segment.THORAX:
+            return set(self.landmarks) == set(AnatomicalLandmark.Thorax.isb())
 
     @property
     def is_origin_isb(self) -> bool:
         if self.segment == Segment.SCAPULA:
             return self.origin == AnatomicalLandmark.Scapula.origin_isb()
+        if self.segment == Segment.THORAX:
+            return self.origin == AnatomicalLandmark.Thorax.origin_isb()
 
     @property
     def is_x_axis_postero_anterior(self) -> bool:
@@ -186,14 +190,25 @@ def parse_axis(input_str) -> VectorBase:
     is_crossed = "^" in input_str
     if is_crossed:
         first_vector, second_vector = input_str.split("^")
-        vector1 = Vector.from_strings(*parse_vectors(first_vector))
-        vector2 = Vector.from_strings(*parse_vectors(second_vector))
+        vector1 = StartEndVector.from_strings(*parse_vector(first_vector))
+        vector2 = StartEndVector.from_strings(*parse_vector(second_vector))
         return CrossedVector(vector1, vector2)
+
+    return StartEndVector.from_strings(*parse_vector(input_str))
+
+
+def parse_vector(input: str) -> StartEndVector:
+    """
+    This function parses the input string of shape "vec(XXX>YYY)" and returns a Vector object
+    """
+    has_no_point = ">" not in input
+    if has_no_point:
+        return StartEndVector.from_string(input[4:-1])
     else:
-        return Vector.from_strings(*parse_vectors(input_str))
+        return StartEndVector.from_strings(*parse_start_end_vector(input))
 
 
-def parse_vectors(input: str) -> tuple[str, ...]:
+def parse_start_end_vector(input: str) -> tuple[str, ...]:
     """
     This function parses the input string of shape "vec(XXX>YYY)" and returns a tuple of the start and end points
     """

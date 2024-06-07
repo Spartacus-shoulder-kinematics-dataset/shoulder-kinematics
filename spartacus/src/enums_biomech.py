@@ -103,10 +103,12 @@ class AnatomicalLandmark:
         PX = "PX"  # processus xiphoide
         MIDPOINT_T10_PX = "(T10+PX)/2"
         MIDPOINT_IJ_T1 = "(IJ+T1)/2"
+        MIDPOINT_T8_PX = "(T8+PX)/2"
+        MIDPOINT_C7_IJ = "(C7+IJ)/2"
 
         @classmethod
         def isb(cls) -> list:
-            return [cls.C7, cls.T10, cls.IJ, cls.PX]
+            return [cls.MIDPOINT_T8_PX, cls.MIDPOINT_C7_IJ, cls.IJ, cls.C7]
 
         @classmethod
         def origin_isb(cls):
@@ -120,7 +122,7 @@ class AnatomicalLandmark:
 
         @classmethod
         def isb(cls):
-            return [cls.STERNOCLAVICULAR_JOINT_CENTER, self.ACROMIOCLAVICULAR_JOINT_CENTER]
+            return [cls.STERNOCLAVICULAR_JOINT_CENTER, cls.ACROMIOCLAVICULAR_JOINT_CENTER]
 
         @classmethod
         def origin_isb(cls):
@@ -177,6 +179,12 @@ class AnatomicalLandmark:
             "(PX+T10)/2": cls.Thorax.MIDPOINT_T10_PX,
             "(IJ+T1)/2": cls.Thorax.MIDPOINT_IJ_T1,
             "(T1+IJ)/2": cls.Thorax.MIDPOINT_IJ_T1,
+            "C7": cls.Thorax.C7,
+            "T8": cls.Thorax.T8,
+            "(T8+PX)/2": cls.Thorax.MIDPOINT_T8_PX,
+            "(PX+T8)/2": cls.Thorax.MIDPOINT_T8_PX,
+            "(C7+IJ)/2": cls.Thorax.MIDPOINT_C7_IJ,
+            "(IJ+C7)/2": cls.Thorax.MIDPOINT_C7_IJ,
             "GH": cls.Humerus.GLENOHUMERAL_HEAD,
             "EL": cls.Humerus.LATERAL_EPICONDYLE,
             "EM": cls.Humerus.MEDIAL_EPICONDYLE,
