@@ -1,5 +1,4 @@
 from enum import Enum
-from pathlib import Path
 
 import numpy as np
 
@@ -11,6 +10,34 @@ class CartesianAxis(Enum):
     minusX = ("-x", np.array([-1, 0, 0]))
     minusY = ("-y", np.array([0, -1, 0]))
     minusZ = ("-z", np.array([0, 0, -1]))
+
+    @classmethod
+    def from_array(cls, array: np.ndarray):
+        axis_to_enum = {
+            (1, 0, 0): cls.plusX,
+            (0, 1, 0): cls.plusY,
+            (0, 0, 1): cls.plusZ,
+            (-1, 0, 0): cls.minusX,
+            (0, -1, 0): cls.minusY,
+            (0, 0, -1): cls.minusZ,
+        }
+
+        the_enum = axis_to_enum.get(tuple(array))
+        if the_enum is None:
+            raise ValueError(f"{array} is not a valid cartesian axis.")
+
+        return the_enum
+
+    @classmethod
+    def principal_axis(cls, array: np.ndarray):
+        # max_index = np.argmax(np.abs(array))
+        max_index = np.argmax(np.abs(array))
+        if array[max_index] > 0:
+            return cls.from_array(np.eye(3)[:, max_index])
+        else:
+            the_array = np.zeros(3)
+            the_array[max_index] = -1
+            return cls.from_array(the_array)
 
 
 class BiomechDirection(Enum):
@@ -67,6 +94,7 @@ class AnatomicalLandmark:
 
         STERNAL_NOTCH = "SN"
         T7 = "T7"
+        T10 = "T10"
         IJ = "IJ"
         T1_ANTERIOR_FACE = "T1 anterior face"
         T1s = "T1s"  # @todo: make sure to understand what is it
@@ -74,22 +102,54 @@ class AnatomicalLandmark:
         T8 = "T8"
         PX = "PX"  # processus xiphoide
 
+        @classmethod
+        def isb(cls) -> list:
+            return [cls.C7, cls.T10, cls.IJ, cls.PX]
+
+        @classmethod
+        def origin_isb(cls):
+            return cls.IJ
+
     class Clavicle(Enum):
         STERNOCLAVICULAR_JOINT_CENTER = "SCJC"
         MIDTHIRD = "MTC"
         CUSTOM = "CUSTOM"
         ACROMIOCLAVICULAR_JOINT_CENTER = "ACJC"
 
+        @classmethod
+        def isb(cls):
+            return [cls.STERNOCLAVICULAR_JOINT_CENTER, self.ACROMIOCLAVICULAR_JOINT_CENTER]
+
+        @classmethod
+        def origin_isb(cls):
+            return cls.STERNOCLAVICULAR_JOINT_CENTER
+
     class Scapula(Enum):
         ANGULAR_ACROMIALIS = "AA"
         GLENOID_CENTER = "GC"
         ACROMIOCLAVICULAR_JOINT_CENTER = "ACJC"
         TRIGNONUM_SPINAE = "TS"
-        ANGULUS_INFERIOR = "AI"
+        ANGULUS_INFERIOR = "IA"
+
+        @classmethod
+        def isb(cls):
+            return [cls.ANGULAR_ACROMIALIS, cls.ANGULUS_INFERIOR, cls.TRIGNONUM_SPINAE]
+
+        @classmethod
+        def origin_isb(cls):
+            return cls.ANGULAR_ACROMIALIS
 
     class Humerus(Enum):
         GLENOHUMERAL_HEAD = "GH"
         MIDPOINT_EPICONDYLES = "midpoint epicondyles"  # middle of Medial and Lateral epicondyles
+
+        @classmethod
+        def isb(cls):
+            return [cls.GLENOHUMERAL_HEAD, cls.MIDPOINT_EPICONDYLES]
+
+        @classmethod
+        def origin_isb(cls):
+            return cls.GLENOHUMERAL_HEAD
 
     class Other(Enum):
         FUNCTIONAL_CENTER = "functional"  # found by score but not meant to represent a real anatomical point
@@ -104,9 +164,11 @@ class AnatomicalLandmark:
 
         biomech_origin_to_enum = {
             "T7": cls.Thorax.T7,
+            "T10": cls.Thorax.T10,
             "IJ": cls.Thorax.IJ,
             "T1 anterior face": cls.Thorax.T1_ANTERIOR_FACE,  # old
             "T1s": cls.Thorax.T1_ANTERIOR_FACE,
+            "PX": cls.Thorax.PX,
             "GH": cls.Humerus.GLENOHUMERAL_HEAD,
             "midpoint EM EL": cls.Humerus.MIDPOINT_EPICONDYLES,  # old
             "(EM+EL)/2": cls.Humerus.MIDPOINT_EPICONDYLES,
@@ -115,6 +177,7 @@ class AnatomicalLandmark:
             "point of intersection between the mesh model and the Zc axis": cls.Clavicle.CUSTOM,
             "AC": cls.Scapula.ACROMIOCLAVICULAR_JOINT_CENTER,
             "AA": cls.Scapula.ANGULAR_ACROMIALIS,
+            "IA": cls.Scapula.ANGULUS_INFERIOR,
             "glenoid center": cls.Scapula.GLENOID_CENTER,  # old
             "GC": cls.Scapula.GLENOID_CENTER,
             "TS": cls.Scapula.TRIGNONUM_SPINAE,
