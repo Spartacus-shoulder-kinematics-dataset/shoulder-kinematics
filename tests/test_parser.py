@@ -7,12 +7,21 @@ from spartacus.src.frame_reader import parse_axis, Frame
 def test_parse_landmarks():
     test_cases = [
         {"input": "vec(T10>PX)", "expected": "Start: Thorax.T10, End: Thorax.PX"},
-        # {
-        # "input": "vec(T10>PX)^vec((T10+PX)/2>(IJ+T1)/2)",
-        # "expected": "(Start: T10, End: PX) X (Start: (T10+PX)/2, End: (IJ+T1)/2)",
-        # },
-        # {"input": "vec((EL+EM)/2>GH)^vec(EL>EM)", "expected": "(Start: (EL+EM)/2, End: GH) X (Start: EL, End: EM)"},
-        # {"input": "vec(EM>GH)^vec(EL>EM)", "expected": "(Start: EM, End: GH) X (Start: EL, End: EM)"},
+        {
+            "input": "vec(T10>PX)^vec((T10+PX)/2>(IJ+T1)/2)",
+            "expected": "(Start: Thorax.T10, End: Thorax.PX) "
+            "X (Start: Thorax.MIDPOINT_T10_PX, End: Thorax.MIDPOINT_IJ_T1)",
+        },
+        {
+            "input": "vec((EL+EM)/2>GH)^vec(EL>EM)",
+            "expected": "(Start: Humerus.MIDPOINT_EPICONDYLES, End: Humerus.GLENOHUMERAL_HEAD) "
+            "X (Start: Humerus.LATERAL_EPICONDYLE, End: Humerus.MEDIAL_EPICONDYLE)",
+        },
+        {
+            "input": "vec(EM>GH)^vec(EL>EM)",
+            "expected": "(Start: Humerus.MEDIAL_EPICONDYLE, End: Humerus.GLENOHUMERAL_HEAD) "
+            "X (Start: Humerus.LATERAL_EPICONDYLE, End: Humerus.MEDIAL_EPICONDYLE)",
+        },
     ]
 
     for case in test_cases:
@@ -62,9 +71,9 @@ def test_parse_frame():
 scapula_frame_template = lambda x_axis: Frame.from_xyz_string(
     z_axis="vec(TS>AA)", x_axis=x_axis, y_axis="z^x", origin="AA", segment=Segment.SCAPULA
 )
-combinations = ["vec(TS>AA)^vec(TS>IA)", "vec(AA>IA)^vec(AA>TS)", "vec(IA>TS)^vec(IA>AA)"]
+combinations_for_x_axis = ["vec(TS>AA)^vec(TS>IA)", "vec(AA>IA)^vec(AA>TS)", "vec(IA>TS)^vec(IA>AA)"]
 
-scapula_frame_isb = [scapula_frame_template(x_axis) for x_axis in combinations]
+scapula_frame_isb = [scapula_frame_template(x_axis) for x_axis in combinations_for_x_axis]
 
 
 @pytest.mark.parametrize(

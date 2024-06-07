@@ -101,6 +101,8 @@ class AnatomicalLandmark:
         C7 = "C7"
         T8 = "T8"
         PX = "PX"  # processus xiphoide
+        MIDPOINT_T10_PX = "(T10+PX)/2"
+        MIDPOINT_IJ_T1 = "(IJ+T1)/2"
 
         @classmethod
         def isb(cls) -> list:
@@ -141,6 +143,8 @@ class AnatomicalLandmark:
 
     class Humerus(Enum):
         GLENOHUMERAL_HEAD = "GH"
+        LATERAL_EPICONDYLE = "EL"
+        MEDIAL_EPICONDYLE = "EM"
         MIDPOINT_EPICONDYLES = "midpoint epicondyles"  # middle of Medial and Lateral epicondyles
 
         @classmethod
@@ -169,9 +173,16 @@ class AnatomicalLandmark:
             "T1 anterior face": cls.Thorax.T1_ANTERIOR_FACE,  # old
             "T1s": cls.Thorax.T1_ANTERIOR_FACE,
             "PX": cls.Thorax.PX,
+            "(T10+PX)/2": cls.Thorax.MIDPOINT_T10_PX,
+            "(PX+T10)/2": cls.Thorax.MIDPOINT_T10_PX,
+            "(IJ+T1)/2": cls.Thorax.MIDPOINT_IJ_T1,
+            "(T1+IJ)/2": cls.Thorax.MIDPOINT_IJ_T1,
             "GH": cls.Humerus.GLENOHUMERAL_HEAD,
+            "EL": cls.Humerus.LATERAL_EPICONDYLE,
+            "EM": cls.Humerus.MEDIAL_EPICONDYLE,
             "midpoint EM EL": cls.Humerus.MIDPOINT_EPICONDYLES,  # old
             "(EM+EL)/2": cls.Humerus.MIDPOINT_EPICONDYLES,
+            "(EL+EM)/2": cls.Humerus.MIDPOINT_EPICONDYLES,
             "SC": cls.Clavicle.STERNOCLAVICULAR_JOINT_CENTER,
             "CM": cls.Clavicle.MIDTHIRD,
             "point of intersection between the mesh model and the Zc axis": cls.Clavicle.CUSTOM,
@@ -188,7 +199,7 @@ class AnatomicalLandmark:
         the_enum = biomech_origin_to_enum.get(biomech_origin)
         if the_enum is None:
             raise ValueError(
-                f"{biomech_origin} is not a valid biomech_origin."
+                f"'{biomech_origin}' is not a valid biomech_origin."
                 "biomech_origin must be one of the following: "
                 "joint, parent, child"
             )
