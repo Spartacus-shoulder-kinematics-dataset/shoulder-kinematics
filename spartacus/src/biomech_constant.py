@@ -18,8 +18,11 @@ class Thorax:
     T1 = np.array([1311, -86, 0.0]) - IJ_origin
     T7 = np.array([1300, -188, 0.0]) - IJ_origin
     T8 = np.array([1297, -212, 0.0]) - IJ_origin
+    T10 = np.array([1290, -238, 0.0]) - IJ_origin
     MID_C7_IJ = (C7 + IJ) / 2
     MID_T8_PX = (T8 + PX) / 2
+    MID_IJ_T1 = (IJ + T1) / 2
+    MID_T10_PX = (T10 + PX) / 2
 
     y_axis = ((C7 + IJ) / 2 - (T8 + PX) / 2) / np.linalg.norm((C7 + IJ) / 2 - (T8 + PX) / 2)
 
@@ -36,9 +39,12 @@ class Thorax:
     T1 = R @ T1
     T7 = R @ T7
     T8 = R @ T8
+    T10 = R @ T10
     SC = R @ SC
     MID_C7_IJ = R @ MID_C7_IJ
     MID_T8_PX = R @ MID_T8_PX
+    MID_IJ_T1 = R @ MID_IJ_T1
+    MID_T10_PX = R @ MID_T10_PX
 
 
 class Scapula:
@@ -98,11 +104,15 @@ def get_constant(landmark: AnatomicalLandmark) -> np.ndarray:
             AnatomicalLandmark.Thorax.IJ: Thorax.IJ,
             AnatomicalLandmark.Thorax.PX: Thorax.PX,
             AnatomicalLandmark.Thorax.T1s: Thorax.T1s,
+            AnatomicalLandmark.Thorax.T1: Thorax.T1,
             AnatomicalLandmark.Thorax.C7: Thorax.C7,
             AnatomicalLandmark.Thorax.T7: Thorax.T7,
             AnatomicalLandmark.Thorax.T8: Thorax.T8,
+            AnatomicalLandmark.Thorax.T10: Thorax.T10,
             AnatomicalLandmark.Thorax.MIDPOINT_C7_IJ: Thorax.MID_C7_IJ,
+            AnatomicalLandmark.Thorax.MIDPOINT_IJ_T1: Thorax.MID_IJ_T1,
             AnatomicalLandmark.Thorax.MIDPOINT_T8_PX: Thorax.MID_T8_PX,
+            AnatomicalLandmark.Thorax.MIDPOINT_T10_PX: Thorax.MID_T10_PX,
         }
 
         the_constant = landmark_mapping.get(landmark)
@@ -138,6 +148,6 @@ def get_constant(landmark: AnatomicalLandmark) -> np.ndarray:
         the_constant = landmark_mapping.get(landmark)
 
     if the_constant is None:
-        raise ValueError(f"Landmark {landmark} not found in Scapula landmarks")
+        raise ValueError(f"Landmark {landmark} not found in landmarks")
 
     return the_constant

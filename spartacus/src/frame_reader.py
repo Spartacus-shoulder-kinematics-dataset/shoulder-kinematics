@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 from .biomech_constant import get_constant
-from .enums_biomech import AnatomicalLandmark, Segment, CartesianAxis
+from .enums_biomech import AnatomicalLandmark, Segment, CartesianAxis, BiomechDirection
 
 
 class VectorBase(ABC):
@@ -20,8 +20,14 @@ class VectorBase(ABC):
         """Returns the principal direction of the vector, ex: np.array([0.8, 0.2, -0.5]) -> CartesianAxis.plusX"""
         return CartesianAxis.principal_axis(self.compute_default_vector())
 
+    def biomech_direction(self) -> BiomechDirection:
+        """Returns the biomechanical direction of the vector, ex: np.array([0.8, 0.2, -0.5]) -> BiomechDirection.postero_anterior"""
+        return BiomechDirection.from_direction_global_isb_frame(self.principal_direction())
+
 
 class StartEndVector(VectorBase):
+    """This class represents a vector that is defined by two anatomical landmarks start and end"""
+
     def __init__(self, start: AnatomicalLandmark, end: AnatomicalLandmark):
         self.start = start
         self.end = end
@@ -43,6 +49,8 @@ class StartEndVector(VectorBase):
 
 
 class CrossedVector(VectorBase):
+    """This class represents a vector that is defined by the cross product of two vectors"""
+
     def __init__(self, first_vector: VectorBase, second_vector: VectorBase):
         self.vector1 = first_vector
         self.vector2 = second_vector
@@ -60,6 +68,8 @@ class CrossedVector(VectorBase):
 
 
 class Frame:
+    """This class represents a frame of reference defined by three vectors and an origin"""
+
     def __init__(
         self, x_axis: VectorBase, y_axis: VectorBase, z_axis: VectorBase, origin: AnatomicalLandmark, segment: Segment
     ):

@@ -3,6 +3,9 @@ import os
 import numpy as np
 import pandas as pd
 
+from src.enums import (
+    DataFolder,
+)
 from .biomech_system import BiomechCoordinateSystem
 from .checks import (
     check_segment_filled_with_nan,
@@ -30,9 +33,7 @@ from .enums_biomech import (
     AnatomicalLandmark,
     JointType,
 )
-from src.enums import (
-    DataFolder,
-)
+from .frame_reader import Frame
 from .joint import Joint
 from .load_data import load_euler_csv
 from .utils import (

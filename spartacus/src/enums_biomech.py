@@ -74,6 +74,23 @@ class BiomechDirection(Enum):
         return the_enum
 
     @property
+    def to_string(self):
+        strings = {
+            self.PlusPosteroAnterior: "+posteroanterior",
+            self.PlusMedioLateral: "+mediolateral",
+            self.PlusInferoSuperior: "+inferosuperior",
+            self.MinusPosteroAnterior: "-posteroanterior",
+            self.MinusMedioLateral: "-mediolateral",
+            self.MinusInferoSuperior: "-inferosuperior",
+        }
+
+        the_string = strings.get(self)
+        if the_string is None:
+            raise ValueError(f"{self} is not a valid biomech_direction.")
+
+        return the_string
+
+    @property
     def sign(self):
         sign = {
             self.PlusPosteroAnterior: 1,
@@ -86,6 +103,27 @@ class BiomechDirection(Enum):
 
         return sign[self]
 
+    @classmethod
+    def from_direction_global_isb_frame(cls, axis: CartesianAxis):
+        """
+        Return the biomechanical direction if we are in the global ISB frame
+        (X: posteroanterior, Y: inferosuperior, Z: medio-lateral)
+        """
+        map = {
+            CartesianAxis.plusX: cls.PlusPosteroAnterior,
+            CartesianAxis.plusY: cls.PlusInferoSuperior,
+            CartesianAxis.plusZ: cls.PlusMedioLateral,
+            CartesianAxis.minusX: cls.MinusPosteroAnterior,
+            CartesianAxis.minusY: cls.MinusInferoSuperior,
+            CartesianAxis.minusZ: cls.MinusMedioLateral,
+        }
+        output = map.get(axis)
+
+        if output is None:
+            raise ValueError(f"{axis} is not a valid cartesian axis.")
+
+        return output
+
 
 class AnatomicalLandmark:
     """Enum for the biomechanical origins of the segment"""
@@ -96,6 +134,7 @@ class AnatomicalLandmark:
         T7 = "T7"
         T10 = "T10"
         IJ = "IJ"
+        T1 = "T1"
         T1_ANTERIOR_FACE = "T1 anterior face"
         T1s = "T1s"  # @todo: make sure to understand what is it
         C7 = "C7"
@@ -177,6 +216,7 @@ class AnatomicalLandmark:
             "T7": cls.Thorax.T7,
             "T10": cls.Thorax.T10,
             "IJ": cls.Thorax.IJ,
+            "T1": cls.Thorax.T1,
             "T1 anterior face": cls.Thorax.T1_ANTERIOR_FACE,  # old
             "T1s": cls.Thorax.T1_ANTERIOR_FACE,
             "PX": cls.Thorax.PX,
@@ -202,6 +242,7 @@ class AnatomicalLandmark:
             "AC": cls.Scapula.ACROMIOCLAVICULAR_JOINT_CENTER,
             "AA": cls.Scapula.ANGULAR_ACROMIALIS,
             "IA": cls.Scapula.ANGULUS_INFERIOR,
+            "AI": cls.Scapula.ANGULUS_INFERIOR,  # old
             "glenoid center": cls.Scapula.GLENOID_CENTER,  # old
             "GC": cls.Scapula.GLENOID_CENTER,
             "TS": cls.Scapula.TRIGNONUM_SPINAE,

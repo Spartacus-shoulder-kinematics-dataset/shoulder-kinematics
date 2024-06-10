@@ -81,6 +81,19 @@ def get_segment_columns(segment: Segment) -> list[str]:
     return [f"{column}{add_suffix}" for column in the_columns[:3]] + [the_columns[3]]
 
 
+def get_segment_columns_direction(segment: Segment) -> list[str]:
+    columns = {
+        Segment.THORAX: ["thorax_x", "thorax_y", "thorax_z", "thorax_origin"],
+        Segment.CLAVICLE: ["clavicle_x", "clavicle_y", "clavicle_z", "clavicle_origin"],
+        Segment.SCAPULA: ["scapula_x", "scapula_y", "scapula_z", "scapula_origin"],
+        Segment.HUMERUS: ["humerus_x", "humerus_y", "humerus_z", "humerus_origin"],
+    }
+
+    the_columns = columns.get(segment, ValueError(f"{segment} is not a valid segment."))
+    add_suffix = "_direction"
+    return [f"{column}{add_suffix}" for column in the_columns[:3]] + [the_columns[3]]
+
+
 def get_is_isb_column(segment: Segment) -> str:
     columns = {
         Segment.THORAX: "thorax_is_isb",
