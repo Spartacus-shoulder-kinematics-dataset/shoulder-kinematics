@@ -19,9 +19,9 @@ class VectorBase(ABC):
     def principal_direction(self) -> CartesianAxis:
         """Returns the principal direction of the vector, ex: np.array([0.8, 0.2, -0.5]) -> CartesianAxis.plusX"""
         return CartesianAxis.principal_axis(self.compute_default_vector())
+    
 
-
-class Vector(VectorBase):
+class StartEndVector(VectorBase):
     def __init__(self, start: AnatomicalLandmark, end: AnatomicalLandmark):
         self.start = start
         self.end = end
@@ -69,6 +69,10 @@ class Frame:
         self.z_axis = z_axis
         self.segment = segment
 
+    @property
+    def axes(self) -> tuple[VectorBase, VectorBase, VectorBase]:
+        return self.x_axis, self.y_axis, self.z_axis
+
     @classmethod
     def from_xy(cls, x_axis: VectorBase, y_axis: VectorBase, origin: AnatomicalLandmark, segment: Segment):
         return cls(x_axis, y_axis, CrossedVector(x_axis, y_axis), origin, segment)
@@ -87,12 +91,14 @@ class Frame:
         return cls.from_xz(x_axis, z_axis, origin, segment)
 
     @classmethod
-    def from_y_crossed_twice(cls, x_axis: VectorBase, z_axis, origin: AnatomicalLandmark, segment: Segment):
-        raise NotImplementedError
+    def from_y_crossed_twice(cls, x_axis: VectorBase, y_axis: VectorBase, origin: AnatomicalLandmark, segment: Segment):
+        z_axis = CrossedVector(x_axis, y_axis)
+        return cls.from_yz(y_axis, z_axis, origin, segment)
 
     @classmethod
-    def from_x_crossed_twice(cls, y_axis: VectorBase, z_axis, origin: AnatomicalLandmark, segment: Segment):
-        raise NotImplementedError
+    def from_x_crossed_twice(cls, x_axis: VectorBase, z_axis: VectorBase, origin: AnatomicalLandmark, segment: Segment):
+        y_axis = CrossedVector(z_axis, x_axis)
+        return cls.from_xy(x_axis, y_axis, origin, segment)
 
     @classmethod
     def from_once_crossed(cls, x_axis: str, y_axis: str, z_axis: str, origin: str, segment: Segment):
@@ -117,7 +123,12 @@ class Frame:
         is_z_axis_crossed_twice = "z^" in y_axis and "^z" in x_axis
 
         if is_x_axis_crossed_twice:
-            return cls.from_x_crossed_twice(None, None, AnatomicalLandmark.from_string(origin), segment)
+            return cls.from_x_crossed_twice(
+                x_axis=parse_axis(x_axis),
+                z_axis=parse_axis(y_axis, side="first"),
+                origin=AnatomicalLandmark.from_string(origin),
+                segment=segment,
+            )
 
         if is_y_axis_crossed_twice:
             return cls.from_y_crossed_twice(None, None, AnatomicalLandmark.from_string(origin), segment)
@@ -192,37 +203,37 @@ class Frame:
 
     @property
     def postero_anterior_axis(self) -> VectorBase:
-        for axis in [self.x_axis, self.y_axis, self.z_axis]:
+        for axis in self.axes:
             if axis.principal_direction() in (CartesianAxis.plusX, CartesianAxis.minusX):
                 return axis
 
     @property
     def infero_superior_axis(self) -> VectorBase:
-        for axis in [self.x_axis, self.y_axis, self.z_axis]:
+        for axis in self.axes:
             if axis.principal_direction() in (CartesianAxis.plusY, CartesianAxis.minusY):
                 return axis
 
     @property
     def medio_lateral_axis(self) -> VectorBase:
-        for axis in [self.x_axis, self.y_axis, self.z_axis]:
+        for axis in self.axes:
             if axis.principal_direction() in (CartesianAxis.plusZ, CartesianAxis.minusZ):
                 return axis
 
     @property
     def postero_anterior_local_axis(self) -> CartesianAxis:
-        for axis in [self.x_axis, self.y_axis, self.z_axis]:
+        for axis in self.axes:
             if axis.principal_direction() in (CartesianAxis.plusX, CartesianAxis.minusX):
                 return axis.principal_direction()
 
     @property
     def infero_superior_local_axis(self) -> CartesianAxis:
-        for axis in [self.x_axis, self.y_axis, self.z_axis]:
+        for axis in self.axes:
             if axis.principal_direction() in (CartesianAxis.plusY, CartesianAxis.minusY):
                 return axis.principal_direction()
 
     @property
     def medio_lateral_local_axis(self) -> CartesianAxis:
-        for axis in [self.x_axis, self.y_axis, self.z_axis]:
+        for axis in self.axes:
             if axis.principal_direction() in (CartesianAxis.plusZ, CartesianAxis.minusZ):
                 return axis.principal_direction()
 

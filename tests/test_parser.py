@@ -156,6 +156,15 @@ def test_isb_clavicle():
         x_axis=f"{y_thorax}^z", y_axis="z^x", z_axis="vec(SC>AC)", origin="SC", segment=Segment.CLAVICLE
     )
 
+    isb_verification(clavicle_frame)
+
+
+def test_not_isb_clavicle():
+    y_thorax = f"vec(T8>(C7+IJ)/2)"
+    clavicle_frame = Frame.from_xyz_string(
+        x_axis=f"{y_thorax}^z", y_axis="z^x", z_axis="vec(SC>AC)", origin="SC", segment=Segment.CLAVICLE
+    )
+
     assert clavicle_frame.is_x_axis_postero_anterior == True
     assert clavicle_frame.is_y_axis_supero_inferior == True
     assert clavicle_frame.is_z_axis_medio_lateral == True
@@ -169,5 +178,22 @@ def test_isb_clavicle():
     assert clavicle_frame.medio_lateral_local_axis == CartesianAxis.plusZ
 
     assert clavicle_frame.is_origin_isb == True
+    assert clavicle_frame.has_isb_landmarks == False
+    assert clavicle_frame.is_isb == False
+
+    z_thorax = f"vec((T8+PX)/2>(C7+IJ)/2)"
+    clavicle_frame = Frame.from_xyz_string(
+        x_axis="vec(SC>AC)", y_axis=f"{z_thorax}^x", z_axis="x^y", origin="SC", segment=Segment.CLAVICLE
+    )
+
+    assert clavicle_frame.is_x_axis_postero_anterior == False
+    assert clavicle_frame.is_y_axis_supero_inferior == False
+    assert clavicle_frame.is_z_axis_medio_lateral == False
+
+    assert clavicle_frame.postero_anterior_axis == clavicle_frame.y_axis
+    assert clavicle_frame.infero_superior_axis == clavicle_frame.z_axis
+    assert clavicle_frame.medio_lateral_axis == clavicle_frame.x_axis
+
+    assert clavicle_frame.is_origin_isb == True
     assert clavicle_frame.has_isb_landmarks == True
-    assert clavicle_frame.is_isb == True
+    assert clavicle_frame.is_isb == False
