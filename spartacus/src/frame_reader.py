@@ -82,7 +82,20 @@ class Frame:
         return cls(CrossedVector(y_axis, z_axis), y_axis, z_axis, origin, segment)
 
     @classmethod
-    def from_xyz_string(cls, x_axis: str, y_axis: str, z_axis: str, origin: str, segment: Segment):
+    def from_z_crossed_twice(cls, y_axis: VectorBase, z_axis, origin: AnatomicalLandmark, segment: Segment):
+        x_axis = CrossedVector(y_axis, z_axis)
+        return cls.from_xz(x_axis, z_axis, origin, segment)
+
+    @classmethod
+    def from_y_crossed_twice(cls, x_axis: VectorBase, z_axis, origin: AnatomicalLandmark, segment: Segment):
+        raise NotImplementedError
+
+    @classmethod
+    def from_x_crossed_twice(cls, y_axis: VectorBase, z_axis, origin: AnatomicalLandmark, segment: Segment):
+        raise NotImplementedError
+
+    @classmethod
+    def from_once_crossed(cls, x_axis: str, y_axis: str, z_axis: str, origin: str, segment: Segment):
         if x_axis == "y^z":
             origin = AnatomicalLandmark.from_string(origin)
             return cls.from_yz(parse_axis(y_axis), parse_axis(z_axis), origin, segment)
@@ -96,6 +109,42 @@ class Frame:
         raise ValueError(
             f"Invalid axis combination. Expected one of 'x^y', 'y^z', 'z^x' but got {x_axis}, {y_axis}, {z_axis}"
         )
+
+    @classmethod
+    def from_twice_crossed(cls, x_axis: str, y_axis: str, z_axis: str, origin: str, segment: Segment):
+        is_x_axis_crossed_twice = "x^" in z_axis and "^x" in y_axis
+        is_y_axis_crossed_twice = "y^" in x_axis and "^y" in z_axis
+        is_z_axis_crossed_twice = "z^" in y_axis and "^z" in x_axis
+
+        if is_x_axis_crossed_twice:
+            return cls.from_x_crossed_twice(None, None, AnatomicalLandmark.from_string(origin), segment)
+
+        if is_y_axis_crossed_twice:
+            return cls.from_y_crossed_twice(None, None, AnatomicalLandmark.from_string(origin), segment)
+
+        if is_z_axis_crossed_twice:
+            return cls.from_z_crossed_twice(
+                y_axis=parse_axis(x_axis, side="first"),
+                z_axis=parse_axis(z_axis),
+                origin=AnatomicalLandmark.from_string(origin),
+                segment=segment,
+            )
+
+    @classmethod
+    def from_xyz_string(cls, x_axis: str, y_axis: str, z_axis: str, origin: str, segment: Segment):
+
+        if cls.is_one_axis_crossed_twice(x_axis, y_axis, z_axis):
+            return cls.from_twice_crossed(x_axis, y_axis, z_axis, origin, segment)
+        else:
+            return cls.from_once_crossed(x_axis, y_axis, z_axis, origin, segment)
+
+    @staticmethod
+    def is_one_axis_crossed_twice(x_axis: str, y_axis: str, z_axis: str) -> bool:
+        is_x_axis_crossed_twice = "x^" in z_axis and "^x" in y_axis
+        is_y_axis_crossed_twice = "y^" in x_axis and "^y" in z_axis
+        is_z_axis_crossed_twice = "z^" in y_axis and "^z" in x_axis
+
+        return is_x_axis_crossed_twice or is_y_axis_crossed_twice or is_z_axis_crossed_twice
 
     @property
     def landmarks(self) -> tuple[str, ...]:
@@ -117,6 +166,8 @@ class Frame:
             return set(self.landmarks) == set(AnatomicalLandmark.Scapula.isb())
         if self.segment == Segment.THORAX:
             return set(self.landmarks) == set(AnatomicalLandmark.Thorax.isb())
+        if self.segment == Segment.CLAVICLE:
+            return set(self.landmarks) == set(AnatomicalLandmark.Clavicle.isb())
 
     @property
     def is_origin_isb(self) -> bool:
@@ -124,6 +175,8 @@ class Frame:
             return self.origin == AnatomicalLandmark.Scapula.origin_isb()
         if self.segment == Segment.THORAX:
             return self.origin == AnatomicalLandmark.Thorax.origin_isb()
+        if self.segment == Segment.CLAVICLE:
+            return self.origin == AnatomicalLandmark.Clavicle.origin_isb()
 
     @property
     def is_x_axis_postero_anterior(self) -> bool:
@@ -182,30 +235,44 @@ class Frame:
         return f"Frame: {self.x_axis}, {self.y_axis}, {self.z_axis}, {self.origin}, {self.segment}"
 
 
-def parse_axis(input_str) -> VectorBase:
+def parse_axis(input_str, side="all") -> VectorBase:
     """
     This function parses the input string of shape "vec(XXX>YYY)" or "vec(XXX>YYY)^vec(XXX>YYY)"
     and returns a Vector or CrossedVector object
     """
     is_crossed = "^" in input_str
     if is_crossed:
-        first_vector, second_vector = input_str.split("^")
-        vector1 = StartEndVector.from_strings(*parse_vector(first_vector))
-        vector2 = StartEndVector.from_strings(*parse_vector(second_vector))
-        return CrossedVector(vector1, vector2)
+        return parse_crossed_vector(input_str, side)
 
-    return StartEndVector.from_strings(*parse_vector(input_str))
+    if side == "first" or side == "second":
+        raise ValueError(
+            f"Invalid input: Expected a crossed vector but got {input_str}"
+            f"Set side to 'all' to parse the whole vector"
+        )
+
+    return parse_vector(input_str)
+
+
+def parse_crossed_vector(input: str, side: str) -> CrossedVector | StartEndVector:
+    first_vector, second_vector = input.split("^")
+
+    if side == "all":
+        vector1 = parse_vector(first_vector)
+        vector2 = parse_vector(second_vector)
+        return CrossedVector(vector1, vector2)
+    elif side == "first":
+        return parse_vector(first_vector)
+    elif side == "second":
+        return parse_vector(second_vector)
+    else:
+        raise ValueError(f"Invalid side: Expected 'first', 'second' or 'all' but got {side}")
 
 
 def parse_vector(input: str) -> StartEndVector:
     """
     This function parses the input string of shape "vec(XXX>YYY)" and returns a Vector object
     """
-    has_no_point = ">" not in input
-    if has_no_point:
-        return StartEndVector.from_string(input[4:-1])
-    else:
-        return StartEndVector.from_strings(*parse_start_end_vector(input))
+    return StartEndVector.from_strings(*parse_start_end_vector(input))
 
 
 def parse_start_end_vector(input: str) -> tuple[str, ...]:

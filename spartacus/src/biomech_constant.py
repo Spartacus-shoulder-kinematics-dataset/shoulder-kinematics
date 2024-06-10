@@ -1,5 +1,4 @@
 import numpy as np
-import plotly.graph_objects as go
 
 from .enums_biomech import AnatomicalLandmark
 
@@ -42,30 +41,6 @@ class Thorax:
     MID_T8_PX = R @ MID_T8_PX
 
 
-def plot_thorax():
-    fig = go.Figure()
-    fig.add_trace(go.Scatter3d(x=[Thorax.IJ[0]], y=[Thorax.IJ[1]], z=[Thorax.IJ[2]], mode="markers", name="IJ"))
-    fig.add_trace(go.Scatter3d(x=[Thorax.PX[0]], y=[Thorax.PX[1]], z=[Thorax.PX[2]], mode="markers", name="PX"))
-    fig.add_trace(go.Scatter3d(x=[Thorax.T1s[0]], y=[Thorax.T1s[1]], z=[Thorax.T1s[2]], mode="markers", name="T1s"))
-    fig.add_trace(go.Scatter3d(x=[Thorax.C7[0]], y=[Thorax.C7[1]], z=[Thorax.C7[2]], mode="markers", name="C7"))
-    fig.add_trace(go.Scatter3d(x=[Thorax.T1[0]], y=[Thorax.T1[1]], z=[Thorax.T1[2]], mode="markers", name="T1"))
-    fig.add_trace(go.Scatter3d(x=[Thorax.T7[0]], y=[Thorax.T7[1]], z=[Thorax.T7[2]], mode="markers", name="T7"))
-    fig.add_trace(go.Scatter3d(x=[Thorax.T8[0]], y=[Thorax.T8[1]], z=[Thorax.T8[2]], mode="markers", name="T8"))
-    fig.add_trace(go.Scatter3d(x=[Thorax.SC[0]], y=[Thorax.SC[1]], z=[Thorax.SC[2]], mode="markers", name="SC"))
-    fig.add_trace(
-        go.Scatter3d(
-            x=[Thorax.MID_C7_IJ[0]], y=[Thorax.MID_C7_IJ[1]], z=[Thorax.MID_C7_IJ[2]], mode="markers", name="MID_C7_IJ"
-        )
-    )
-    fig.add_trace(
-        go.Scatter3d(
-            x=[Thorax.MID_T8_PX[0]], y=[Thorax.MID_T8_PX[1]], z=[Thorax.MID_T8_PX[2]], mode="markers", name="MID_T8_PX"
-        )
-    )
-    fig.update_layout(scene=dict(aspectmode="data"))
-    fig.show()
-
-
 class Scapula:
     """
     This class stores scapula landmarks with default values is ISB frame to make sure we can stick to definitions.
@@ -94,27 +69,27 @@ class Scapula:
 
     R = np.array([x_axis, y_axis, z_axis]).T
 
-    AC = R @ AC
-    AI = R @ AI
+    manual_offset = np.array([-70, 0.0, 100])  # made up to approximate the global position
+    manual_scaling = np.array([0.5, 0.5, 0.5])  # made up to approximate the global position
+
+    AA = (R @ AA) * manual_scaling + manual_offset
+    AC = (R @ AC) * manual_scaling + manual_offset
+    AI = (R @ AI) * manual_scaling + manual_offset
     for i, gc in enumerate(GC_CONTOURS):
-        GC_CONTOURS[i] = R @ gc
-    IE = R @ IE
-    SE = R @ SE
-    TS = R @ TS
+        GC_CONTOURS[i] = (R @ gc) * manual_scaling + manual_offset
+    IE = (R @ IE) * manual_scaling + manual_offset
+    SE = (R @ SE) * manual_scaling + manual_offset
+    TS = (R @ TS) * manual_scaling + manual_offset
 
 
-def plot_scapula():
-    fig = go.Figure()
-    fig.add_trace(go.Scatter3d(x=[Scapula.AA[0]], y=[Scapula.AA[1]], z=[Scapula.AA[2]], mode="markers", name="AA"))
-    fig.add_trace(go.Scatter3d(x=[Scapula.AC[0]], y=[Scapula.AC[1]], z=[Scapula.AC[2]], mode="markers", name="AC"))
-    fig.add_trace(go.Scatter3d(x=[Scapula.AI[0]], y=[Scapula.AI[1]], z=[Scapula.AI[2]], mode="markers", name="AI"))
-    for i, gc in enumerate(Scapula.GC_CONTOURS):
-        fig.add_trace(go.Scatter3d(x=[gc[0]], y=[gc[1]], z=[gc[2]], mode="markers", name=f"GC {i}"))
-    fig.add_trace(go.Scatter3d(x=[Scapula.IE[0]], y=[Scapula.IE[1]], z=[Scapula.IE[2]], mode="markers", name="IE"))
-    fig.add_trace(go.Scatter3d(x=[Scapula.SE[0]], y=[Scapula.SE[1]], z=[Scapula.SE[2]], mode="markers", name="SE"))
-    fig.add_trace(go.Scatter3d(x=[Scapula.TS[0]], y=[Scapula.TS[1]], z=[Scapula.TS[2]], mode="markers", name="TS"))
-    fig.update_layout(scene=dict(aspectmode="data"))
-    fig.show()
+class Clavicle:
+    """
+    This class stores clavicle landmarks with default values is ISB frame to make sure we can stick to definitions.
+    """
+
+    SC = np.zeros(3)
+    AC = np.array([-0.05, 0.01, 0.20])
+    y_thorax = np.array([0.0, 1.0, 0.0])
 
 
 def get_constant(landmark: AnatomicalLandmark) -> np.ndarray:
@@ -147,13 +122,20 @@ def get_constant(landmark: AnatomicalLandmark) -> np.ndarray:
 
         the_constant = landmark_mapping.get(landmark)
 
-        if the_constant is None:
-            raise ValueError(f"Landmark {landmark} not found in Scapula landmarks")
+    if isinstance(landmark, AnatomicalLandmark.Clavicle):
+        landmark_mapping = {
+            AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_JOINT_CENTER: Clavicle.SC,
+            AnatomicalLandmark.Scapula.ACROMIOCLAVICULAR_JOINT_CENTER: Scapula.AC,
+            AnatomicalLandmark.Scapula.ANGULUS_INFERIOR: Scapula.AI,
+            # AnatomicalLandmark.Scapula.GLENOID_CAVITY_CONTOURS: Scapula.GC_CONTOURS,
+            # AnatomicalLandmark.Scapula.INFERIOR_EDGE: Scapula.IE,
+            # AnatomicalLandmark.Scapula.SUPERIOR_EDGE: Scapula.SE,
+            AnatomicalLandmark.Scapula.TRIGNONUM_SPINAE: Scapula.TS,
+        }
+
+        the_constant = landmark_mapping.get(landmark)
+
     if the_constant is None:
         raise ValueError(f"Landmark {landmark} not found in Scapula landmarks")
 
     return the_constant
-
-
-# plot_scapula()
-# plot_thorax()

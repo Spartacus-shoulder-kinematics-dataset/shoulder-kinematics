@@ -118,11 +118,16 @@ class AnatomicalLandmark:
         STERNOCLAVICULAR_JOINT_CENTER = "SCJC"
         MIDTHIRD = "MTC"
         CUSTOM = "CUSTOM"
-        ACROMIOCLAVICULAR_JOINT_CENTER = "ACJC"
+        # ACROMIOCLAVICULAR_JOINT_CENTER = "ACJC"
 
         @classmethod
         def isb(cls):
-            return [cls.STERNOCLAVICULAR_JOINT_CENTER, cls.ACROMIOCLAVICULAR_JOINT_CENTER]
+            return [
+                cls.STERNOCLAVICULAR_JOINT_CENTER,
+                AnatomicalLandmark.Thorax.MIDPOINT_T8_PX,
+                AnatomicalLandmark.Thorax.MIDPOINT_C7_IJ,
+                AnatomicalLandmark.Scapula.ACROMIOCLAVICULAR_JOINT_CENTER,
+            ]
 
         @classmethod
         def origin_isb(cls):
