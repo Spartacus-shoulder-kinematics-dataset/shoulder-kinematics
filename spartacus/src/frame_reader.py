@@ -179,6 +179,8 @@ class Frame:
             return set(self.landmarks) == set(AnatomicalLandmark.Thorax.isb())
         if self.segment == Segment.CLAVICLE:
             return set(self.landmarks) == set(AnatomicalLandmark.Clavicle.isb())
+        if self.segment == Segment.HUMERUS:
+            return set(self.landmarks) == set(AnatomicalLandmark.Humerus.isb())
 
     @property
     def is_origin_isb(self) -> bool:
@@ -188,6 +190,8 @@ class Frame:
             return self.origin == AnatomicalLandmark.Thorax.origin_isb()
         if self.segment == Segment.CLAVICLE:
             return self.origin == AnatomicalLandmark.Clavicle.origin_isb()
+        if self.segment == Segment.HUMERUS:
+            return self.origin == AnatomicalLandmark.Humerus.origin_isb()
 
     @property
     def is_x_axis_postero_anterior(self) -> bool:

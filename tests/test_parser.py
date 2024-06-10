@@ -197,3 +197,23 @@ def test_not_isb_clavicle():
     assert clavicle_frame.is_origin_isb == True
     assert clavicle_frame.has_isb_landmarks == True
     assert clavicle_frame.is_isb == False
+
+
+humerus_frame_template = lambda x_axis: Frame.from_xyz_string(
+    x_axis=x_axis, y_axis="vec((EM+EL)/2>GH)", z_axis="x^y", origin="GH", segment=Segment.HUMERUS
+)
+combinations_for_x_axis = [
+    "vec(EL>EM)^vec(EL>GH)",
+    "vec(GH>EL)^vec(GH>EM)",
+    "vec(EM>GH)^vec(EM>EL)",
+]
+
+humerus_frames_isb = [humerus_frame_template(axis) for axis in combinations_for_x_axis]
+
+
+@pytest.mark.parametrize(
+    "isb_humerus_frame",
+    humerus_frames_isb,
+)
+def test_parse_humerus_frame_isb(isb_humerus_frame):
+    isb_verification(isb_humerus_frame)

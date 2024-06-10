@@ -82,6 +82,14 @@ class Scapula:
     TS = (R @ TS) * manual_scaling + manual_offset
 
 
+class Humerus:
+
+    EL = np.array([-21, -104, 130])  # made up guess
+    EM = np.array([-20, -105, 110])  # made up guess
+    GH = np.array([-50, -15, 105])  # made up guess
+    MID_EPICONDYLES = (EL + EM) / 2
+
+
 def get_constant(landmark: AnatomicalLandmark) -> np.ndarray:
     the_constant = None
 
@@ -121,13 +129,10 @@ def get_constant(landmark: AnatomicalLandmark) -> np.ndarray:
 
     if isinstance(landmark, AnatomicalLandmark.Humerus):
         landmark_mapping = {
-            AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_JOINT_CENTER: Thorax.SC,
-            AnatomicalLandmark.Scapula.ACROMIOCLAVICULAR_JOINT_CENTER: Scapula.AC,
-            AnatomicalLandmark.Scapula.ANGULUS_INFERIOR: Scapula.AI,
-            # AnatomicalLandmark.Scapula.GLENOID_CAVITY_CONTOURS: Scapula.GC_CONTOURS,
-            # AnatomicalLandmark.Scapula.INFERIOR_EDGE: Scapula.IE,
-            # AnatomicalLandmark.Scapula.SUPERIOR_EDGE: Scapula.SE,
-            AnatomicalLandmark.Scapula.TRIGNONUM_SPINAE: Scapula.TS,
+            AnatomicalLandmark.Humerus.MIDPOINT_EPICONDYLES: Humerus.MID_EPICONDYLES,
+            AnatomicalLandmark.Humerus.LATERAL_EPICONDYLE: Humerus.EL,
+            AnatomicalLandmark.Humerus.MEDIAL_EPICONDYLE: Humerus.EM,
+            AnatomicalLandmark.Humerus.GLENOHUMERAL_HEAD: Humerus.GH,
         }
 
         the_constant = landmark_mapping.get(landmark)

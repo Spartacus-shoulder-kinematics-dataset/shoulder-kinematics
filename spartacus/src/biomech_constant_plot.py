@@ -1,6 +1,6 @@
 from plotly import graph_objects as go
 
-from biomech_constant import Scapula, Thorax
+from biomech_constant import Scapula, Thorax, Humerus
 
 
 def plot_scapula():
@@ -101,6 +101,48 @@ def plot_all():
             x=[Thorax.MID_T8_PX[0]], y=[Thorax.MID_T8_PX[1]], z=[Thorax.MID_T8_PX[2]], mode="markers", name="MID_T8_PX"
         )
     )
+
+    fig.add_trace(
+        go.Scatter3d(
+            x=[Humerus.EL[0]],
+            y=[Humerus.EL[1]],
+            z=[Humerus.EL[2]],
+            mode="markers",
+            name="EL",
+            marker=dict(color="green"),
+        )
+    )
+    fig.add_trace(
+        go.Scatter3d(
+            x=[Humerus.EM[0]],
+            y=[Humerus.EM[1]],
+            z=[Humerus.EM[2]],
+            mode="markers",
+            name="EM",
+            marker=dict(color="green"),
+        )
+    )
+    fig.add_trace(
+        go.Scatter3d(
+            x=[Humerus.GH[0]],
+            y=[Humerus.GH[1]],
+            z=[Humerus.GH[2]],
+            mode="markers",
+            name="GH",
+            marker=dict(color="green"),
+        )
+    )
+    fig.add_trace(
+        go.Scatter3d(
+            x=[Humerus.MID_EPICONDYLES[0]],
+            y=[Humerus.MID_EPICONDYLES[1]],
+            z=[Humerus.MID_EPICONDYLES[2]],
+            mode="markers",
+            name="MID_EPICONDYLES",
+            marker=dict(color="green"),
+        )
+    )
+
     fig.update_layout(scene=dict(aspectmode="data"))
     fig.show()
 

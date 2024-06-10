@@ -156,7 +156,7 @@ class AnatomicalLandmark:
 
         @classmethod
         def isb(cls):
-            return [cls.GLENOHUMERAL_HEAD, cls.MIDPOINT_EPICONDYLES]
+            return [cls.GLENOHUMERAL_HEAD, cls.LATERAL_EPICONDYLE, cls.MEDIAL_EPICONDYLE, cls.MIDPOINT_EPICONDYLES]
 
         @classmethod
         def origin_isb(cls):
