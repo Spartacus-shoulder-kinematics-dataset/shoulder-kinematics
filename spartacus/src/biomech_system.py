@@ -1,4 +1,5 @@
 import collections
+
 import numpy as np
 
 from .enums_biomech import CartesianAxis, BiomechDirection, AnatomicalLandmark, Segment
@@ -109,7 +110,7 @@ class BiomechCoordinateSystem:
             Segment.THORAX: [AnatomicalLandmark.Thorax.C7, AnatomicalLandmark.Thorax.T8, AnatomicalLandmark.Thorax.PX],
             Segment.CLAVICLE: [
                 AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_JOINT_CENTER,
-                AnatomicalLandmark.Clavicle.ACROMIOCLAVICULAR_JOINT_CENTER,
+                AnatomicalLandmark.Scapula.ACROMIOCLAVICULAR_JOINT_CENTER,
             ],
             Segment.SCAPULA: [AnatomicalLandmark.Scapula.TRIGNONUM_SPINAE, AnatomicalLandmark.Scapula.ANGULUS_INFERIOR],
             Segment.HUMERUS: [AnatomicalLandmark.Humerus.MIDPOINT_EPICONDYLES],
