@@ -82,16 +82,6 @@ class Scapula:
     TS = (R @ TS) * manual_scaling + manual_offset
 
 
-class Clavicle:
-    """
-    This class stores clavicle landmarks with default values is ISB frame to make sure we can stick to definitions.
-    """
-
-    SC = np.zeros(3)
-    AC = np.array([-0.05, 0.01, 0.20])
-    y_thorax = np.array([0.0, 1.0, 0.0])
-
-
 def get_constant(landmark: AnatomicalLandmark) -> np.ndarray:
     the_constant = None
 
@@ -124,7 +114,14 @@ def get_constant(landmark: AnatomicalLandmark) -> np.ndarray:
 
     if isinstance(landmark, AnatomicalLandmark.Clavicle):
         landmark_mapping = {
-            AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_JOINT_CENTER: Clavicle.SC,
+            AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_JOINT_CENTER: Thorax.SC,
+        }
+
+        the_constant = landmark_mapping.get(landmark)
+
+    if isinstance(landmark, AnatomicalLandmark.Humerus):
+        landmark_mapping = {
+            AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_JOINT_CENTER: Thorax.SC,
             AnatomicalLandmark.Scapula.ACROMIOCLAVICULAR_JOINT_CENTER: Scapula.AC,
             AnatomicalLandmark.Scapula.ANGULUS_INFERIOR: Scapula.AI,
             # AnatomicalLandmark.Scapula.GLENOID_CAVITY_CONTOURS: Scapula.GC_CONTOURS,

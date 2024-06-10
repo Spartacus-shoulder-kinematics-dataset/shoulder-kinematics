@@ -19,7 +19,7 @@ class VectorBase(ABC):
     def principal_direction(self) -> CartesianAxis:
         """Returns the principal direction of the vector, ex: np.array([0.8, 0.2, -0.5]) -> CartesianAxis.plusX"""
         return CartesianAxis.principal_axis(self.compute_default_vector())
-    
+
 
 class StartEndVector(VectorBase):
     def __init__(self, start: AnatomicalLandmark, end: AnatomicalLandmark):
