@@ -15,13 +15,6 @@ from spartacus.src.utils import (
 
 print_warnings = True
 
-
-to_pass_because_left_side = [
-    ("Begon et al.", Segment.CLAVICLE),  # clavicle
-    ("Begon et al.", Segment.SCAPULA),  # scapula
-    ("Begon et al.", Segment.HUMERUS),  # humerus
-    ("Begon et al.", Segment.THORAX),  # thorax
-]
 to_pass_because_geometric = [
     ("Fung et al.", Segment.THORAX),  # geometric Thorax feature implement SoloVectors
     ("Fung et al.", Segment.HUMERUS),  # geometric Humerus feature implement SoloVectors
@@ -84,11 +77,9 @@ def test_new_parsing():
         for segment_enum in Segment:
             print(segment_enum)
             tuple_test = (row.dataset_authors, segment_enum)
-            if row.dataset_authors == "Fung et al.":
-                print("hey")
+
             if (
-                tuple_test in to_pass_because_left_side
-                or tuple_test in to_pass_because_geometric
+                tuple_test in to_pass_because_geometric
                 or tuple_test in to_pass_because_not_filled
                 or tuple_test in to_pass_because_thorax_is_imaging_system
                 or tuple_test in to_pass_because_there_is_mislabel
