@@ -164,7 +164,6 @@ class Frame:
                 z_axis=parse_axis(y_axis, cross_product_side="first", arm_side=side),
                 origin=AnatomicalLandmark.from_string(origin),
                 segment=segment,
-                side=side,
             )
 
         if is_y_axis_crossed_twice:
@@ -176,7 +175,6 @@ class Frame:
                 z_axis=parse_axis(z_axis),
                 origin=AnatomicalLandmark.from_string(origin),
                 segment=segment,
-                side=side,
             )
 
     @classmethod
