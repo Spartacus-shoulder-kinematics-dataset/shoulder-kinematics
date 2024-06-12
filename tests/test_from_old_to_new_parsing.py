@@ -41,7 +41,6 @@ to_pass_because_geometric = [
 to_pass_because_not_filled = [
     ("Henninger et al.", Segment.THORAX),
     ("Henninger et al.", Segment.HUMERUS),
-    ("Henninger et al.", Segment.SCAPULA),
     ("Henninger et al.", Segment.CLAVICLE),
 ]  # thorax
 to_pass_because_thorax_is_imaging_system = [
@@ -99,7 +98,15 @@ def test_new_parsing():
                 z_axis=row[segment_cols_direction[2]],
                 origin=row[segment_cols_direction[3]],
                 segment=segment_enum,
+                side="right" if row.side_as_right or segment_enum == Segment.THORAX else row.side,
             )
+            print(frame.side)
+            print(frame.x_axis.principal_direction())
+            print(frame.x_axis.compute_default_vector())
+            print(frame.y_axis.principal_direction())
+            print(frame.y_axis.compute_default_vector())
+            print(frame.z_axis.principal_direction())
+            print(frame.z_axis.compute_default_vector())
 
             assert frame.x_axis.biomech_direction() == BiomechDirection.from_string(row[segment_cols[0]])
             assert frame.y_axis.biomech_direction() == BiomechDirection.from_string(row[segment_cols[1]])
