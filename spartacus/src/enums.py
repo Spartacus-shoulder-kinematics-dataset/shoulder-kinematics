@@ -1,8 +1,6 @@
 from enum import Enum
 from pathlib import Path
 
-import numpy as np
-
 
 class DatasetCSV(Enum):
     """Enum for the dataset csv files, with dynamic path"""
@@ -17,23 +15,18 @@ class DataFolder(Enum):
     CHU_2012 = Path(__file__).parent.parent / "data" / "#3_Chu_et_al"
     FUNG_2001 = Path(__file__).parent.parent / "data" / "#4_Fung_et_al"
     GUTIERREZ_DELGADO_2017 = Path(__file__).parent.parent / "data" / "#5_Gutierrez_Delgado_et_al"
-    KOLZ_2020 = Path(__file__).parent.parent / "data" / "Kolz et al 2020"
+    KOLZ_2020 = Path(__file__).parent.parent / "data" / "#6_Henninger_et_al" / "6a_PA"
     MCCLURE_2001 = Path(__file__).parent.parent / "data" / "#7_Karduna_et_al"
     KIJIMA_2015 = Path(__file__).parent.parent / "data" / "#8_Kijima_et_al"
     KIM_2017 = Path(__file__).parent.parent / "data" / "#9_Kim_et_al"
     KONOZO_2017 = Path(__file__).parent.parent / "data" / "#10_Kozono_et_al"
     LAWRENCE_2014 = Path(__file__).parent.parent / "data" / "#11_Ludewig_et_al"
     MATSUKI_2011 = Path(__file__).parent.parent / "data" / "#12_Matsuki_et_al"
-    # MATSUKI_2011 = Path(__file__).parent.parent / "data" / "Matsuki et al 2011"
-    # MATSUKI_2012 = Path(__file__).parent.parent / "data" / "Matsuki et al 2012"
-    # MATSUKI_2014 = Path(__file__).parent.parent / "data" / "Matsuki et al 2014"
     MATSUMURA_2013 = Path(__file__).parent.parent / "data" / "#13_Matsumura_et_al"
     MOISSENET = Path(__file__).parent.parent / "data" / "#14_Moissenet_et_al"
     NISHINAKA_2008 = Path(__file__).parent.parent / "data" / "#15_Nishinaka_et_al"
     OKI_2012 = Path(__file__).parent.parent / "data" / "#16_Oki_et_al"
     SAHARA_2006 = Path(__file__).parent.parent / "data" / "#17_Sahara_et_al"
-    # SAHARA_2006 = Path(__file__).parent.parent / "data" / "Sahara et al 2006"
-    # SAHARA_2007 = Path(__file__).parent.parent / "data" / "Sahara et al 2007"
     SUGI_2021 = Path(__file__).parent.parent / "data" / "#18_Sugi_et_al"
     TEECE_2008 = Path(__file__).parent.parent / "data" / "#19_Teece_et_al"
     YOSHIDA_2023 = Path(__file__).parent.parent / "data" / "#20_Yoshida_et_al"
@@ -47,7 +40,7 @@ class DataFolder(Enum):
             "#3_Chu_et_al": cls.CHU_2012,  # "Chu et al 2012"
             "#4_Fung_et_al": cls.FUNG_2001,  # "Fung et al 2001"
             "#5_Gutierrez_Delgado_et_al": cls.GUTIERREZ_DELGADO_2017,  # "Gutierrez Delgado et al 2017"
-            "Kolz et al 2020": cls.KOLZ_2020,  # "Kolz et al 2020
+            "#6_Henninger_et_al/6a_PA": cls.KOLZ_2020,  # "Kolz et al 2020
             "#7_Karduna_et_al": cls.MCCLURE_2001,
             "#8_Kijima_et_al": cls.KIJIMA_2015,  # "Kijima et al 2015"
             "#9_Kim_et_al": cls.KIM_2017,  # "Kim et al 2017"
