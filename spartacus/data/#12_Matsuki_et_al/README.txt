@@ -1,1 +1,0 @@
-Only right shoulder (dominant) data extracted from original paper
