@@ -102,12 +102,12 @@ articles_data = {
         [(0, -23.068), (20, 32.595395315826835), (60, -0.8599417044686809), (-1, 11.970999999999998)],
     ),
     "Matsuki et al.": (
-        864,  #     288
+        1836,  #     288
         ["scapular elevation"],
         ["scapulothoracic", "glenohumeral", "sternoclavicular"],
         [1, 2, 3],
-        -10228.198907525397,
-        [(0, 0.7331976380416924), (1, 1.3163822061108446), (2, 2.009989683892475), (-1, 34.11662691)],
+        -18922.510132213356,
+        [(0, 0.7331976380416924), (1, 1.3163822061108446), (2, 2.009989683892475), (-1, np.nan)],
     ),
     "Moissenet et al.": (
         705264,
@@ -212,7 +212,7 @@ def test_number_of_articles():
 
     assert len(articles) == 13
 
-    assert confident_values.shape[0] == 810861
+    assert confident_values.shape[0] == 811833
 
 
 def print_data(data, random_checks):
