@@ -28,13 +28,14 @@ class VectorBase(ABC):
 class StartEndVector(VectorBase):
     """This class represents a vector that is defined by two anatomical landmarks start and end"""
 
-    def __init__(self, start: AnatomicalLandmark, end: AnatomicalLandmark):
+    def __init__(self, start: AnatomicalLandmark, end: AnatomicalLandmark, side: str = None):
         self.start = start
         self.end = end
+        self.side = side
 
     @classmethod
-    def from_strings(cls, start: str, end: str):
-        return cls(AnatomicalLandmark.from_string(start), AnatomicalLandmark.from_string(end))
+    def from_strings(cls, start: str, end: str, arm_side: str = None):
+        return cls(AnatomicalLandmark.from_string(start), AnatomicalLandmark.from_string(end), side=arm_side)
 
     def __str__(self):
         return f"Start: {self.start}, End: {self.end}"
@@ -44,7 +45,7 @@ class StartEndVector(VectorBase):
         return self.start, self.end
 
     def compute_default_vector(self) -> np.ndarray:
-        vector = get_constant(self.end) - get_constant(self.start)
+        vector = get_constant(self.end, self.side) - get_constant(self.start, self.side)
         return vector / np.linalg.norm(vector)
 
 
@@ -54,6 +55,12 @@ class CrossedVector(VectorBase):
     def __init__(self, first_vector: VectorBase, second_vector: VectorBase):
         self.vector1 = first_vector
         self.vector2 = second_vector
+
+    @property
+    def side(self) -> str:
+        if self.vector1.side != self.vector2.side:
+            raise ValueError("The two vectors must have the same side")
+        return self.vector1.side
 
     def __str__(self):
         return f"({self.vector1}) X ({self.vector2})"
@@ -71,7 +78,12 @@ class Frame:
     """This class represents a frame of reference defined by three vectors and an origin"""
 
     def __init__(
-        self, x_axis: VectorBase, y_axis: VectorBase, z_axis: VectorBase, origin: AnatomicalLandmark, segment: Segment
+        self,
+        x_axis: VectorBase,
+        y_axis: VectorBase,
+        z_axis: VectorBase,
+        origin: AnatomicalLandmark,
+        segment: Segment,
     ):
         self.origin = origin
         self.x_axis = x_axis
@@ -80,19 +92,33 @@ class Frame:
         self.segment = segment
 
     @property
+    def side(self):
+        if self.x_axis.side != self.y_axis.side or self.y_axis.side != self.z_axis.side:
+            raise ValueError(
+                "All vectors must have the same side" f"Got {self.x_axis.side}, {self.y_axis.side}, {self.z_axis.side}"
+            )
+        return self.x_axis.side
+
+    @property
     def axes(self) -> tuple[VectorBase, VectorBase, VectorBase]:
         return self.x_axis, self.y_axis, self.z_axis
 
     @classmethod
-    def from_xy(cls, x_axis: VectorBase, y_axis: VectorBase, origin: AnatomicalLandmark, segment: Segment):
+    def from_xy(
+        cls, x_axis: VectorBase, y_axis: VectorBase, origin: AnatomicalLandmark, segment: Segment, side: str = None
+    ):
         return cls(x_axis, y_axis, CrossedVector(x_axis, y_axis), origin, segment)
 
     @classmethod
-    def from_xz(cls, x_axis: VectorBase, z_axis: VectorBase, origin: AnatomicalLandmark, segment: Segment):
+    def from_xz(
+        cls, x_axis: VectorBase, z_axis: VectorBase, origin: AnatomicalLandmark, segment: Segment, side: str = None
+    ):
         return cls(x_axis, CrossedVector(z_axis, x_axis), z_axis, origin, segment)
 
     @classmethod
-    def from_yz(cls, y_axis: VectorBase, z_axis: VectorBase, origin: AnatomicalLandmark, segment: Segment):
+    def from_yz(
+        cls, y_axis: VectorBase, z_axis: VectorBase, origin: AnatomicalLandmark, segment: Segment, side: str = None
+    ):
         return cls(CrossedVector(y_axis, z_axis), y_axis, z_axis, origin, segment)
 
     @classmethod
@@ -111,23 +137,23 @@ class Frame:
         return cls.from_xy(x_axis, y_axis, origin, segment)
 
     @classmethod
-    def from_once_crossed(cls, x_axis: str, y_axis: str, z_axis: str, origin: str, segment: Segment):
+    def from_once_crossed(cls, x_axis: str, y_axis: str, z_axis: str, origin: str, segment: Segment, side: str = None):
         if x_axis == "y^z":
             origin = AnatomicalLandmark.from_string(origin)
-            return cls.from_yz(parse_axis(y_axis), parse_axis(z_axis), origin, segment)
+            return cls.from_yz(parse_axis(y_axis, arm_side=side), parse_axis(z_axis, arm_side=side), origin, segment)
         if y_axis == "z^x":
             origin = AnatomicalLandmark.from_string(origin)
-            return cls.from_xz(parse_axis(x_axis), parse_axis(z_axis), origin, segment)
+            return cls.from_xz(parse_axis(x_axis, arm_side=side), parse_axis(z_axis, arm_side=side), origin, segment)
         if z_axis == "x^y":
             origin = AnatomicalLandmark.from_string(origin)
-            return cls.from_xy(parse_axis(x_axis), parse_axis(y_axis), origin, segment)
+            return cls.from_xy(parse_axis(x_axis, arm_side=side), parse_axis(y_axis, arm_side=side), origin, segment)
 
         raise ValueError(
             f"Invalid axis combination. Expected one of 'x^y', 'y^z', 'z^x' but got {x_axis}, {y_axis}, {z_axis}"
         )
 
     @classmethod
-    def from_twice_crossed(cls, x_axis: str, y_axis: str, z_axis: str, origin: str, segment: Segment):
+    def from_twice_crossed(cls, x_axis: str, y_axis: str, z_axis: str, origin: str, segment: Segment, side: str = None):
         is_x_axis_crossed_twice = "x^" in z_axis and "^x" in y_axis
         is_y_axis_crossed_twice = "y^" in x_axis and "^y" in z_axis
         is_z_axis_crossed_twice = "z^" in y_axis and "^z" in x_axis
@@ -135,7 +161,7 @@ class Frame:
         if is_x_axis_crossed_twice:
             return cls.from_x_crossed_twice(
                 x_axis=parse_axis(x_axis),
-                z_axis=parse_axis(y_axis, side="first"),
+                z_axis=parse_axis(y_axis, cross_product_side="first", arm_side=side),
                 origin=AnatomicalLandmark.from_string(origin),
                 segment=segment,
             )
@@ -145,19 +171,19 @@ class Frame:
 
         if is_z_axis_crossed_twice:
             return cls.from_z_crossed_twice(
-                y_axis=parse_axis(x_axis, side="first"),
+                y_axis=parse_axis(x_axis, cross_product_side="first", arm_side=side),
                 z_axis=parse_axis(z_axis),
                 origin=AnatomicalLandmark.from_string(origin),
                 segment=segment,
             )
 
     @classmethod
-    def from_xyz_string(cls, x_axis: str, y_axis: str, z_axis: str, origin: str, segment: Segment):
+    def from_xyz_string(cls, x_axis: str, y_axis: str, z_axis: str, origin: str, segment: Segment, side: str = None):
 
         if cls.is_one_axis_crossed_twice(x_axis, y_axis, z_axis):
-            return cls.from_twice_crossed(x_axis, y_axis, z_axis, origin, segment)
+            return cls.from_twice_crossed(x_axis, y_axis, z_axis, origin, segment, side)
         else:
-            return cls.from_once_crossed(x_axis, y_axis, z_axis, origin, segment)
+            return cls.from_once_crossed(x_axis, y_axis, z_axis, origin, segment, side)
 
     @staticmethod
     def is_one_axis_crossed_twice(x_axis: str, y_axis: str, z_axis: str) -> bool:
@@ -256,48 +282,73 @@ class Frame:
         pass
         # TODO: Implement this property
 
+    @property
+    def is_direct(self) -> bool:
+        # todo
+        pass
+        # return np.linalg.det(self.get_rotation_matrix()) > 0
+
     def __print__(self):
         return f"Frame: {self.x_axis}, {self.y_axis}, {self.z_axis}, {self.origin}, {self.segment}"
 
 
-def parse_axis(input_str, side="all") -> VectorBase:
+def parse_axis(input_str, cross_product_side="all", arm_side=None) -> VectorBase:
     """
-    This function parses the input string of shape "vec(XXX>YYY)" or "vec(XXX>YYY)^vec(XXX>YYY)"
+    This function parses the input string of shape "vec(XXX>YYY)", "vec(XXX>YYY)^vec(XXX>YYY)", "vec(XXX>YYY)^vec(XXX>YYY)^vec(XXX>YYY)"
     and returns a Vector or CrossedVector object
-    """
-    is_crossed = "^" in input_str
-    if is_crossed:
-        return parse_crossed_vector(input_str, side)
 
-    if side == "first" or side == "second":
+    Parameters
+    ----------
+    input_str: str
+        The string to parse
+    cross_product_side: str
+        The side of the cross product to parse. Can be "first", "second" or "all",
+        XXX is the first vector and YYY is the second vector
+    arm_side: str
+        The side of the arm. Can be "right" arm or "left" arl
+    """
+    times_crossed = input_str.count("^")
+
+    if times_crossed == 1:
+        return parse_crossed_vector(input_str, cross_product_side, arm_side)
+
+    if times_crossed > 1:
+        vectors = input_str.split("^")
+        multiple_crossed_vector = parse_crossed_vector(f"{vectors[0]}^{vectors[1]}", cross_product_side, arm_side)
+        for vector in vectors[2:]:
+            multiple_crossed_vector = CrossedVector(multiple_crossed_vector, parse_vector(vector, arm_side))
+        return multiple_crossed_vector
+
+    if (cross_product_side == "first" or cross_product_side == "second") and times_crossed == 0:
         raise ValueError(
             f"Invalid input: Expected a crossed vector but got {input_str}"
             f"Set side to 'all' to parse the whole vector"
         )
 
-    return parse_vector(input_str)
+    return parse_vector(input_str, arm_side)
 
 
-def parse_crossed_vector(input: str, side: str) -> CrossedVector | StartEndVector:
+def parse_crossed_vector(input: str, cross_product_side: str, arm_side: str) -> CrossedVector | StartEndVector:
     first_vector, second_vector = input.split("^")
 
-    if side == "all":
-        vector1 = parse_vector(first_vector)
-        vector2 = parse_vector(second_vector)
+    if cross_product_side == "all":
+        vector1 = parse_vector(first_vector, arm_side)
+        vector2 = parse_vector(second_vector, arm_side)
         return CrossedVector(vector1, vector2)
-    elif side == "first":
-        return parse_vector(first_vector)
-    elif side == "second":
-        return parse_vector(second_vector)
+    elif cross_product_side == "first":
+        return parse_vector(first_vector, arm_side)
+    elif cross_product_side == "second":
+        return parse_vector(second_vector, arm_side)
     else:
-        raise ValueError(f"Invalid side: Expected 'first', 'second' or 'all' but got {side}")
+        raise ValueError(f"Invalid side: Expected 'first', 'second' or 'all' but got {arm_side}")
 
 
-def parse_vector(input: str) -> StartEndVector:
+def parse_vector(input: str, arm_side: str) -> StartEndVector:
     """
     This function parses the input string of shape "vec(XXX>YYY)" and returns a Vector object
     """
-    return StartEndVector.from_strings(*parse_start_end_vector(input))
+    start, end = parse_start_end_vector(input)
+    return StartEndVector.from_strings(start=start, end=end, arm_side=arm_side)
 
 
 def parse_start_end_vector(input: str) -> tuple[str, ...]:

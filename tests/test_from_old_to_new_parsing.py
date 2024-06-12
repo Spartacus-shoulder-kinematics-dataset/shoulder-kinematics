@@ -15,13 +15,6 @@ from spartacus.src.utils import (
 
 print_warnings = True
 
-
-to_pass_because_left_side = [
-    ("Begon et al.", Segment.CLAVICLE),  # clavicle
-    ("Begon et al.", Segment.SCAPULA),  # scapula
-    ("Begon et al.", Segment.HUMERUS),  # humerus
-    ("Begon et al.", Segment.THORAX),  # thorax
-]
 to_pass_because_geometric = [
     ("Fung et al.", Segment.THORAX),  # geometric Thorax feature implement SoloVectors
     ("Fung et al.", Segment.HUMERUS),  # geometric Humerus feature implement SoloVectors
@@ -48,7 +41,6 @@ to_pass_because_geometric = [
 to_pass_because_not_filled = [
     ("Henninger et al.", Segment.THORAX),
     ("Henninger et al.", Segment.HUMERUS),
-    ("Henninger et al.", Segment.SCAPULA),
     ("Henninger et al.", Segment.CLAVICLE),
 ]  # thorax
 to_pass_because_thorax_is_imaging_system = [
@@ -84,11 +76,9 @@ def test_new_parsing():
         for segment_enum in Segment:
             print(segment_enum)
             tuple_test = (row.dataset_authors, segment_enum)
-            if row.dataset_authors == "Fung et al.":
-                print("hey")
+
             if (
-                tuple_test in to_pass_because_left_side
-                or tuple_test in to_pass_because_geometric
+                tuple_test in to_pass_because_geometric
                 or tuple_test in to_pass_because_not_filled
                 or tuple_test in to_pass_because_thorax_is_imaging_system
                 or tuple_test in to_pass_because_there_is_mislabel
@@ -108,7 +98,15 @@ def test_new_parsing():
                 z_axis=row[segment_cols_direction[2]],
                 origin=row[segment_cols_direction[3]],
                 segment=segment_enum,
+                side="right" if row.side_as_right or segment_enum == Segment.THORAX else row.side,
             )
+            print(frame.side)
+            print(frame.x_axis.principal_direction())
+            print(frame.x_axis.compute_default_vector())
+            print(frame.y_axis.principal_direction())
+            print(frame.y_axis.compute_default_vector())
+            print(frame.z_axis.principal_direction())
+            print(frame.z_axis.compute_default_vector())
 
             assert frame.x_axis.biomech_direction() == BiomechDirection.from_string(row[segment_cols[0]])
             assert frame.y_axis.biomech_direction() == BiomechDirection.from_string(row[segment_cols[1]])

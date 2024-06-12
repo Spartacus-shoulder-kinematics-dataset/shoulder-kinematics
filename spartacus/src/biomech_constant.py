@@ -96,7 +96,7 @@ class Humerus:
     MID_EPICONDYLES = (EL + EM) / 2
 
 
-def get_constant(landmark: AnatomicalLandmark) -> np.ndarray:
+def get_constant(landmark: AnatomicalLandmark, side: str) -> np.ndarray:
     the_constant = None
 
     if isinstance(landmark, AnatomicalLandmark.Thorax):
@@ -115,7 +115,7 @@ def get_constant(landmark: AnatomicalLandmark) -> np.ndarray:
             AnatomicalLandmark.Thorax.MIDPOINT_T10_PX: Thorax.MID_T10_PX,
         }
 
-        the_constant = landmark_mapping.get(landmark)
+        the_constant = landmark_mapping.get(landmark).copy()
 
     if isinstance(landmark, AnatomicalLandmark.Scapula):
         landmark_mapping = {
@@ -128,14 +128,14 @@ def get_constant(landmark: AnatomicalLandmark) -> np.ndarray:
             AnatomicalLandmark.Scapula.TRIGNONUM_SPINAE: Scapula.TS,
         }
 
-        the_constant = landmark_mapping.get(landmark)
+        the_constant = landmark_mapping.get(landmark).copy()
 
     if isinstance(landmark, AnatomicalLandmark.Clavicle):
         landmark_mapping = {
             AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_JOINT_CENTER: Thorax.SC,
         }
 
-        the_constant = landmark_mapping.get(landmark)
+        the_constant = landmark_mapping.get(landmark).copy()
 
     if isinstance(landmark, AnatomicalLandmark.Humerus):
         landmark_mapping = {
@@ -145,9 +145,15 @@ def get_constant(landmark: AnatomicalLandmark) -> np.ndarray:
             AnatomicalLandmark.Humerus.GLENOHUMERAL_HEAD: Humerus.GH,
         }
 
-        the_constant = landmark_mapping.get(landmark)
+        the_constant = landmark_mapping.get(landmark).copy()
 
     if the_constant is None:
         raise ValueError(f"Landmark {landmark} not found in landmarks")
+
+    if side is not None and side not in ["left", "right"]:
+        raise ValueError(f"Side {side} is not a valid side. It should be 'left' or 'right'")
+
+    if side == "left":
+        the_constant[-1] = -the_constant[-1]
 
     return the_constant
