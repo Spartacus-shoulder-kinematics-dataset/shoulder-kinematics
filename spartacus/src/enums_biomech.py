@@ -345,6 +345,8 @@ class EulerSequence(Enum):
 
 
 class Frame:
+    """todo : FrameType : parent, child, jcs, no more segment name"""
+
     class Local(Enum):
         """Enum for the local frame"""
 
