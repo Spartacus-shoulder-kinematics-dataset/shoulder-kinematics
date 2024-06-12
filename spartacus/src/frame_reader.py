@@ -183,25 +183,25 @@ class Frame:
 
     @property
     def has_isb_landmarks(self) -> bool:
-        if self.segment == Segment.SCAPULA:
-            return set(self.landmarks) == set(AnatomicalLandmark.Scapula.isb())
-        if self.segment == Segment.THORAX:
-            return set(self.landmarks) == set(AnatomicalLandmark.Thorax.isb())
-        if self.segment == Segment.CLAVICLE:
-            return set(self.landmarks) == set(AnatomicalLandmark.Clavicle.isb())
-        if self.segment == Segment.HUMERUS:
-            return set(self.landmarks) == set(AnatomicalLandmark.Humerus.isb())
+        segment_to_landmark = {
+            Segment.SCAPULA: AnatomicalLandmark.Scapula.isb(),
+            Segment.THORAX: AnatomicalLandmark.Thorax.isb(),
+            Segment.CLAVICLE: AnatomicalLandmark.Clavicle.isb(),
+            Segment.HUMERUS: AnatomicalLandmark.Humerus.isb(),
+        }
+
+        return set(self.landmarks) == set(segment_to_landmark.get(self.segment))
 
     @property
     def is_origin_isb(self) -> bool:
-        if self.segment == Segment.SCAPULA:
-            return self.origin == AnatomicalLandmark.Scapula.origin_isb()
-        if self.segment == Segment.THORAX:
-            return self.origin == AnatomicalLandmark.Thorax.origin_isb()
-        if self.segment == Segment.CLAVICLE:
-            return self.origin == AnatomicalLandmark.Clavicle.origin_isb()
-        if self.segment == Segment.HUMERUS:
-            return self.origin == AnatomicalLandmark.Humerus.origin_isb()
+        segment_to_origin_isb = {
+            Segment.SCAPULA: AnatomicalLandmark.Scapula.origin_isb,
+            Segment.THORAX: AnatomicalLandmark.Thorax.origin_isb,
+            Segment.CLAVICLE: AnatomicalLandmark.Clavicle.origin_isb,
+            Segment.HUMERUS: AnatomicalLandmark.Humerus.origin_isb,
+        }
+
+        return self.origin == segment_to_origin_isb.get(self.segment)()
 
     @property
     def is_x_axis_postero_anterior(self) -> bool:
