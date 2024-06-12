@@ -1,11 +1,13 @@
-from .src.enums import (
+from .src.enums_biomech import (
     CartesianAxis,
     EulerSequence,
     JointType,
-    DatasetCSV,
     BiomechDirection,
-    BiomechOrigin,
+    AnatomicalLandmark,
     Segment,
+)
+from src.enums import (
+    DatasetCSV,
     DataFolder,
 )
 from .src.checks import (

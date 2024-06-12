@@ -1,7 +1,7 @@
 import biorbd
 import numpy as np
 
-from .enums import Segment
+from .enums_biomech import Segment
 
 
 def mat_2_rotation(R: np.ndarray) -> biorbd.Rotation:
@@ -78,6 +78,19 @@ def get_segment_columns(segment: Segment) -> list[str]:
 
     the_columns = columns.get(segment, ValueError(f"{segment} is not a valid segment."))
     add_suffix = "_sense"
+    return [f"{column}{add_suffix}" for column in the_columns[:3]] + [the_columns[3]]
+
+
+def get_segment_columns_direction(segment: Segment) -> list[str]:
+    columns = {
+        Segment.THORAX: ["thorax_x", "thorax_y", "thorax_z", "thorax_origin"],
+        Segment.CLAVICLE: ["clavicle_x", "clavicle_y", "clavicle_z", "clavicle_origin"],
+        Segment.SCAPULA: ["scapula_x", "scapula_y", "scapula_z", "scapula_origin"],
+        Segment.HUMERUS: ["humerus_x", "humerus_y", "humerus_z", "humerus_origin"],
+    }
+
+    the_columns = columns.get(segment, ValueError(f"{segment} is not a valid segment."))
+    add_suffix = "_direction"
     return [f"{column}{add_suffix}" for column in the_columns[:3]] + [the_columns[3]]
 
 

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from .biomech_system import BiomechCoordinateSystem
-from .enums import JointType, Segment, BiomechOrigin, Correction
+from .enums_biomech import JointType, Segment, AnatomicalLandmark, Correction
 from .joint import Joint
 from .utils import (
     get_is_isb_column,
@@ -211,7 +211,7 @@ def check_correction_methods(row: "RowData", bsys: BiomechCoordinateSystem, prin
         if correction_cell is None:
             return True
         else:
-            if bsys.origin == BiomechOrigin.Scapula.GLENOID_CENTER:
+            if bsys.origin == AnatomicalLandmark.Scapula.GLENOID_CENTER:
                 if Correction.SCAPULA_KOLZ_GLENOID_TO_PA_ROTATION in correction_cell:
                     return True
                 else:
@@ -224,7 +224,7 @@ def check_correction_methods(row: "RowData", bsys: BiomechCoordinateSystem, prin
                         print(bsys.origin)
                         print("detected correction method:", correction_cell)
                     return False
-            if bsys.origin == BiomechOrigin.Scapula.ACROMIOCLAVICULAR_JOINT_CENTER:
+            if bsys.origin == AnatomicalLandmark.Scapula.ACROMIOCLAVICULAR_JOINT_CENTER:
                 if Correction.SCAPULA_KOLZ_AC_TO_PA_ROTATION in correction_cell:
                     return True
                 else:

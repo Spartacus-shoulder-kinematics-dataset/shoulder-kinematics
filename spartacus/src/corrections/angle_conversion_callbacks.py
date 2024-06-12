@@ -2,7 +2,7 @@ import biorbd
 import numpy as np
 
 from ..biomech_system import BiomechCoordinateSystem
-from ..enums import EulerSequence
+from ..enums_biomech import EulerSequence
 from ..utils import mat_2_rotation
 
 

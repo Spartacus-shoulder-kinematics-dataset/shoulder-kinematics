@@ -1,7 +1,8 @@
 import collections
+
 import numpy as np
 
-from .enums import CartesianAxis, BiomechDirection, BiomechOrigin, Segment
+from .enums_biomech import CartesianAxis, BiomechDirection, AnatomicalLandmark, Segment
 from .utils import compute_rotation_matrix_from_axes
 
 
@@ -42,7 +43,7 @@ class BiomechCoordinateSystem:
         x: BiomechDirection,
         y: BiomechDirection,
         z: BiomechDirection,
-        origin: BiomechOrigin = None,
+        origin: AnatomicalLandmark = None,
         segment: Segment = None,
     ):
         my_arg = dict()
@@ -85,10 +86,10 @@ class BiomechCoordinateSystem:
 
     def is_isb_origin(self) -> bool:
         segment_origin_mapping = {
-            Segment.THORAX: BiomechOrigin.Thorax.IJ,
-            Segment.CLAVICLE: BiomechOrigin.Clavicle.STERNOCLAVICULAR_JOINT_CENTER,
-            Segment.SCAPULA: BiomechOrigin.Scapula.ANGULAR_ACROMIALIS,
-            Segment.HUMERUS: BiomechOrigin.Humerus.GLENOHUMERAL_HEAD,
+            Segment.THORAX: AnatomicalLandmark.Thorax.IJ,
+            Segment.CLAVICLE: AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_JOINT_CENTER,
+            Segment.SCAPULA: AnatomicalLandmark.Scapula.ANGULAR_ACROMIALIS,
+            Segment.HUMERUS: AnatomicalLandmark.Humerus.GLENOHUMERAL_HEAD,
         }
 
         return segment_origin_mapping.get(self.segment) == self.origin
@@ -106,13 +107,13 @@ class BiomechCoordinateSystem:
             return True
 
         ON_ISB_AXES = {
-            Segment.THORAX: [BiomechOrigin.Thorax.C7, BiomechOrigin.Thorax.T8, BiomechOrigin.Thorax.PX],
+            Segment.THORAX: [AnatomicalLandmark.Thorax.C7, AnatomicalLandmark.Thorax.T8, AnatomicalLandmark.Thorax.PX],
             Segment.CLAVICLE: [
-                BiomechOrigin.Clavicle.STERNOCLAVICULAR_JOINT_CENTER,
-                BiomechOrigin.Clavicle.ACROMIOCLAVICULAR_JOINT_CENTER,
+                AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_JOINT_CENTER,
+                AnatomicalLandmark.Scapula.ACROMIOCLAVICULAR_JOINT_CENTER,
             ],
-            Segment.SCAPULA: [BiomechOrigin.Scapula.TRIGNONUM_SPINAE, BiomechOrigin.Scapula.ANGULUS_INFERIOR],
-            Segment.HUMERUS: [BiomechOrigin.Humerus.MIDPOINT_EPICONDYLES],
+            Segment.SCAPULA: [AnatomicalLandmark.Scapula.TRIGNONUM_SPINAE, AnatomicalLandmark.Scapula.ANGULUS_INFERIOR],
+            Segment.HUMERUS: [AnatomicalLandmark.Humerus.MIDPOINT_EPICONDYLES],
         }
 
         return self.origin in ON_ISB_AXES.get(self.segment, [])

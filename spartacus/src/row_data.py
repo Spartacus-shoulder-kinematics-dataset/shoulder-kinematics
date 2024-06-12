@@ -3,6 +3,9 @@ import os
 import numpy as np
 import pandas as pd
 
+from src.enums import (
+    DataFolder,
+)
 from .biomech_system import BiomechCoordinateSystem
 from .checks import (
     check_segment_filled_with_nan,
@@ -21,20 +24,21 @@ from .corrections.angle_conversion_callbacks import (
 )
 from .corrections.kolz_matrices import get_kolz_rotation_matrix
 from .deviation import Deviation
-from .enums import (
+from .enums_biomech import (
     Segment,
     Frame,
     Correction,
-    DataFolder,
     EulerSequence,
     BiomechDirection,
-    BiomechOrigin,
+    AnatomicalLandmark,
     JointType,
 )
+# from .frame_reader import Frame
 from .joint import Joint
 from .load_data import load_euler_csv
 from .utils import (
     get_segment_columns,
+    get_segment_columns_direction,
     get_correction_column,
     get_is_correctable_column,
     get_is_isb_column,
@@ -121,16 +125,30 @@ class RowData:
         output = True
         for segment_enum in Segment:
             segment_cols = get_segment_columns(segment_enum)
+            segment_cols_direction = get_segment_columns_direction(segment_enum)
             # first check
             if check_segment_filled_with_nan(self.row, segment_cols, print_warnings=print_warnings):
                 continue
+
+            # frame = Frame.from_xyz_string(
+            #     x_axis=self.row[segment_cols_direction[0]],
+            #     y_axis=self.row[segment_cols_direction[1]],
+            #     z_axis=self.row[segment_cols_direction[2]],
+            #     origin=self.row[segment_cols_direction[3]],
+            #     segment=segment_enum,
+            # )
+            #
+            # print(segment_enum)
+            # assert frame.x_axis.biomech_direction() == BiomechDirection.from_string(self.row[segment_cols[0]])
+            # assert frame.y_axis.biomech_direction() == BiomechDirection.from_string(self.row[segment_cols[1]])
+            # assert frame.z_axis.biomech_direction() == BiomechDirection.from_string(self.row[segment_cols[2]])
 
             # build the coordinate system
             bsys = BiomechCoordinateSystem.from_biomech_directions(
                 x=BiomechDirection.from_string(self.row[segment_cols[0]]),
                 y=BiomechDirection.from_string(self.row[segment_cols[1]]),
                 z=BiomechDirection.from_string(self.row[segment_cols[2]]),
-                origin=BiomechOrigin.from_string(self.row[segment_cols[3]]),
+                origin=AnatomicalLandmark.from_string(self.row[segment_cols[3]]),
                 segment=segment_enum,
             )
             # second check
@@ -193,7 +211,7 @@ class RowData:
             self.joint = Joint(
                 joint_type=JointType.from_string(self.row.joint),
                 euler_sequence=EulerSequence.from_string(self.row.euler_sequence),  # throw a None
-                translation_origin=BiomechOrigin.from_string(self.row.origin_displacement),
+                translation_origin=AnatomicalLandmark.from_string(self.row.origin_displacement),
                 translation_frame=Frame.from_string(self.row.displacement_cs, self.row.joint),
             )
 
@@ -209,7 +227,7 @@ class RowData:
             self.joint = Joint(
                 joint_type=JointType.from_string(self.row.joint),
                 euler_sequence=EulerSequence.from_string(self.row.euler_sequence),
-                translation_origin=BiomechOrigin.from_string(self.row.origin_displacement),
+                translation_origin=AnatomicalLandmark.from_string(self.row.origin_displacement),
                 translation_frame=Frame.from_string(self.row.displacement_cs, self.row.joint),
             )
 
@@ -244,14 +262,14 @@ class RowData:
             x=BiomechDirection.from_string(self.row[self.parent_columns[0]]),
             y=BiomechDirection.from_string(self.row[self.parent_columns[1]]),
             z=BiomechDirection.from_string(self.row[self.parent_columns[2]]),
-            origin=BiomechOrigin.from_string(self.row[self.parent_columns[3]]),
+            origin=AnatomicalLandmark.from_string(self.row[self.parent_columns[3]]),
             segment=self.parent_segment,
         )
         self.child_biomech_sys = BiomechCoordinateSystem.from_biomech_directions(
             x=BiomechDirection.from_string(self.row[self.child_columns[0]]),
             y=BiomechDirection.from_string(self.row[self.child_columns[1]]),
             z=BiomechDirection.from_string(self.row[self.child_columns[2]]),
-            origin=BiomechOrigin.from_string(self.row[self.child_columns[3]]),
+            origin=AnatomicalLandmark.from_string(self.row[self.child_columns[3]]),
             segment=self.child_segment,
         )
 

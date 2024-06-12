@@ -1,4 +1,4 @@
-from .enums import EulerSequence, JointType, Segment, BiomechOrigin
+from .enums_biomech import EulerSequence, JointType, Segment, AnatomicalLandmark
 from .legend_utils import isb_rotation_biomechanical_dof
 
 
@@ -7,7 +7,7 @@ class Joint:
         self,
         joint_type: JointType,
         euler_sequence: EulerSequence,
-        translation_origin: BiomechOrigin,
+        translation_origin: AnatomicalLandmark,
         translation_frame: Segment,
     ):
         self.joint_type = joint_type
