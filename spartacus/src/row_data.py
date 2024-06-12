@@ -33,11 +33,12 @@ from .enums_biomech import (
     AnatomicalLandmark,
     JointType,
 )
-from .frame_reader import Frame
+# from .frame_reader import Frame
 from .joint import Joint
 from .load_data import load_euler_csv
 from .utils import (
     get_segment_columns,
+    get_segment_columns_direction,
     get_correction_column,
     get_is_correctable_column,
     get_is_isb_column,
@@ -124,9 +125,23 @@ class RowData:
         output = True
         for segment_enum in Segment:
             segment_cols = get_segment_columns(segment_enum)
+            segment_cols_direction = get_segment_columns_direction(segment_enum)
             # first check
             if check_segment_filled_with_nan(self.row, segment_cols, print_warnings=print_warnings):
                 continue
+
+            # frame = Frame.from_xyz_string(
+            #     x_axis=self.row[segment_cols_direction[0]],
+            #     y_axis=self.row[segment_cols_direction[1]],
+            #     z_axis=self.row[segment_cols_direction[2]],
+            #     origin=self.row[segment_cols_direction[3]],
+            #     segment=segment_enum,
+            # )
+            #
+            # print(segment_enum)
+            # assert frame.x_axis.biomech_direction() == BiomechDirection.from_string(self.row[segment_cols[0]])
+            # assert frame.y_axis.biomech_direction() == BiomechDirection.from_string(self.row[segment_cols[1]])
+            # assert frame.z_axis.biomech_direction() == BiomechDirection.from_string(self.row[segment_cols[2]])
 
             # build the coordinate system
             bsys = BiomechCoordinateSystem.from_biomech_directions(
