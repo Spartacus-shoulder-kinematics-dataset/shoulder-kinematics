@@ -93,8 +93,10 @@ class Scapula:
     SE = (R @ SE) * manual_scaling + manual_offset
     TS = (R @ TS) * manual_scaling + manual_offset
 
+    # making sure they are orthogonal
     POSTEROANTERIOR_GLENOID_AXIS = (GC_CONTOURS[1] - GC_CONTOURS[2]) / np.linalg.norm(GC_CONTOURS[1] - GC_CONTOURS[2])
     INFEROSUPERIOR_GLENOID_AXIS_TEMP = (SE - IE) / np.linalg.norm(SE - IE)
+
     vec = np.cross(POSTEROANTERIOR_GLENOID_AXIS, INFEROSUPERIOR_GLENOID_AXIS_TEMP)
     GLENOID_NORMAL = vec / np.linalg.norm(vec)
 
@@ -139,8 +141,8 @@ def get_constant(landmark: Any, side: str) -> np.ndarray:
             AnatomicalVector.Scapula.POSTEROANTERIOR_GLENOID_AXIS: Scapula.POSTEROANTERIOR_GLENOID_AXIS,
             AnatomicalVector.Scapula.INFEROSUPERIOR_GLENOID_AXIS: Scapula.INFEROSUPERIOR_GLENOID_AXIS,
             # AnatomicalLandmark.Scapula.GLENOID_CAVITY_CONTOURS: Scapula.GC_CONTOURS,
-            # AnatomicalLandmark.Scapula.INFERIOR_EDGE: Scapula.IE,
-            # AnatomicalLandmark.Scapula.SUPERIOR_EDGE: Scapula.SE,
+            AnatomicalLandmark.Scapula.INFERIOR_EDGE: Scapula.IE,
+            AnatomicalLandmark.Scapula.SUPERIOR_EDGE: Scapula.SE,
             AnatomicalLandmark.Scapula.TRIGNONUM_SPINAE: Scapula.TS,
         }
 
