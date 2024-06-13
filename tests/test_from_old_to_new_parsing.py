@@ -37,12 +37,6 @@ to_pass_because_geometric = [
     ("Sugi et al.", Segment.HUMERUS),
     ("Sugi et al.", Segment.SCAPULA),
 ]
-to_pass_because_not_filled = [
-    ("Henninger et al.", Segment.THORAX),
-    ("Henninger et al.", Segment.HUMERUS),
-    ("Henninger et al.", Segment.CLAVICLE),
-]  # thorax
-# TODO:
 to_pass_because_thorax_is_imaging_system = [
     # ("Kijima et al.", Segment.THORAX),  # thorax
     ("Kim et al.", Segment.THORAX),  # thorax
@@ -80,15 +74,14 @@ def test_new_parsing():
     df = df.where(pd.notna(df), None)
     author_ok = []
     for i, row in df.iterrows():
-        # print(row.dataset_authors)
+        print(row.dataset_authors)
         count = 0
         for segment_enum in Segment:
-            # print(segment_enum)
+            print(segment_enum)
             tuple_test = (row.dataset_authors, segment_enum)
 
             if (
                 tuple_test in to_pass_because_geometric
-                or tuple_test in to_pass_because_not_filled
                 or tuple_test in to_pass_because_thorax_is_imaging_system
                 or tuple_test in to_pass_because_there_is_mislabel
             ):
