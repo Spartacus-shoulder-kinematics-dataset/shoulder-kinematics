@@ -1,6 +1,6 @@
 from spartacus.src.biomech_system import BiomechCoordinateSystem
 
-from spartacus.src.enums_biomech import CartesianAxis, BiomechDirection, AnatomicalLandmark, Segment
+from spartacus.src.enums_biomech import CartesianAxis, AnatomicalLandmark, Segment
 
 
 def test_risk_routine():
@@ -13,7 +13,7 @@ def test_risk_routine():
         origin=AnatomicalLandmark.Thorax.IJ,
     )
 
-    assert all_good.is_isb() == True
+    assert all_good.is_isb_oriented() == True
     assert all_good.is_mislabeled() == False
     assert all_good.is_any_axis_wrong_sens() == False
     assert all_good.get_segment_risk_quantification("proximal", "rotation") == 1
@@ -26,7 +26,7 @@ def test_risk_routine():
         origin=AnatomicalLandmark.Thorax.IJ,
     )
 
-    assert mislabeled.is_isb() == False
+    assert mislabeled.is_isb_oriented() == False
     assert mislabeled.is_mislabeled() == True
     assert mislabeled.is_any_axis_wrong_sens() == False
     assert mislabeled.get_segment_risk_quantification("proximal", "rotation") == 0.9
@@ -38,7 +38,7 @@ def test_risk_routine():
         medio_lateral_axis=CartesianAxis.minusZ,
         origin=AnatomicalLandmark.Thorax.IJ,
     )
-    assert wrong_sens.is_isb() == False
+    assert wrong_sens.is_isb_oriented() == False
     assert wrong_sens.is_mislabeled() == False
     assert wrong_sens.is_any_axis_wrong_sens() == True
     assert wrong_sens.get_segment_risk_quantification("proximal", "rotation") == 0.9
@@ -51,7 +51,7 @@ def test_risk_routine():
         origin=AnatomicalLandmark.Thorax.IJ,
     )
 
-    assert mislabeled_and_wrong_sens.is_isb() == False
+    assert mislabeled_and_wrong_sens.is_isb_oriented() == False
     assert mislabeled_and_wrong_sens.is_mislabeled() == True
     assert mislabeled_and_wrong_sens.is_any_axis_wrong_sens() == True
     assert mislabeled_and_wrong_sens.get_segment_risk_quantification("proximal", "rotation") == 0.9 * 0.9
