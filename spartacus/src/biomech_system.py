@@ -3,6 +3,7 @@ import collections
 import numpy as np
 
 from .enums_biomech import CartesianAxis, BiomechDirection, AnatomicalLandmark, Segment
+from .frame_reader import Frame
 from .utils import compute_rotation_matrix_from_axes
 
 
@@ -14,6 +15,7 @@ class BiomechCoordinateSystem:
         infero_superior_axis: CartesianAxis,
         medio_lateral_axis: CartesianAxis,
         origin=None,
+        frame=None,
     ):
         # verify isinstance
         if not isinstance(antero_posterior_axis, CartesianAxis):
@@ -36,6 +38,7 @@ class BiomechCoordinateSystem:
 
         self.origin = origin
         self.segment = segment
+        self.frame = frame
 
     @classmethod
     def from_biomech_directions(
@@ -54,35 +57,49 @@ class BiomechCoordinateSystem:
 
         # verify is positive or negative
         actual_axes = [x, y, z]
-        positive_enums_axis = [CartesianAxis.plusX, CartesianAxis.plusY, CartesianAxis.plusZ]
-        negative_enums_axis = [CartesianAxis.minusX, CartesianAxis.minusY, CartesianAxis.minusZ]
 
-        for axis, positive_enum, negative_enum in zip(actual_axes, positive_enums_axis, negative_enums_axis):
-            if axis.sign == 1:
-                if axis == BiomechDirection.PlusPosteroAnterior:
-                    my_arg["antero_posterior_axis"] = positive_enum
-                    continue
-                elif axis == BiomechDirection.PlusMedioLateral:
-                    my_arg["medio_lateral_axis"] = positive_enum
-                    continue
-                elif axis == BiomechDirection.PlusInferoSuperior:
-                    my_arg["infero_superior_axis"] = positive_enum
-                    continue
-            elif axis.sign == -1:
-                if axis == BiomechDirection.MinusPosteroAnterior:
-                    my_arg["antero_posterior_axis"] = negative_enum
-                    continue
-                elif axis == BiomechDirection.MinusMedioLateral:
-                    my_arg["medio_lateral_axis"] = negative_enum
-                    continue
-                elif axis == BiomechDirection.MinusInferoSuperior:
-                    my_arg["infero_superior_axis"] = negative_enum
-                    continue
+        axis_to_key = {
+            BiomechDirection.PlusPosteroAnterior: "antero_posterior_axis",
+            BiomechDirection.MinusPosteroAnterior: "antero_posterior_axis",
+            BiomechDirection.PlusMedioLateral: "medio_lateral_axis",
+            BiomechDirection.MinusMedioLateral: "medio_lateral_axis",
+            BiomechDirection.PlusInferoSuperior: "infero_superior_axis",
+            BiomechDirection.MinusInferoSuperior: "infero_superior_axis",
+        }
+
+        sign_to_cartesian_axis_x = {
+            1: CartesianAxis.plusX,
+            -1: CartesianAxis.minusX,
+        }
+        sign_to_cartesian_axis_y = {
+            1: CartesianAxis.plusY,
+            -1: CartesianAxis.minusY,
+        }
+        sign_to_cartesian_axis_z = {
+            1: CartesianAxis.plusZ,
+            -1: CartesianAxis.minusZ,
+        }
+
+        for axis, sign_to_cartesian_axis in zip(
+            actual_axes, [sign_to_cartesian_axis_x, sign_to_cartesian_axis_y, sign_to_cartesian_axis_z]
+        ):
+            my_arg[axis_to_key[axis]] = sign_to_cartesian_axis[axis.sign]
 
         my_arg["origin"] = origin
         my_arg["segment"] = segment
 
         return cls(**my_arg)
+
+    @classmethod
+    def from_frame(cls, frame: Frame):
+        return cls(
+            segment=frame.segment,
+            antero_posterior_axis=frame.x_axis.principal_direction(),
+            infero_superior_axis=frame.y_axis.principal_direction(),
+            medio_lateral_axis=frame.z_axis.principal_direction(),
+            origin=frame.origin,
+            frame=frame,
+        )
 
     def is_isb_origin(self) -> bool:
         segment_origin_mapping = {
@@ -119,7 +136,7 @@ class BiomechCoordinateSystem:
         return self.origin in ON_ISB_AXES.get(self.segment, [])
 
     def is_isb(self) -> bool:
-        return self.is_isb_oriented() and self.is_isb_origin()
+        return self.frame.is_isb if self.frame is not None else False
 
     def is_isb_oriented(self) -> bool:
         condition_1 = self.anterior_posterior_axis is CartesianAxis.plusX
