@@ -9,12 +9,9 @@ from src.enums import (
 from .biomech_system import BiomechCoordinateSystem
 from .checks import (
     check_segment_filled_with_nan,
-    check_is_isb_segment,
     check_is_euler_sequence_provided,
     check_is_translation_provided,
     check_parent_child_joint,
-    check_is_isb_correctable,
-    check_correction_methods,
 )
 from .corrections.angle_conversion_callbacks import (
     isb_framed_rotation_matrix_from_euler_angles,
@@ -26,14 +23,14 @@ from .corrections.kolz_matrices import get_kolz_rotation_matrix
 from .deviation import Deviation
 from .enums_biomech import (
     Segment,
-    Frame,
+    FrameType,
     Correction,
     EulerSequence,
     BiomechDirection,
     AnatomicalLandmark,
     JointType,
 )
-# from .frame_reader import Frame
+from .frame_reader import Frame
 from .joint import Joint
 from .load_data import load_euler_csv
 from .utils import (
@@ -152,14 +149,15 @@ class RowData:
                 segment=segment_enum,
             )
             # second check
-            if not check_is_isb_segment(self.row, bsys, print_warnings=print_warnings):
-                output = False
-
-            if not check_is_isb_correctable(self.row, bsys, print_warnings=print_warnings):
-                output = False
-
-            if not check_correction_methods(self, bsys, print_warnings=print_warnings):
-                output = False
+            # removed because I cant check anymore if ISB without properly loading the system.
+            # if not check_is_isb_segment(self.row, bsys, print_warnings=print_warnings):
+            #     output = False
+            #
+            # if not check_is_isb_correctable(self.row, bsys, print_warnings=print_warnings):
+            #     output = False
+            #
+            # if not check_correction_methods(self, bsys, print_warnings=print_warnings):
+            #     output = False
 
             # third check if the segment is direct or not
             if not bsys.is_direct():
@@ -212,7 +210,8 @@ class RowData:
                 joint_type=JointType.from_string(self.row.joint),
                 euler_sequence=EulerSequence.from_string(self.row.euler_sequence),  # throw a None
                 translation_origin=AnatomicalLandmark.from_string(self.row.origin_displacement),
-                translation_frame=Frame.from_string(self.row.displacement_cs, self.row.joint),
+                # translation_frame=FrameType.from_string(self.row.displacement_cs, self.row.joint),
+                translation_frame=FrameType.from_string(self.row.displacement_cs),
             )
 
         elif no_translation:  # Only rotation is provided
@@ -228,7 +227,8 @@ class RowData:
                 joint_type=JointType.from_string(self.row.joint),
                 euler_sequence=EulerSequence.from_string(self.row.euler_sequence),
                 translation_origin=AnatomicalLandmark.from_string(self.row.origin_displacement),
-                translation_frame=Frame.from_string(self.row.displacement_cs, self.row.joint),
+                # translation_frame=FrameType.from_string(self.row.displacement_cs, self.row.joint),
+                translation_frame=FrameType.from_string(self.row.displacement_cs),
             )
 
         if not check_parent_child_joint(self.joint, row=self.row, print_warnings=print_warnings):
@@ -257,21 +257,42 @@ class RowData:
         """
         Set the parent and child segments of the joint.
         """
+        if self.parent_segment == Segment.THORAX and self.row.thorax_is_global:
+            self.parent_biomech_sys = BiomechCoordinateSystem.from_biomech_directions(
+                x=BiomechDirection.from_string(
+                    self.row[self.parent_columns[0]]
+                ),  # when removed dedicated columns to directions, replaceby BiomechDirection.from_string(self.row[self.segment_cols_direction[0]])
+                y=BiomechDirection.from_string(
+                    self.row[self.parent_columns[1]]
+                ),  # when removed dedicated columns to directions, replaceby BiomechDirection.from_string(self.row[self.segment_cols_direction[1]])
+                z=BiomechDirection.from_string(
+                    self.row[self.parent_columns[2]]
+                ),  # when removed dedicated columns to directions, replaceby BiomechDirection.from_string(self.row[self.segment_cols_direction[2 ]])
+                origin=AnatomicalLandmark.from_string(self.row[self.parent_columns[3]]),
+                segment=self.parent_segment,
+            )
+        else:
+            segment_cols_direction = get_segment_columns_direction(self.parent_segment)
+            frame_parent = Frame.from_xyz_string(
+                x_axis=self.row[segment_cols_direction[0]],
+                y_axis=self.row[segment_cols_direction[1]],
+                z_axis=self.row[segment_cols_direction[2]],
+                origin=self.row[segment_cols_direction[3]],
+                segment=self.parent_segment,
+                side="right" if self.row.side_as_right or self.parent_segment == Segment.THORAX else self.row.side,
+            )
+            self.parent_biomech_sys = BiomechCoordinateSystem.from_frame(frame_parent)
 
-        self.parent_biomech_sys = BiomechCoordinateSystem.from_biomech_directions(
-            x=BiomechDirection.from_string(self.row[self.parent_columns[0]]),
-            y=BiomechDirection.from_string(self.row[self.parent_columns[1]]),
-            z=BiomechDirection.from_string(self.row[self.parent_columns[2]]),
-            origin=AnatomicalLandmark.from_string(self.row[self.parent_columns[3]]),
-            segment=self.parent_segment,
-        )
-        self.child_biomech_sys = BiomechCoordinateSystem.from_biomech_directions(
-            x=BiomechDirection.from_string(self.row[self.child_columns[0]]),
-            y=BiomechDirection.from_string(self.row[self.child_columns[1]]),
-            z=BiomechDirection.from_string(self.row[self.child_columns[2]]),
-            origin=AnatomicalLandmark.from_string(self.row[self.child_columns[3]]),
+        segment_cols_direction = get_segment_columns_direction(self.child_segment)
+        frame_child = Frame.from_xyz_string(
+            x_axis=self.row[segment_cols_direction[0]],
+            y_axis=self.row[segment_cols_direction[1]],
+            z_axis=self.row[segment_cols_direction[2]],
+            origin=self.row[segment_cols_direction[3]],
             segment=self.child_segment,
+            side="right" if self.row.side_as_right or self.child_segment == Segment.THORAX else self.row.side,
         )
+        self.child_biomech_sys = BiomechCoordinateSystem.from_frame(frame_child)
 
     def extract_corrections(self, segment: Segment) -> str:
         """
@@ -615,10 +636,6 @@ class RowData:
         self.usable_translation_data = (
             self.child_segment_usable_for_translation_data and self.parent_segment_usable_for_translation_data
         )
-
-        # todo: risk level implementation
-        # self.rotation_risk = Risk.LOW
-        # self.translation_risk = Risk.HIGH
 
         return self.usable_rotation_data, self.usable_translation_data
 

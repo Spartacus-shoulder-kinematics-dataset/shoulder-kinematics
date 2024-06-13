@@ -122,7 +122,7 @@ class BiomechCoordinateSystem:
         """
         if self.is_isb_origin():
             return True
-
+        # todo: may check according to frame object
         ON_ISB_AXES = {
             Segment.THORAX: [AnatomicalLandmark.Thorax.C7, AnatomicalLandmark.Thorax.T8, AnatomicalLandmark.Thorax.PX],
             Segment.CLAVICLE: [
@@ -197,7 +197,15 @@ class BiomechCoordinateSystem:
 
     def get_segment_risk_quantification(self, type_segment, type_risk):
         """
-        Return the risk quantification of the segment which is the product of the risk of each type of risk described in the dictionnary dict_coeff.
+        Return the risk quantification of the segment which is the product of the risk
+        of each type of risk described in the dictionnary dict_coeff.
+
+        Parameters
+        ----------
+        type_segment: str
+            "proximal" or "distal"
+        type_risk: str
+            "rotation" or "displacement"
         """
         nested_dict = lambda: collections.defaultdict(nested_dict)
         dict_coeff = nested_dict()

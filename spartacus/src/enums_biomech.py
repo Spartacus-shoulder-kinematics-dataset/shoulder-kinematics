@@ -125,6 +125,17 @@ class BiomechDirection(Enum):
         return output
 
 
+class AnatomicalVector:
+    """Enum for the biomechanical vectors of the segment, all unit vectors"""
+
+    class Thorax(Enum):
+        SPINAL_CANAL_AXIS = "spinal canal axis"  # pointing infero-superior
+
+    class Scapula(Enum):
+        POSTEROANTERIOR_GLENOID_AXIS = "posteroanterior glenoid axis"
+        INFEROSUPERIOR_GLENOID_AXIS = "inferosuperior glenoid axis"
+
+
 class AnatomicalLandmark:
     """Enum for the biomechanical origins of the segment"""
 
@@ -136,7 +147,6 @@ class AnatomicalLandmark:
         IJ = "IJ"
         T1 = "T1"
         T1_ANTERIOR_FACE = "T1 anterior face"
-        T1s = "T1s"  # @todo: make sure to understand what is it
         C7 = "C7"
         T8 = "T8"
         PX = "PX"  # processus xiphoide
@@ -178,6 +188,8 @@ class AnatomicalLandmark:
         ACROMIOCLAVICULAR_JOINT_CENTER = "ACJC"
         TRIGNONUM_SPINAE = "TS"
         ANGULUS_INFERIOR = "IA"
+        INFERIOR_EDGE = "IE"
+        SUPERIOR_EDGE = "SE"
 
         @classmethod
         def isb(cls):
@@ -230,6 +242,7 @@ class AnatomicalLandmark:
             "(PX+T8)/2": cls.Thorax.MIDPOINT_T8_PX,
             "(C7+IJ)/2": cls.Thorax.MIDPOINT_C7_IJ,
             "(IJ+C7)/2": cls.Thorax.MIDPOINT_C7_IJ,
+            "spinal canal axis": AnatomicalVector.Thorax.SPINAL_CANAL_AXIS,
             "GH": cls.Humerus.GLENOHUMERAL_HEAD,
             "EL": cls.Humerus.LATERAL_EPICONDYLE,
             "EM": cls.Humerus.MEDIAL_EPICONDYLE,
@@ -245,6 +258,10 @@ class AnatomicalLandmark:
             "AI": cls.Scapula.ANGULUS_INFERIOR,  # old
             "glenoid center": cls.Scapula.GLENOID_CENTER,  # old
             "GC": cls.Scapula.GLENOID_CENTER,
+            "IE": cls.Scapula.INFERIOR_EDGE,
+            "SE": cls.Scapula.SUPERIOR_EDGE,
+            "posteroanterior glenoid axis": AnatomicalVector.Scapula.POSTEROANTERIOR_GLENOID_AXIS,
+            "inferosuperior glenoid axis": AnatomicalVector.Scapula.INFEROSUPERIOR_GLENOID_AXIS,
             "TS": cls.Scapula.TRIGNONUM_SPINAE,
             "clavicle origin": cls.Clavicle.CUSTOM,
             "functional": cls.Other.FUNCTIONAL_CENTER,
@@ -253,7 +270,7 @@ class AnatomicalLandmark:
         the_enum = biomech_origin_to_enum.get(biomech_origin)
         if the_enum is None:
             raise ValueError(
-                f"'{biomech_origin}' is not a valid biomech_origin."
+                f"'{biomech_origin}' is not a valid Anatomical landmark."
                 "biomech_origin must be one of the following: "
                 "joint, parent, child"
             )
@@ -344,50 +361,67 @@ class EulerSequence(Enum):
         return the_enum
 
 
-class Frame:
-    """todo : FrameType : parent, child, jcs, no more segment name"""
+class FrameType:
 
-    class Local(Enum):
-        """Enum for the local frame"""
-
-        THORAX = "thorax"
-        HUMERUS = "humerus"
-        SCAPULA = "scapula"
-        CLAVICLE = "clavicle"
-
-    class NonOrthogonal(Enum):
-        """Enum for the non-orthogonal frame"""
-
-        JOINT_STERNOCLAVICULAR = "SC"
-        JOINT_ACROMIOCLAVICULAR = "AC"
-        JOINT_GLENOHUMERAL = "GH"
-        JOINT_SCAPULOTHORACIC = "ST"
+    PARENT = "parent"
+    CHILD = "child"
+    JCS = "joint coordinate system"
 
     @classmethod
-    def from_string(cls, frame: str, joint: str):
-        segment_name_to_enum = {
-            "thorax": cls.Local.THORAX,
-            "humerus": cls.Local.HUMERUS,
-            "scapula": cls.Local.SCAPULA,
-            "clavicle": cls.Local.CLAVICLE,
+    def from_string(cls, frame_type: str):
+        frame_type_name_to_enum = {
+            "parent": cls.PARENT,
+            "child": cls.CHILD,
+            "jcs": cls.JCS,
         }
 
-        frame_to_enum = {
-            ("jcs", "glenohumeral"): cls.NonOrthogonal.JOINT_GLENOHUMERAL,
-            ("jcs", "scapulothoracic"): cls.NonOrthogonal.JOINT_SCAPULOTHORACIC,
-            ("jcs", "acromioclavicular"): cls.NonOrthogonal.JOINT_ACROMIOCLAVICULAR,
-            ("jcs", "sternoclavicular"): cls.NonOrthogonal.JOINT_STERNOCLAVICULAR,
-        }
-
-        the_enum = segment_name_to_enum.get(frame)
-
+        the_enum = frame_type_name_to_enum.get(frame_type)
         if the_enum is None:
-            the_enum = frame_to_enum.get((frame, joint))
-
-        if the_enum is None:
-            raise ValueError(f"{frame} is not a valid frame.")
+            raise ValueError(f"{frame_type} is not a valid frame type.")
 
         return the_enum
+
+    # class Local(Enum):
+    #     """Enum for the local frame"""
+    #
+    #     THORAX = "thorax"
+    #     HUMERUS = "humerus"
+    #     SCAPULA = "scapula"
+    #     CLAVICLE = "clavicle"
+    #
+    # class NonOrthogonal(Enum):
+    #     """Enum for the non-orthogonal frame"""
+    #
+    #     JOINT_STERNOCLAVICULAR = "SC"
+    #     JOINT_ACROMIOCLAVICULAR = "AC"
+    #     JOINT_GLENOHUMERAL = "GH"
+    #     JOINT_SCAPULOTHORACIC = "ST"
+
+    # @classmethod
+    # def from_string(cls, frame: str, joint: str):
+    #     segment_name_to_enum = {
+    #         "thorax": cls.Local.THORAX,
+    #         "humerus": cls.Local.HUMERUS,
+    #         "scapula": cls.Local.SCAPULA,
+    #         "clavicle": cls.Local.CLAVICLE,
+    #     }
+    #
+    #     frame_to_enum = {
+    #         ("jcs", "glenohumeral"): cls.NonOrthogonal.JOINT_GLENOHUMERAL,
+    #         ("jcs", "scapulothoracic"): cls.NonOrthogonal.JOINT_SCAPULOTHORACIC,
+    #         ("jcs", "acromioclavicular"): cls.NonOrthogonal.JOINT_ACROMIOCLAVICULAR,
+    #         ("jcs", "sternoclavicular"): cls.NonOrthogonal.JOINT_STERNOCLAVICULAR,
+    #     }
+    #
+    #     the_enum = segment_name_to_enum.get(frame)
+    #
+    #     if the_enum is None:
+    #         the_enum = frame_to_enum.get((frame, joint))
+    #
+    #     if the_enum is None:
+    #         raise ValueError(f"{frame} is not a valid frame.")
+    #
+    #     return the_enum
 
 
 class Segment(Enum):

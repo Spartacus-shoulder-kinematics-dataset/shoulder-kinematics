@@ -1,6 +1,8 @@
+from typing import Any
+
 import numpy as np
 
-from .enums_biomech import AnatomicalLandmark
+from .enums_biomech import AnatomicalLandmark, AnatomicalVector
 
 
 class Thorax:
@@ -46,6 +48,10 @@ class Thorax:
     MID_IJ_T1 = R @ MID_IJ_T1
     MID_T10_PX = R @ MID_T10_PX
 
+    SPINAL_CANAL_AXIS = np.array([np.sin(np.pi / 3), np.cos(np.pi / 3), 0]) / np.linalg.norm(
+        [np.sin(np.pi / 3), np.cos(np.pi / 3), 0]
+    )  # made up guess
+
 
 class Scapula:
     """
@@ -87,6 +93,16 @@ class Scapula:
     SE = (R @ SE) * manual_scaling + manual_offset
     TS = (R @ TS) * manual_scaling + manual_offset
 
+    # making sure they are orthogonal
+    POSTEROANTERIOR_GLENOID_AXIS = (GC_CONTOURS[1] - GC_CONTOURS[2]) / np.linalg.norm(GC_CONTOURS[1] - GC_CONTOURS[2])
+    INFEROSUPERIOR_GLENOID_AXIS_TEMP = (SE - IE) / np.linalg.norm(SE - IE)
+
+    vec = np.cross(POSTEROANTERIOR_GLENOID_AXIS, INFEROSUPERIOR_GLENOID_AXIS_TEMP)
+    GLENOID_NORMAL = vec / np.linalg.norm(vec)
+
+    vec = np.cross(GLENOID_NORMAL, POSTEROANTERIOR_GLENOID_AXIS)
+    INFEROSUPERIOR_GLENOID_AXIS = np.cross(GLENOID_NORMAL, POSTEROANTERIOR_GLENOID_AXIS) / np.linalg.norm(vec)
+
 
 class Humerus:
 
@@ -96,14 +112,14 @@ class Humerus:
     MID_EPICONDYLES = (EL + EM) / 2
 
 
-def get_constant(landmark: AnatomicalLandmark, side: str) -> np.ndarray:
+def get_constant(landmark: Any, side: str) -> np.ndarray:
     the_constant = None
 
-    if isinstance(landmark, AnatomicalLandmark.Thorax):
+    if isinstance(landmark, AnatomicalLandmark.Thorax) or isinstance(landmark, AnatomicalVector.Thorax):
         landmark_mapping = {
             AnatomicalLandmark.Thorax.IJ: Thorax.IJ,
             AnatomicalLandmark.Thorax.PX: Thorax.PX,
-            AnatomicalLandmark.Thorax.T1s: Thorax.T1s,
+            AnatomicalLandmark.Thorax.T1_ANTERIOR_FACE: Thorax.T1s,
             AnatomicalLandmark.Thorax.T1: Thorax.T1,
             AnatomicalLandmark.Thorax.C7: Thorax.C7,
             AnatomicalLandmark.Thorax.T7: Thorax.T7,
@@ -113,18 +129,20 @@ def get_constant(landmark: AnatomicalLandmark, side: str) -> np.ndarray:
             AnatomicalLandmark.Thorax.MIDPOINT_IJ_T1: Thorax.MID_IJ_T1,
             AnatomicalLandmark.Thorax.MIDPOINT_T8_PX: Thorax.MID_T8_PX,
             AnatomicalLandmark.Thorax.MIDPOINT_T10_PX: Thorax.MID_T10_PX,
+            AnatomicalVector.Thorax.SPINAL_CANAL_AXIS: Thorax.SPINAL_CANAL_AXIS,
         }
-
         the_constant = landmark_mapping.get(landmark).copy()
 
-    if isinstance(landmark, AnatomicalLandmark.Scapula):
+    if isinstance(landmark, AnatomicalLandmark.Scapula) or isinstance(landmark, AnatomicalVector.Scapula):
         landmark_mapping = {
             AnatomicalLandmark.Scapula.ANGULAR_ACROMIALIS: Scapula.AA,
             AnatomicalLandmark.Scapula.ACROMIOCLAVICULAR_JOINT_CENTER: Scapula.AC,
             AnatomicalLandmark.Scapula.ANGULUS_INFERIOR: Scapula.AI,
+            AnatomicalVector.Scapula.POSTEROANTERIOR_GLENOID_AXIS: Scapula.POSTEROANTERIOR_GLENOID_AXIS,
+            AnatomicalVector.Scapula.INFEROSUPERIOR_GLENOID_AXIS: Scapula.INFEROSUPERIOR_GLENOID_AXIS,
             # AnatomicalLandmark.Scapula.GLENOID_CAVITY_CONTOURS: Scapula.GC_CONTOURS,
-            # AnatomicalLandmark.Scapula.INFERIOR_EDGE: Scapula.IE,
-            # AnatomicalLandmark.Scapula.SUPERIOR_EDGE: Scapula.SE,
+            AnatomicalLandmark.Scapula.INFERIOR_EDGE: Scapula.IE,
+            AnatomicalLandmark.Scapula.SUPERIOR_EDGE: Scapula.SE,
             AnatomicalLandmark.Scapula.TRIGNONUM_SPINAE: Scapula.TS,
         }
 
