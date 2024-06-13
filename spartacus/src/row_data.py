@@ -259,9 +259,15 @@ class RowData:
         """
         if self.parent_segment == Segment.THORAX and self.row.thorax_is_global:
             self.parent_biomech_sys = BiomechCoordinateSystem.from_biomech_directions(
-                x=BiomechDirection.from_string(self.row[self.parent_columns[0]]),
-                y=BiomechDirection.from_string(self.row[self.parent_columns[1]]),
-                z=BiomechDirection.from_string(self.row[self.parent_columns[2]]),
+                x=BiomechDirection.from_string(
+                    self.row[self.parent_columns[0]]
+                ),  # when removed dedicated columns to directions, replaceby BiomechDirection.from_string(self.row[self.segment_cols_direction[0]])
+                y=BiomechDirection.from_string(
+                    self.row[self.parent_columns[1]]
+                ),  # when removed dedicated columns to directions, replaceby BiomechDirection.from_string(self.row[self.segment_cols_direction[1]])
+                z=BiomechDirection.from_string(
+                    self.row[self.parent_columns[2]]
+                ),  # when removed dedicated columns to directions, replaceby BiomechDirection.from_string(self.row[self.segment_cols_direction[2 ]])
                 origin=AnatomicalLandmark.from_string(self.row[self.parent_columns[3]]),
                 segment=self.parent_segment,
             )
@@ -630,10 +636,6 @@ class RowData:
         self.usable_translation_data = (
             self.child_segment_usable_for_translation_data and self.parent_segment_usable_for_translation_data
         )
-
-        # todo: risk level implementation
-        # self.rotation_risk = Risk.LOW
-        # self.translation_risk = Risk.HIGH
 
         return self.usable_rotation_data, self.usable_translation_data
 
