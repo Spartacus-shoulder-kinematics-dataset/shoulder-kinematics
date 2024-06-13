@@ -9,12 +9,9 @@ from src.enums import (
 from .biomech_system import BiomechCoordinateSystem
 from .checks import (
     check_segment_filled_with_nan,
-    check_is_isb_segment,
     check_is_euler_sequence_provided,
     check_is_translation_provided,
     check_parent_child_joint,
-    check_is_isb_correctable,
-    check_correction_methods,
 )
 from .corrections.angle_conversion_callbacks import (
     isb_framed_rotation_matrix_from_euler_angles,
@@ -152,14 +149,15 @@ class RowData:
                 segment=segment_enum,
             )
             # second check
-            if not check_is_isb_segment(self.row, bsys, print_warnings=print_warnings):
-                output = False
-
-            if not check_is_isb_correctable(self.row, bsys, print_warnings=print_warnings):
-                output = False
-
-            if not check_correction_methods(self, bsys, print_warnings=print_warnings):
-                output = False
+            # removed because I cant check anymore if ISB without properly loading the system.
+            # if not check_is_isb_segment(self.row, bsys, print_warnings=print_warnings):
+            #     output = False
+            #
+            # if not check_is_isb_correctable(self.row, bsys, print_warnings=print_warnings):
+            #     output = False
+            #
+            # if not check_correction_methods(self, bsys, print_warnings=print_warnings):
+            #     output = False
 
             # third check if the segment is direct or not
             if not bsys.is_direct():
