@@ -125,6 +125,17 @@ class BiomechDirection(Enum):
         return output
 
 
+class AnatomicalVector:
+    """Enum for the biomechanical vectors of the segment, all unit vectors"""
+
+    class Thorax(Enum):
+        SPINAL_CANAL_AXIS = "spinal canal axis"  # pointing infero-superior
+
+    class Scapula(Enum):
+        POSTEROANTERIOR_GLENOID_AXIS = "posteroanterior glenoid axis"
+        INFEROSUPERIOR_GLENOID_AXIS = "inferosuperior glenoid axis"
+
+
 class AnatomicalLandmark:
     """Enum for the biomechanical origins of the segment"""
 
@@ -136,7 +147,6 @@ class AnatomicalLandmark:
         IJ = "IJ"
         T1 = "T1"
         T1_ANTERIOR_FACE = "T1 anterior face"
-        T1s = "T1s"  # @todo: make sure to understand what is it
         C7 = "C7"
         T8 = "T8"
         PX = "PX"  # processus xiphoide
@@ -230,6 +240,7 @@ class AnatomicalLandmark:
             "(PX+T8)/2": cls.Thorax.MIDPOINT_T8_PX,
             "(C7+IJ)/2": cls.Thorax.MIDPOINT_C7_IJ,
             "(IJ+C7)/2": cls.Thorax.MIDPOINT_C7_IJ,
+            "spinal canal axis": AnatomicalVector.Thorax.SPINAL_CANAL_AXIS,
             "GH": cls.Humerus.GLENOHUMERAL_HEAD,
             "EL": cls.Humerus.LATERAL_EPICONDYLE,
             "EM": cls.Humerus.MEDIAL_EPICONDYLE,
@@ -245,6 +256,8 @@ class AnatomicalLandmark:
             "AI": cls.Scapula.ANGULUS_INFERIOR,  # old
             "glenoid center": cls.Scapula.GLENOID_CENTER,  # old
             "GC": cls.Scapula.GLENOID_CENTER,
+            "posteroanterior glenoid axis": AnatomicalVector.Scapula.POSTEROANTERIOR_GLENOID_AXIS,
+            "inferosuperior glenoid axis": AnatomicalVector.Scapula.INFEROSUPERIOR_GLENOID_AXIS,
             "TS": cls.Scapula.TRIGNONUM_SPINAE,
             "clavicle origin": cls.Clavicle.CUSTOM,
             "functional": cls.Other.FUNCTIONAL_CENTER,
@@ -253,7 +266,7 @@ class AnatomicalLandmark:
         the_enum = biomech_origin_to_enum.get(biomech_origin)
         if the_enum is None:
             raise ValueError(
-                f"'{biomech_origin}' is not a valid biomech_origin."
+                f"'{biomech_origin}' is not a valid Anatomical landmark."
                 "biomech_origin must be one of the following: "
                 "joint, parent, child"
             )

@@ -259,7 +259,7 @@ class RowData:
         """
         Set the parent and child segments of the joint.
         """
-        if self.parent == Segment.THORAX and self.row.thorax_is_global:
+        if self.parent_segment == Segment.THORAX and self.row.thorax_is_global:
             self.parent_biomech_sys = BiomechCoordinateSystem.from_biomech_directions(
                 x=BiomechDirection.from_string(self.row[self.parent_columns[0]]),
                 y=BiomechDirection.from_string(self.row[self.parent_columns[1]]),

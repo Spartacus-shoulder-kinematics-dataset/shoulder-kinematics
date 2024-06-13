@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 from .biomech_constant import get_constant
-from .enums_biomech import AnatomicalLandmark, Segment, CartesianAxis, BiomechDirection
+from .enums_biomech import AnatomicalLandmark, Segment, CartesianAxis, BiomechDirection, AnatomicalVector
 
 
 class VectorBase(ABC):
@@ -23,6 +23,23 @@ class VectorBase(ABC):
     def biomech_direction(self) -> BiomechDirection:
         """Returns the biomechanical direction of the vector, ex: np.array([0.8, 0.2, -0.5]) -> BiomechDirection.postero_anterior"""
         return BiomechDirection.from_direction_global_isb_frame(self.principal_direction())
+
+
+class SoloVector(VectorBase):
+    def __init__(self, direction: AnatomicalVector, side: str = None):
+        self.direction = direction
+        self.side = side
+
+    @classmethod
+    def from_string(cls, direction: str, side: str = None):
+        return cls(AnatomicalLandmark.from_string(direction), side=side)
+
+    def compute_default_vector(self) -> np.ndarray:
+        return get_constant(self.direction, self.side)
+
+    @property
+    def landmarks(self) -> None:
+        return None
 
 
 class StartEndVector(VectorBase):
@@ -45,6 +62,7 @@ class StartEndVector(VectorBase):
         return self.start, self.end
 
     def compute_default_vector(self) -> np.ndarray:
+        print(self.start, self.end, self.side)
         vector = get_constant(self.end, self.side) - get_constant(self.start, self.side)
         return vector / np.linalg.norm(vector)
 
@@ -122,9 +140,14 @@ class Frame:
         return cls(CrossedVector(y_axis, z_axis), y_axis, z_axis, origin, segment)
 
     @classmethod
-    def from_z_crossed_twice(cls, y_axis: VectorBase, z_axis, origin: AnatomicalLandmark, segment: Segment):
+    def from_z_crossed_twice_build_x(cls, y_axis: VectorBase, z_axis, origin: AnatomicalLandmark, segment: Segment):
         x_axis = CrossedVector(y_axis, z_axis)
         return cls.from_xz(x_axis, z_axis, origin, segment)
+
+    @classmethod
+    def from_z_crossed_twice_build_y(cls, x_axis: VectorBase, z_axis, origin: AnatomicalLandmark, segment: Segment):
+        y_axis = CrossedVector(z_axis, x_axis)
+        return cls.from_yz(y_axis, z_axis, origin, segment)
 
     @classmethod
     def from_y_crossed_twice(cls, x_axis: VectorBase, y_axis: VectorBase, origin: AnatomicalLandmark, segment: Segment):
@@ -170,12 +193,21 @@ class Frame:
             return cls.from_y_crossed_twice(None, None, AnatomicalLandmark.from_string(origin), segment)
 
         if is_z_axis_crossed_twice:
-            return cls.from_z_crossed_twice(
-                y_axis=parse_axis(x_axis, cross_product_side="first", arm_side=side),
-                z_axis=parse_axis(z_axis),
-                origin=AnatomicalLandmark.from_string(origin),
-                segment=segment,
-            )
+            if x_axis == "y^z":
+                return cls.from_z_crossed_twice_build_y(
+                    x_axis=parse_axis(y_axis, cross_product_side="second", arm_side=side),
+                    z_axis=parse_axis(z_axis),
+                    origin=AnatomicalLandmark.from_string(origin),
+                    segment=segment,
+                )
+
+            if y_axis == "x^y":
+                return cls.from_z_crossed_twice_build_x(
+                    y_axis=parse_axis(x_axis, cross_product_side="first", arm_side=side),
+                    z_axis=parse_axis(z_axis),
+                    origin=AnatomicalLandmark.from_string(origin),
+                    segment=segment,
+                )
 
     @classmethod
     def from_xyz_string(cls, x_axis: str, y_axis: str, z_axis: str, origin: str, segment: Segment, side: str = None):
@@ -321,6 +353,9 @@ def parse_axis(input_str, cross_product_side="all", arm_side=None) -> VectorBase
     arm_side: str
         The side of the arm. Can be "right" arm or "left" arl
     """
+    if "vec" not in input_str:
+        return SoloVector(AnatomicalLandmark.from_string(input_str), side=arm_side)
+
     times_crossed = input_str.count("^")
 
     if times_crossed == 1:
