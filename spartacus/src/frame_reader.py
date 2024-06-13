@@ -201,7 +201,7 @@ class Frame:
                     segment=segment,
                 )
 
-            if y_axis == "x^y":
+            if y_axis == "z^x":
                 return cls.from_z_crossed_twice_build_x(
                     y_axis=parse_axis(x_axis, cross_product_side="first", arm_side=side),
                     z_axis=parse_axis(z_axis),
