@@ -39,12 +39,12 @@ to_pass_because_geometric = [
 ]
 to_pass_because_thorax_is_imaging_system = [
     # ("Kijima et al.", Segment.THORAX),  # thorax
-    ("Kim et al.", Segment.THORAX),  # thorax
-    ("Kozono et al.", Segment.THORAX),  # thorax
-    ("Matsuki et al.", Segment.THORAX),  # thorax
-    ("Nishinaka et al.", Segment.THORAX),  # thorax
-    ("Sahara et al.", Segment.THORAX),  # thorax
-    ("Sugi et al.", Segment.THORAX),  # thorax
+    # ("Kim et al.", Segment.THORAX),  # thorax
+    # ("Kozono et al.", Segment.THORAX),  # thorax
+    # ("Matsuki et al.", Segment.THORAX),  # thorax
+    # ("Nishinaka et al.", Segment.THORAX),  # thorax
+    # ("Sahara et al.", Segment.THORAX),  # thorax
+    # ("Sugi et al.", Segment.THORAX),  # thorax
 ]  # thorax
 to_pass_because_there_is_mislabel = [
     ("Ludewig et al.", Segment.CLAVICLE),  # clavicle z^y_thorax* should be replaced by y_thorax*^z
@@ -120,23 +120,22 @@ def test_new_parsing():
                 assert frame.y_axis.biomech_direction() == BiomechDirection.from_string(row[segment_cols[1]])
                 assert frame.z_axis.biomech_direction() == BiomechDirection.from_string(row[segment_cols[2]])
 
-                if tuple_test in to_pass_because_isb_is_mislabeled:
-                    try:
-                        is_isb_col = get_is_isb_column(segment_enum)
-                        assert frame.is_isb == row[is_isb_col]
+                try:
+                    is_isb_col = get_is_isb_column(segment_enum)
+                    assert frame.is_isb == row[is_isb_col]
 
-                    except Exception as e:
-                        print(e)
-                        print("MISLABELED ISB:")
-                        print(tuple_test)
-                        print("to check ISB:")
-                        print("landmarks :", frame.landmarks)
-                        print("expected landmarks :", frame.expected_isb_landmarks)
+                except Exception as e:
+                    print(e)
+                    print("MISLABELED ISB:")
+                    print(tuple_test)
+                    print("to check ISB:")
+                    print("landmarks :", frame.landmarks)
+                    print("expected landmarks :", frame.expected_isb_landmarks)
 
-                        print(frame.origin)
-                        print(frame.is_isb_oriented)
-                        print("has isb landmark", frame.has_isb_landmarks)
-                        print("####################")
+                    print(frame.origin)
+                    print(frame.is_isb_oriented)
+                    print("has isb landmark", frame.has_isb_landmarks)
+                    print("####################")
 
                 # build the coordinate system
                 bsys_old = BiomechCoordinateSystem.from_biomech_directions(
