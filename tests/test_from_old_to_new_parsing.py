@@ -4,10 +4,9 @@ import pandas as pd
 from spartacus import DatasetCSV, Segment, BiomechDirection, BiomechCoordinateSystem, AnatomicalLandmark
 from spartacus.src.checks import (
     check_segment_filled_with_nan,
-    check_is_isb_segment,
-    check_is_isb_correctable,
 )
 from spartacus.src.frame_reader import Frame
+from spartacus.src.utils import get_is_isb_column
 from spartacus.src.utils import (
     get_segment_columns,
     get_segment_columns_direction,
@@ -43,8 +42,9 @@ to_pass_because_not_filled = [
     ("Henninger et al.", Segment.HUMERUS),
     ("Henninger et al.", Segment.CLAVICLE),
 ]  # thorax
+# TODO:
 to_pass_because_thorax_is_imaging_system = [
-    ("Kijima et al.", Segment.THORAX),  # thorax
+    # ("Kijima et al.", Segment.THORAX),  # thorax
     ("Kim et al.", Segment.THORAX),  # thorax
     ("Kozono et al.", Segment.THORAX),  # thorax
     ("Matsuki et al.", Segment.THORAX),  # thorax
@@ -65,16 +65,25 @@ to_pass_because_there_is_mislabel = [
     ),  # y_thorax^z ? instead of z^y_thorax and y^z instead of x^y ?? # Not display on the figure I have
 ]
 
+to_pass_because_isb_is_mislabeled = [
+    ("Guttierrez Delgado et al.", Segment.THORAX),  # actually not isb
+    ("Ludewig et al.", Segment.THORAX),  # actually not isb
+    ("Matsumura et al.", Segment.THORAX),  # actually not isb
+    ("Moissenet et al.", Segment.THORAX),  # actually not isb
+    ("Oki et al.", Segment.THORAX),  # actually not isb
+    ("Yoshida et al.", Segment.THORAX),  # actually not isb
+]
+
 
 def test_new_parsing():
     df = pd.read_csv(DatasetCSV.CLEAN.value)
     df = df.where(pd.notna(df), None)
     author_ok = []
     for i, row in df.iterrows():
-        print(row.dataset_authors)
+        # print(row.dataset_authors)
         count = 0
         for segment_enum in Segment:
-            print(segment_enum)
+            # print(segment_enum)
             tuple_test = (row.dataset_authors, segment_enum)
 
             if (
@@ -86,52 +95,87 @@ def test_new_parsing():
                 count += 1
                 continue
 
+            if row.dataset_authors == "Bourne et al." and segment_enum == Segment.HUMERUS:
+                print("")
+
             segment_cols = get_segment_columns(segment_enum)
             segment_cols_direction = get_segment_columns_direction(segment_enum)
             # first check
             if check_segment_filled_with_nan(row, segment_cols, print_warnings=print_warnings):
                 continue
 
-            frame = Frame.from_xyz_string(
-                x_axis=row[segment_cols_direction[0]],
-                y_axis=row[segment_cols_direction[1]],
-                z_axis=row[segment_cols_direction[2]],
-                origin=row[segment_cols_direction[3]],
-                segment=segment_enum,
-                side="right" if row.side_as_right or segment_enum == Segment.THORAX else row.side,
-            )
-            print(frame.side)
-            print(frame.x_axis.principal_direction())
-            print(frame.x_axis.compute_default_vector())
-            print(frame.y_axis.principal_direction())
-            print(frame.y_axis.compute_default_vector())
-            print(frame.z_axis.principal_direction())
-            print(frame.z_axis.compute_default_vector())
+            if row.thorax_is_global and segment_enum == Segment.THORAX:
+                print("Thorax is global", row.thorax_is_global)
+                # build the coordinate system
+                bsys_new = BiomechCoordinateSystem.from_biomech_directions(
+                    x=BiomechDirection.from_string(row[segment_cols[0]]),
+                    y=BiomechDirection.from_string(row[segment_cols[1]]),
+                    z=BiomechDirection.from_string(row[segment_cols[2]]),
+                    origin=AnatomicalLandmark.from_string(row[segment_cols[3]]),
+                    segment=segment_enum,
+                )
+            else:
 
-            assert frame.x_axis.biomech_direction() == BiomechDirection.from_string(row[segment_cols[0]])
-            assert frame.y_axis.biomech_direction() == BiomechDirection.from_string(row[segment_cols[1]])
-            assert frame.z_axis.biomech_direction() == BiomechDirection.from_string(row[segment_cols[2]])
+                frame = Frame.from_xyz_string(
+                    x_axis=row[segment_cols_direction[0]],
+                    y_axis=row[segment_cols_direction[1]],
+                    z_axis=row[segment_cols_direction[2]],
+                    origin=row[segment_cols_direction[3]],
+                    segment=segment_enum,
+                    side="right" if row.side_as_right or segment_enum == Segment.THORAX else row.side,
+                )
+                # print(frame.side)
+                # print(frame.x_axis.principal_direction())
+                # print(frame.x_axis.compute_default_vector())
+                # print(frame.y_axis.principal_direction())
+                # print(frame.y_axis.compute_default_vector())
+                # print(frame.z_axis.principal_direction())
+                # print(frame.z_axis.compute_default_vector())
 
-            # build the coordinate system
-            bsys = BiomechCoordinateSystem.from_biomech_directions(
-                x=BiomechDirection.from_string(row[segment_cols[0]]),
-                y=BiomechDirection.from_string(row[segment_cols[1]]),
-                z=BiomechDirection.from_string(row[segment_cols[2]]),
-                origin=AnatomicalLandmark.from_string(row[segment_cols[3]]),
-                segment=segment_enum,
-            )
+                assert frame.x_axis.biomech_direction() == BiomechDirection.from_string(row[segment_cols[0]])
+                assert frame.y_axis.biomech_direction() == BiomechDirection.from_string(row[segment_cols[1]])
+                assert frame.z_axis.biomech_direction() == BiomechDirection.from_string(row[segment_cols[2]])
+
+                if tuple_test in to_pass_because_isb_is_mislabeled:
+                    try:
+                        is_isb_col = get_is_isb_column(segment_enum)
+                        assert frame.is_isb == row[is_isb_col]
+
+                    except Exception as e:
+                        print(e)
+                        print("MISLABELED ISB:")
+                        print(tuple_test)
+                        print("to check ISB:")
+                        print("landmarks :", frame.landmarks)
+                        print("expected landmarks :", frame.expected_isb_landmarks)
+
+                        print(frame.origin)
+                        print(frame.is_isb_oriented)
+                        print("has isb landmark", frame.has_isb_landmarks)
+                        print("####################")
+
+                # build the coordinate system
+                bsys_old = BiomechCoordinateSystem.from_biomech_directions(
+                    x=BiomechDirection.from_string(row[segment_cols[0]]),
+                    y=BiomechDirection.from_string(row[segment_cols[1]]),
+                    z=BiomechDirection.from_string(row[segment_cols[2]]),
+                    origin=AnatomicalLandmark.from_string(row[segment_cols[3]]),
+                    segment=segment_enum,
+                )
+                bsys_new = BiomechCoordinateSystem.from_frame(frame)
+
             # second check
-            if not check_is_isb_segment(row, bsys, print_warnings=print_warnings):
-                output = False
+            # if not check_is_isb_segment(row, bsys_new, print_warnings=print_warnings):
+            #     output = False
 
-            if not check_is_isb_correctable(row, bsys, print_warnings=print_warnings):
-                output = False
+            # if not check_is_isb_correctable(row, bsys_new, print_warnings=print_warnings):
+            #     output = False
 
             # if not check_correction_methods(self, bsys, print_warnings=print_warnings):
             #     output = False
 
             # third check if the segment is direct or not
-            if not bsys.is_direct():
+            if not bsys_new.is_direct():
                 if print_warnings:
                     print(
                         f"{row.dataset_authors}, " f"Segment {segment_enum.value} is not direct, " f"it should be !!!"
