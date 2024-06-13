@@ -208,6 +208,10 @@ class Frame:
         )
 
     @property
+    def is_isb_oriented(self) -> bool:
+        return self.is_x_axis_postero_anterior and self.is_y_axis_supero_inferior and self.is_z_axis_medio_lateral
+
+    @property
     def has_isb_landmarks(self) -> bool:
         segment_to_landmark = {
             Segment.SCAPULA: AnatomicalLandmark.Scapula.isb(),
@@ -217,6 +221,16 @@ class Frame:
         }
 
         return set(self.landmarks) == set(segment_to_landmark.get(self.segment))
+
+    @property
+    def expected_isb_landmarks(self) -> tuple[str, ...]:
+        segment_to_landmark = {
+            Segment.SCAPULA: AnatomicalLandmark.Scapula.isb(),
+            Segment.THORAX: AnatomicalLandmark.Thorax.isb(),
+            Segment.CLAVICLE: AnatomicalLandmark.Clavicle.isb(),
+            Segment.HUMERUS: AnatomicalLandmark.Humerus.isb(),
+        }
+        return segment_to_landmark.get(self.segment)
 
     @property
     def is_origin_isb(self) -> bool:
