@@ -59,15 +59,6 @@ to_pass_because_there_is_mislabel = [
     ),  # y_thorax^z ? instead of z^y_thorax and y^z instead of x^y ?? # Not display on the figure I have
 ]
 
-to_pass_because_isb_is_mislabeled = [
-    ("Guttierrez Delgado et al.", Segment.THORAX),  # actually not isb
-    ("Ludewig et al.", Segment.THORAX),  # actually not isb
-    ("Matsumura et al.", Segment.THORAX),  # actually not isb
-    ("Moissenet et al.", Segment.THORAX),  # actually not isb
-    ("Oki et al.", Segment.THORAX),  # actually not isb
-    ("Yoshida et al.", Segment.THORAX),  # actually not isb
-]
-
 
 def test_new_parsing():
     df = pd.read_csv(DatasetCSV.CLEAN.value)
