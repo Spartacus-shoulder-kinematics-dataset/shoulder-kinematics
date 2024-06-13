@@ -188,6 +188,8 @@ class AnatomicalLandmark:
         ACROMIOCLAVICULAR_JOINT_CENTER = "ACJC"
         TRIGNONUM_SPINAE = "TS"
         ANGULUS_INFERIOR = "IA"
+        INFERIOR_EDGE = "IE"
+        SUPERIOR_EDGE = "SE"
 
         @classmethod
         def isb(cls):
@@ -256,6 +258,8 @@ class AnatomicalLandmark:
             "AI": cls.Scapula.ANGULUS_INFERIOR,  # old
             "glenoid center": cls.Scapula.GLENOID_CENTER,  # old
             "GC": cls.Scapula.GLENOID_CENTER,
+            "IE": cls.Scapula.INFERIOR_EDGE,
+            "SE": cls.Scapula.SUPERIOR_EDGE,
             "posteroanterior glenoid axis": AnatomicalVector.Scapula.POSTEROANTERIOR_GLENOID_AXIS,
             "inferosuperior glenoid axis": AnatomicalVector.Scapula.INFEROSUPERIOR_GLENOID_AXIS,
             "TS": cls.Scapula.TRIGNONUM_SPINAE,
