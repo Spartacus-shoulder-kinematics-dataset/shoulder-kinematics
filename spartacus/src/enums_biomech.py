@@ -344,50 +344,67 @@ class EulerSequence(Enum):
         return the_enum
 
 
-class Frame:
-    """todo : FrameType : parent, child, jcs, no more segment name"""
+class FrameType:
 
-    class Local(Enum):
-        """Enum for the local frame"""
-
-        THORAX = "thorax"
-        HUMERUS = "humerus"
-        SCAPULA = "scapula"
-        CLAVICLE = "clavicle"
-
-    class NonOrthogonal(Enum):
-        """Enum for the non-orthogonal frame"""
-
-        JOINT_STERNOCLAVICULAR = "SC"
-        JOINT_ACROMIOCLAVICULAR = "AC"
-        JOINT_GLENOHUMERAL = "GH"
-        JOINT_SCAPULOTHORACIC = "ST"
+    PARENT = "parent"
+    CHILD = "child"
+    JCS = "joint coordinate system"
 
     @classmethod
-    def from_string(cls, frame: str, joint: str):
-        segment_name_to_enum = {
-            "thorax": cls.Local.THORAX,
-            "humerus": cls.Local.HUMERUS,
-            "scapula": cls.Local.SCAPULA,
-            "clavicle": cls.Local.CLAVICLE,
+    def from_string(cls, frame_type: str):
+        frame_type_name_to_enum = {
+            "parent": cls.PARENT,
+            "child": cls.CHILD,
+            "jcs": cls.JCS,
         }
 
-        frame_to_enum = {
-            ("jcs", "glenohumeral"): cls.NonOrthogonal.JOINT_GLENOHUMERAL,
-            ("jcs", "scapulothoracic"): cls.NonOrthogonal.JOINT_SCAPULOTHORACIC,
-            ("jcs", "acromioclavicular"): cls.NonOrthogonal.JOINT_ACROMIOCLAVICULAR,
-            ("jcs", "sternoclavicular"): cls.NonOrthogonal.JOINT_STERNOCLAVICULAR,
-        }
-
-        the_enum = segment_name_to_enum.get(frame)
-
+        the_enum = frame_type_name_to_enum.get(frame_type)
         if the_enum is None:
-            the_enum = frame_to_enum.get((frame, joint))
-
-        if the_enum is None:
-            raise ValueError(f"{frame} is not a valid frame.")
+            raise ValueError(f"{frame_type} is not a valid frame type.")
 
         return the_enum
+
+    # class Local(Enum):
+    #     """Enum for the local frame"""
+    #
+    #     THORAX = "thorax"
+    #     HUMERUS = "humerus"
+    #     SCAPULA = "scapula"
+    #     CLAVICLE = "clavicle"
+    #
+    # class NonOrthogonal(Enum):
+    #     """Enum for the non-orthogonal frame"""
+    #
+    #     JOINT_STERNOCLAVICULAR = "SC"
+    #     JOINT_ACROMIOCLAVICULAR = "AC"
+    #     JOINT_GLENOHUMERAL = "GH"
+    #     JOINT_SCAPULOTHORACIC = "ST"
+
+    # @classmethod
+    # def from_string(cls, frame: str, joint: str):
+    #     segment_name_to_enum = {
+    #         "thorax": cls.Local.THORAX,
+    #         "humerus": cls.Local.HUMERUS,
+    #         "scapula": cls.Local.SCAPULA,
+    #         "clavicle": cls.Local.CLAVICLE,
+    #     }
+    #
+    #     frame_to_enum = {
+    #         ("jcs", "glenohumeral"): cls.NonOrthogonal.JOINT_GLENOHUMERAL,
+    #         ("jcs", "scapulothoracic"): cls.NonOrthogonal.JOINT_SCAPULOTHORACIC,
+    #         ("jcs", "acromioclavicular"): cls.NonOrthogonal.JOINT_ACROMIOCLAVICULAR,
+    #         ("jcs", "sternoclavicular"): cls.NonOrthogonal.JOINT_STERNOCLAVICULAR,
+    #     }
+    #
+    #     the_enum = segment_name_to_enum.get(frame)
+    #
+    #     if the_enum is None:
+    #         the_enum = frame_to_enum.get((frame, joint))
+    #
+    #     if the_enum is None:
+    #         raise ValueError(f"{frame} is not a valid frame.")
+    #
+    #     return the_enum
 
 
 class Segment(Enum):
