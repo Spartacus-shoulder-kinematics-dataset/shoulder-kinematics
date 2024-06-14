@@ -133,7 +133,10 @@ class AnatomicalVector:
 
     class Scapula(Enum):
         POSTEROANTERIOR_GLENOID_AXIS = "posteroanterior glenoid axis"
+        ANTEROPOSTERIOR_GLENOID_AXIS = "anteroposterior glenoid axis"
         INFEROSUPERIOR_GLENOID_AXIS = "inferosuperior glenoid axis"
+        MEDIOLATERAL_GLENOID_NORMAL = "mediolateral glenoid normal"
+        LATEROMEDIAL_GLENOID_NORMAL = "lateromedial glenoid normal"
 
 
 class AnatomicalLandmark:
@@ -242,7 +245,7 @@ class AnatomicalLandmark:
             "(PX+T8)/2": cls.Thorax.MIDPOINT_T8_PX,
             "(C7+IJ)/2": cls.Thorax.MIDPOINT_C7_IJ,
             "(IJ+C7)/2": cls.Thorax.MIDPOINT_C7_IJ,
-            "spinal canal axis": AnatomicalVector.Thorax.SPINAL_CANAL_AXIS,
+            "spinal canal axis from T1 to T7": AnatomicalVector.Thorax.SPINAL_CANAL_AXIS,
             "GH": cls.Humerus.GLENOHUMERAL_HEAD,
             "EL": cls.Humerus.LATERAL_EPICONDYLE,
             "EM": cls.Humerus.MEDIAL_EPICONDYLE,
@@ -261,7 +264,10 @@ class AnatomicalLandmark:
             "IE": cls.Scapula.INFERIOR_EDGE,
             "SE": cls.Scapula.SUPERIOR_EDGE,
             "posteroanterior glenoid axis": AnatomicalVector.Scapula.POSTEROANTERIOR_GLENOID_AXIS,
+            "anteroposterior glenoid axis": AnatomicalVector.Scapula.ANTEROPOSTERIOR_GLENOID_AXIS,
             "inferosuperior glenoid axis": AnatomicalVector.Scapula.INFEROSUPERIOR_GLENOID_AXIS,
+            "mediolateral glenoid normal": AnatomicalVector.Scapula.MEDIOLATERAL_GLENOID_NORMAL,
+            "lateromedial glenoid normal": AnatomicalVector.Scapula.LATEROMEDIAL_GLENOID_NORMAL,
             "TS": cls.Scapula.TRIGNONUM_SPINAE,
             "clavicle origin": cls.Clavicle.CUSTOM,
             "functional": cls.Other.FUNCTIONAL_CENTER,

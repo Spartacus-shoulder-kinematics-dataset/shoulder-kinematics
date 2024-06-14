@@ -1,5 +1,5 @@
-import numpy as np
 import pandas as pd
+import pytest
 
 from spartacus import DatasetCSV, Segment, BiomechDirection, BiomechCoordinateSystem, AnatomicalLandmark
 from spartacus.src.checks import (
@@ -15,9 +15,7 @@ from spartacus.src.utils import (
 print_warnings = True
 
 to_pass_because_geometric = [
-    ("Fung et al.", Segment.THORAX),  # geometric Thorax feature implement SoloVectors
     ("Fung et al.", Segment.HUMERUS),  # geometric Humerus feature implement SoloVectors
-    ("Fung et al.", Segment.SCAPULA),  # geometric Scapula feature implement SoloVectors
     (
         "Gutierrez Delgado et al.",
         Segment.CLAVICLE,
@@ -27,15 +25,10 @@ to_pass_because_geometric = [
         Segment.CLAVICLE,
     ),  # geometric clavicle ?? is it correct on clavicle doest seem consistent with the figure ?
     ("Kijima et al.", Segment.HUMERUS),
-    ("Kijima et al.", Segment.SCAPULA),
     ("Kim et al.", Segment.HUMERUS),
     ("Kim et al.", Segment.SCAPULA),
     ("Matsuki et al.", Segment.HUMERUS),
-    ("Matsuki et al.", Segment.SCAPULA),
-    ("Nishinaka et al.", Segment.SCAPULA),
-    ("Sahara et al.", Segment.SCAPULA),
     ("Sugi et al.", Segment.HUMERUS),
-    ("Sugi et al.", Segment.SCAPULA),
 ]
 to_pass_because_thorax_is_imaging_system = [
     # ("Kijima et al.", Segment.THORAX),  # thorax
@@ -49,7 +42,6 @@ to_pass_because_thorax_is_imaging_system = [
 to_pass_because_there_is_mislabel = [
     ("Ludewig et al.", Segment.CLAVICLE),  # clavicle z^y_thorax* should be replaced by y_thorax*^z
     ("Oki et al.", Segment.CLAVICLE),  # clavicle z^y_thorax* should be replaced by y_thorax*^z
-    ("Teece et al.", Segment.THORAX),  # thorax y^z should be replaced by z^x ??
     ("Fung et al.", Segment.CLAVICLE),  # -x_thorax* ???
     ("Matsuki et al.", Segment.CLAVICLE),  # y_thorax^z ? instead of z^y_thorax
     ("Sahara et al.", Segment.CLAVICLE),  # y_thorax^z ? instead of z^y_thorax
@@ -59,12 +51,17 @@ to_pass_because_there_is_mislabel = [
     ),  # y_thorax^z ? instead of z^y_thorax and y^z instead of x^y ?? # Not display on the figure I have
 ]
 
+df = pd.read_csv(DatasetCSV.CLEAN.value)
+df = df.where(pd.notna(df), None)
+authors = df["dataset_authors"].unique().tolist()
 
-def test_new_parsing():
-    df = pd.read_csv(DatasetCSV.CLEAN.value)
-    df = df.where(pd.notna(df), None)
-    author_ok = []
-    for i, row in df.iterrows():
+
+@pytest.mark.parametrize("author", authors)
+def test_new_parsing(author):
+
+    subdf = df[df["dataset_authors"] == author]
+
+    for i, row in subdf.iterrows():
         print(row.dataset_authors)
         count = 0
         for segment_enum in Segment:
@@ -95,7 +92,7 @@ def test_new_parsing():
                     x=BiomechDirection.from_string(row[segment_cols[0]]),
                     y=BiomechDirection.from_string(row[segment_cols[1]]),
                     z=BiomechDirection.from_string(row[segment_cols[2]]),
-                    origin=AnatomicalLandmark.from_string(row[segment_cols[3]]),
+                    origin=None,
                     segment=segment_enum,
                 )
             else:
@@ -108,13 +105,13 @@ def test_new_parsing():
                     segment=segment_enum,
                     side="right" if row.side_as_right or segment_enum == Segment.THORAX else row.side,
                 )
-                # print(frame.side)
-                # print(frame.x_axis.principal_direction())
-                # print(frame.x_axis.compute_default_vector())
-                # print(frame.y_axis.principal_direction())
-                # print(frame.y_axis.compute_default_vector())
-                # print(frame.z_axis.principal_direction())
-                # print(frame.z_axis.compute_default_vector())
+                print(frame.side)
+                print(frame.x_axis.principal_direction())
+                print(frame.x_axis.compute_default_vector())
+                print(frame.y_axis.principal_direction())
+                print(frame.y_axis.compute_default_vector())
+                print(frame.z_axis.principal_direction())
+                print(frame.z_axis.compute_default_vector())
 
                 assert frame.x_axis.biomech_direction() == BiomechDirection.from_string(row[segment_cols[0]])
                 assert frame.y_axis.biomech_direction() == BiomechDirection.from_string(row[segment_cols[1]])
@@ -164,7 +161,3 @@ def test_new_parsing():
                         f"{row.dataset_authors}, " f"Segment {segment_enum.value} is not direct, " f"it should be !!!"
                     )
                 output = False
-        if count == 0:
-            author_ok.append(row.dataset_authors)
-
-    print(np.unique(author_ok))
