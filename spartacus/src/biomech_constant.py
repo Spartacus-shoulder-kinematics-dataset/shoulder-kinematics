@@ -89,7 +89,7 @@ class Scapula:
     AI = (R @ AI) * manual_scaling + manual_offset
     for i, gc in enumerate(GC_CONTOURS):
         GC_CONTOURS[i] = (R @ gc) * manual_scaling + manual_offset
-    IE = (R @ IE) * manual_scaling + manual_offset
+    IE = (R @ IE) * manual_scaling + manual_offset + np.array([4, 0, 0])  # make sure IE to SE is mainly inferosuperior
     SE = (R @ SE) * manual_scaling + manual_offset
     TS = (R @ TS) * manual_scaling + manual_offset
 
