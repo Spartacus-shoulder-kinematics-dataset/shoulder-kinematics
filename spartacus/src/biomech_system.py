@@ -1,7 +1,6 @@
-import collections
-
 import numpy as np
 
+from .deviation_constant import DEVIATION_COEFF
 from .enums_biomech import CartesianAxis, BiomechDirection, AnatomicalLandmark, Segment
 from .frame_reader import Frame
 from .utils import compute_rotation_matrix_from_axes
@@ -15,7 +14,7 @@ class BiomechCoordinateSystem:
         infero_superior_axis: CartesianAxis,
         medio_lateral_axis: CartesianAxis,
         origin=None,
-        frame=None,
+        frame: Frame = None,
     ):
         # verify isinstance
         if not isinstance(antero_posterior_axis, CartesianAxis):
@@ -101,15 +100,45 @@ class BiomechCoordinateSystem:
             frame=frame,
         )
 
+    def is_mislabeled(self):
+        """
+        Return True if the segment is mislabeled, False otherwise
+        Mislabeling is defined as the only difference with ISB being the wrong name of the axis. Which means that :
+            - the antero posterior axis is not along the x axis
+            - the infero superior axis is not along the y axis
+            - the medio lateral axis is not along the z axis
+        """
+
+        condition_1 = (self.anterior_posterior_axis is CartesianAxis.plusX) or (
+            self.anterior_posterior_axis is CartesianAxis.minusX
+        )
+        condition_2 = (self.infero_superior_axis is CartesianAxis.plusY) or (
+            self.infero_superior_axis is CartesianAxis.minusY
+        )
+        condition_3 = (self.medio_lateral_axis is CartesianAxis.plusZ) or (
+            self.medio_lateral_axis is CartesianAxis.minusZ
+        )
+
+        return not (condition_1 and condition_2 and condition_3)
+
+    def is_isb_oriented(self) -> bool:
+        condition_1 = self.anterior_posterior_axis is CartesianAxis.plusX
+        condition_2 = self.infero_superior_axis is CartesianAxis.plusY
+        condition_3 = self.medio_lateral_axis is CartesianAxis.plusZ
+        return condition_1 and condition_2 and condition_3
+
     def is_isb_origin(self) -> bool:
-        segment_origin_mapping = {
-            Segment.THORAX: AnatomicalLandmark.Thorax.IJ,
-            Segment.CLAVICLE: AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_JOINT_CENTER,
-            Segment.SCAPULA: AnatomicalLandmark.Scapula.ANGULAR_ACROMIALIS,
-            Segment.HUMERUS: AnatomicalLandmark.Humerus.GLENOHUMERAL_HEAD,
+        segment_to_origin_isb = {
+            Segment.SCAPULA: AnatomicalLandmark.Scapula.origin_isb,
+            Segment.THORAX: AnatomicalLandmark.Thorax.origin_isb,
+            Segment.CLAVICLE: AnatomicalLandmark.Clavicle.origin_isb,
+            Segment.HUMERUS: AnatomicalLandmark.Humerus.origin_isb,
         }
 
-        return segment_origin_mapping.get(self.segment) == self.origin
+        return segment_to_origin_isb.get(self.segment) == self.origin
+
+    def is_an_isb_axe(self) -> bool:
+        raise NotImplementedError
 
     def is_origin_on_an_isb_axis(self) -> bool:
         """
@@ -138,12 +167,6 @@ class BiomechCoordinateSystem:
     def is_isb(self) -> bool:
         return self.frame.is_isb if self.frame is not None else False
 
-    def is_isb_oriented(self) -> bool:
-        condition_1 = self.anterior_posterior_axis is CartesianAxis.plusX
-        condition_2 = self.infero_superior_axis is CartesianAxis.plusY
-        condition_3 = self.medio_lateral_axis is CartesianAxis.plusZ
-        return condition_1 and condition_2 and condition_3
-
     def is_direct(self) -> bool:
         """check if the frame is direct (True) or indirect (False)"""
         return np.linalg.det(self.get_rotation_matrix()) > 0
@@ -155,33 +178,12 @@ class BiomechCoordinateSystem:
         such that a_in_isb = R_to_isb_from_local @ a_in_local
 
         """
-
+        # todo: to transfer in Frame ?
         return compute_rotation_matrix_from_axes(
             anterior_posterior_axis=self.anterior_posterior_axis.value[1][:, np.newaxis],
             infero_superior_axis=self.infero_superior_axis.value[1][:, np.newaxis],
             medio_lateral_axis=self.medio_lateral_axis.value[1][:, np.newaxis],
         )
-
-    def is_mislabeled(self):
-        """
-        Return True if the segment is mislabeled, False otherwise
-        Mislabeling is defined as the only difference with ISB being the wrong name of the axis. Which means that :
-            - the antero posterior axis is not along the x axis
-            - the infero superior axis is not along the y axis
-            - the medio lateral axis is not along the z axis
-        """
-
-        condition_1 = (self.anterior_posterior_axis is CartesianAxis.plusX) or (
-            self.anterior_posterior_axis is CartesianAxis.minusX
-        )
-        condition_2 = (self.infero_superior_axis is CartesianAxis.plusY) or (
-            self.infero_superior_axis is CartesianAxis.minusY
-        )
-        condition_3 = (self.medio_lateral_axis is CartesianAxis.plusZ) or (
-            self.medio_lateral_axis is CartesianAxis.minusZ
-        )
-
-        return not (condition_1 and condition_2 and condition_3)
 
     def is_any_axis_wrong_sens(self):
         """
@@ -195,49 +197,26 @@ class BiomechCoordinateSystem:
 
         return is_ant_post_wrong_sens or is_med_lat_wrong_sens or is_inf_sup_wrong_sens
 
-    def get_segment_risk_quantification(self, type_segment, type_risk):
+    def get_segment_risk_quantification(self, type_risk):
         """
         Return the risk quantification of the segment which is the product of the risk
         of each type of risk described in the dictionnary dict_coeff.
 
         Parameters
         ----------
-        type_segment: str
-            "proximal" or "distal"
         type_risk: str
             "rotation" or "displacement"
         """
-        nested_dict = lambda: collections.defaultdict(nested_dict)
-        dict_coeff = nested_dict()
-        dict_coeff["proximal"]["rotation"]["label"] = 0.9
-        dict_coeff["proximal"]["rotation"]["sens"] = 0.9
-        dict_coeff["proximal"]["rotation"]["origin"] = 0.9
-        dict_coeff["proximal"]["rotation"]["direction"] = 0.5
-
-        dict_coeff["proximal"]["displacement"]["label"] = 0.9
-        dict_coeff["proximal"]["displacement"]["sens"] = 0.9
-        dict_coeff["proximal"]["displacement"]["origin"] = 0.5
-        dict_coeff["proximal"]["displacement"]["direction"] = 0.5
-
-        dict_coeff["distal"]["rotation"]["label"] = 0.9
-        dict_coeff["distal"]["rotation"]["sens"] = 0.9
-        dict_coeff["distal"]["rotation"]["origin"] = 0.9
-        dict_coeff["distal"]["rotation"]["direction"] = 0.5
-
-        dict_coeff["distal"]["displacement"]["label"] = 0.9
-        dict_coeff["distal"]["displacement"]["sens"] = 0.9
-        dict_coeff["distal"]["displacement"]["origin"] = 0.5
-        dict_coeff["distal"]["displacement"]["direction"] = 0.9
 
         risk = 1
         if self.is_mislabeled():
-            risk = risk * dict_coeff[type_segment][type_risk]["label"]
+            risk = risk * DEVIATION_COEFF[type_risk]["label"]
 
         if not self.is_isb_origin():
-            risk = risk * dict_coeff[type_segment][type_risk]["origin"]
+            risk = risk * DEVIATION_COEFF[type_risk]["origin"]
 
         if self.is_any_axis_wrong_sens():
-            risk = risk * dict_coeff[type_segment][type_risk]["sens"]
+            risk = risk * DEVIATION_COEFF[type_risk]["sens"]
 
         return risk
 

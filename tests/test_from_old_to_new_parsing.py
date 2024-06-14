@@ -30,15 +30,6 @@ to_pass_because_geometric = [
     ("Matsuki et al.", Segment.HUMERUS),
     ("Sugi et al.", Segment.HUMERUS),
 ]
-to_pass_because_thorax_is_imaging_system = [
-    # ("Kijima et al.", Segment.THORAX),  # thorax
-    # ("Kim et al.", Segment.THORAX),  # thorax
-    # ("Kozono et al.", Segment.THORAX),  # thorax
-    # ("Matsuki et al.", Segment.THORAX),  # thorax
-    # ("Nishinaka et al.", Segment.THORAX),  # thorax
-    # ("Sahara et al.", Segment.THORAX),  # thorax
-    # ("Sugi et al.", Segment.THORAX),  # thorax
-]  # thorax
 to_pass_because_there_is_mislabel = [
     ("Ludewig et al.", Segment.CLAVICLE),  # clavicle z^y_thorax* should be replaced by y_thorax*^z
     ("Oki et al.", Segment.CLAVICLE),  # clavicle z^y_thorax* should be replaced by y_thorax*^z
@@ -68,11 +59,7 @@ def test_new_parsing(author):
             print(segment_enum)
             tuple_test = (row.dataset_authors, segment_enum)
 
-            if (
-                tuple_test in to_pass_because_geometric
-                or tuple_test in to_pass_because_thorax_is_imaging_system
-                or tuple_test in to_pass_because_there_is_mislabel
-            ):
+            if tuple_test in to_pass_because_geometric or tuple_test in to_pass_because_there_is_mislabel:
                 count += 1
                 continue
 
