@@ -48,8 +48,8 @@ class Thorax:
     MID_IJ_T1 = R @ MID_IJ_T1
     MID_T10_PX = R @ MID_T10_PX
 
-    SPINAL_CANAL_AXIS = np.array([np.sin(np.pi / 3), np.cos(np.pi / 3), 0]) / np.linalg.norm(
-        [np.sin(np.pi / 3), np.cos(np.pi / 3), 0]
+    SPINAL_CANAL_AXIS = np.array([np.sin(np.pi / 6), np.cos(np.pi / 6), 0]) / np.linalg.norm(
+        [np.sin(np.pi / 6), np.cos(np.pi / 6), 0]
     )  # made up guess
 
 
@@ -89,7 +89,7 @@ class Scapula:
     AI = (R @ AI) * manual_scaling + manual_offset
     for i, gc in enumerate(GC_CONTOURS):
         GC_CONTOURS[i] = (R @ gc) * manual_scaling + manual_offset
-    IE = (R @ IE) * manual_scaling + manual_offset
+    IE = (R @ IE) * manual_scaling + manual_offset + np.array([4, 0, 0])  # make sure IE to SE is mainly inferosuperior
     SE = (R @ SE) * manual_scaling + manual_offset
     TS = (R @ TS) * manual_scaling + manual_offset
 
@@ -98,10 +98,13 @@ class Scapula:
     INFEROSUPERIOR_GLENOID_AXIS_TEMP = (SE - IE) / np.linalg.norm(SE - IE)
 
     vec = np.cross(POSTEROANTERIOR_GLENOID_AXIS, INFEROSUPERIOR_GLENOID_AXIS_TEMP)
-    GLENOID_NORMAL = vec / np.linalg.norm(vec)
+    MEDIOLATERAL_GLENOID_NORMAL = vec / np.linalg.norm(vec)
+    LATEROMEDIAL_GLENOID_NORMAL = -MEDIOLATERAL_GLENOID_NORMAL
 
-    vec = np.cross(GLENOID_NORMAL, POSTEROANTERIOR_GLENOID_AXIS)
-    INFEROSUPERIOR_GLENOID_AXIS = np.cross(GLENOID_NORMAL, POSTEROANTERIOR_GLENOID_AXIS) / np.linalg.norm(vec)
+    vec = np.cross(MEDIOLATERAL_GLENOID_NORMAL, POSTEROANTERIOR_GLENOID_AXIS)
+    INFEROSUPERIOR_GLENOID_AXIS = vec / np.linalg.norm(vec)
+
+    ANTEROPOSTERIOR_GLENOID_AXIS = -POSTEROANTERIOR_GLENOID_AXIS
 
 
 class Humerus:
@@ -139,7 +142,10 @@ def get_constant(landmark: Any, side: str) -> np.ndarray:
             AnatomicalLandmark.Scapula.ACROMIOCLAVICULAR_JOINT_CENTER: Scapula.AC,
             AnatomicalLandmark.Scapula.ANGULUS_INFERIOR: Scapula.AI,
             AnatomicalVector.Scapula.POSTEROANTERIOR_GLENOID_AXIS: Scapula.POSTEROANTERIOR_GLENOID_AXIS,
+            AnatomicalVector.Scapula.ANTEROPOSTERIOR_GLENOID_AXIS: Scapula.ANTEROPOSTERIOR_GLENOID_AXIS,
             AnatomicalVector.Scapula.INFEROSUPERIOR_GLENOID_AXIS: Scapula.INFEROSUPERIOR_GLENOID_AXIS,
+            AnatomicalVector.Scapula.MEDIOLATERAL_GLENOID_NORMAL: Scapula.MEDIOLATERAL_GLENOID_NORMAL,
+            AnatomicalVector.Scapula.LATEROMEDIAL_GLENOID_NORMAL: Scapula.LATEROMEDIAL_GLENOID_NORMAL,
             # AnatomicalLandmark.Scapula.GLENOID_CAVITY_CONTOURS: Scapula.GC_CONTOURS,
             AnatomicalLandmark.Scapula.INFERIOR_EDGE: Scapula.IE,
             AnatomicalLandmark.Scapula.SUPERIOR_EDGE: Scapula.SE,
@@ -172,6 +178,6 @@ def get_constant(landmark: Any, side: str) -> np.ndarray:
         raise ValueError(f"Side {side} is not a valid side. It should be 'left' or 'right'")
 
     if side == "left":
-        the_constant[-1] = -the_constant[-1]
+        the_constant[-1] *= -1
 
     return the_constant
