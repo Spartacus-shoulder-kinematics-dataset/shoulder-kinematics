@@ -48,8 +48,8 @@ class Thorax:
     MID_IJ_T1 = R @ MID_IJ_T1
     MID_T10_PX = R @ MID_T10_PX
 
-    SPINAL_CANAL_AXIS = np.array([np.sin(np.pi / 3), np.cos(np.pi / 3), 0]) / np.linalg.norm(
-        [np.sin(np.pi / 3), np.cos(np.pi / 3), 0]
+    SPINAL_CANAL_AXIS = np.array([np.sin(np.pi / 6), np.cos(np.pi / 6), 0]) / np.linalg.norm(
+        [np.sin(np.pi / 6), np.cos(np.pi / 6), 0]
     )  # made up guess
 
 
