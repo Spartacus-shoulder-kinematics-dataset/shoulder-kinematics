@@ -1,9 +1,9 @@
 import numpy as np
 
+from .deviation_constant import DEVIATION_COEFF
 from .enums_biomech import CartesianAxis, BiomechDirection, AnatomicalLandmark, Segment
 from .frame_reader import Frame
 from .utils import compute_rotation_matrix_from_axes
-from .deviation_constant import DEVIATION_COEFF
 
 
 class BiomechCoordinateSystem:
@@ -140,29 +140,29 @@ class BiomechCoordinateSystem:
     def is_an_isb_axe(self) -> bool:
         raise NotImplementedError
 
-    # def is_origin_on_an_isb_axis(self) -> bool:
-    #     """
-    #     Return True if the origin is on an ISB axis, False otherwise
-    #
-    #     NOTE
-    #     ----
-    #     The true definition would be, the origin is part of the process to build an ISB axis.
-    #
-    #     """
-    #     if self.is_isb_origin():
-    #         return True
-    #     # todo: may check according to frame object
-    #     ON_ISB_AXES = {
-    #         Segment.THORAX: [AnatomicalLandmark.Thorax.C7, AnatomicalLandmark.Thorax.T8, AnatomicalLandmark.Thorax.PX],
-    #         Segment.CLAVICLE: [
-    #             AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_JOINT_CENTER,
-    #             AnatomicalLandmark.Scapula.ACROMIOCLAVICULAR_JOINT_CENTER,
-    #         ],
-    #         Segment.SCAPULA: [AnatomicalLandmark.Scapula.TRIGNONUM_SPINAE, AnatomicalLandmark.Scapula.ANGULUS_INFERIOR],
-    #         Segment.HUMERUS: [AnatomicalLandmark.Humerus.MIDPOINT_EPICONDYLES],
-    #     }
-    #
-    #     return self.origin in ON_ISB_AXES.get(self.segment, [])
+    def is_origin_on_an_isb_axis(self) -> bool:
+        """
+        Return True if the origin is on an ISB axis, False otherwise
+
+        NOTE
+        ----
+        The true definition would be, the origin is part of the process to build an ISB axis.
+
+        """
+        if self.is_isb_origin():
+            return True
+        # todo: may check according to frame object
+        ON_ISB_AXES = {
+            Segment.THORAX: [AnatomicalLandmark.Thorax.C7, AnatomicalLandmark.Thorax.T8, AnatomicalLandmark.Thorax.PX],
+            Segment.CLAVICLE: [
+                AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_JOINT_CENTER,
+                AnatomicalLandmark.Scapula.ACROMIOCLAVICULAR_JOINT_CENTER,
+            ],
+            Segment.SCAPULA: [AnatomicalLandmark.Scapula.TRIGNONUM_SPINAE, AnatomicalLandmark.Scapula.ANGULUS_INFERIOR],
+            Segment.HUMERUS: [AnatomicalLandmark.Humerus.MIDPOINT_EPICONDYLES],
+        }
+
+        return self.origin in ON_ISB_AXES.get(self.segment, [])
 
     def is_isb(self) -> bool:
         return self.frame.is_isb if self.frame is not None else False

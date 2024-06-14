@@ -101,6 +101,8 @@ class Spartacus:
                 continue
 
             if rotation_validity:
+                # row_data.quantify_segment_deviation()  # todo
+                # row_data.quantify_segment_risk()  # todo
                 row_data.set_rotation_correction_callback()
 
             if not row_data.usable_rotation_data:
