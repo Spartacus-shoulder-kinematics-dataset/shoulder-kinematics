@@ -38,8 +38,8 @@ class SoloVector(VectorBase):
         return get_constant(self.direction, self.side)
 
     @property
-    def landmarks(self) -> None:
-        return None
+    def landmarks(self) -> tuple:
+        return ()
 
 
 class StartEndVector(VectorBase):
@@ -196,7 +196,7 @@ class Frame:
             if x_axis == "y^z":
                 return cls.from_z_crossed_twice_build_y(
                     x_axis=parse_axis(y_axis, cross_product_side="second", arm_side=side),
-                    z_axis=parse_axis(z_axis),
+                    z_axis=parse_axis(z_axis, arm_side=side),
                     origin=AnatomicalLandmark.from_string(origin),
                     segment=segment,
                 )
@@ -204,7 +204,7 @@ class Frame:
             if y_axis == "z^x":
                 return cls.from_z_crossed_twice_build_x(
                     y_axis=parse_axis(x_axis, cross_product_side="first", arm_side=side),
-                    z_axis=parse_axis(z_axis),
+                    z_axis=parse_axis(z_axis, arm_side=side),
                     origin=AnatomicalLandmark.from_string(origin),
                     segment=segment,
                 )
@@ -353,8 +353,6 @@ def parse_axis(input_str, cross_product_side="all", arm_side=None) -> VectorBase
     arm_side: str
         The side of the arm. Can be "right" arm or "left" arl
     """
-    if "vec" not in input_str:
-        return SoloVector(AnatomicalLandmark.from_string(input_str), side=arm_side)
 
     times_crossed = input_str.count("^")
 
@@ -392,10 +390,17 @@ def parse_crossed_vector(input: str, cross_product_side: str, arm_side: str) -> 
         raise ValueError(f"Invalid side: Expected 'first', 'second' or 'all' but got {arm_side}")
 
 
-def parse_vector(input: str, arm_side: str) -> StartEndVector:
+def parse_vector(input: str, arm_side: str) -> StartEndVector | SoloVector:
     """
     This function parses the input string of shape "vec(XXX>YYY)" and returns a Vector object
     """
+    has_parenthesis = input.startswith("(") and input.endswith(")")
+
+    if "vec" not in input and not has_parenthesis:
+        return SoloVector(AnatomicalLandmark.from_string(input), side=arm_side)
+    if has_parenthesis:
+        return SoloVector(AnatomicalLandmark.from_string(input[1:-1]), side=arm_side)
+
     start, end = parse_start_end_vector(input)
     return StartEndVector.from_strings(start=start, end=end, arm_side=arm_side)
 
