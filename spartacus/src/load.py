@@ -89,10 +89,14 @@ class Spartacus:
 
             if not row_data.check_all_segments_validity(print_warnings=print_warnings):
                 continue
+            row_data.set_segments()
+
             if not row_data.check_joint_validity(print_warnings=print_warnings):
                 continue
 
-            row_data.set_segments()
+            if not row_data.check_thoracohumeral_angle(print_warnings=print_warnings):
+                continue
+
             rotation_validity, translation_validity = row_data.check_segments_correction_validity(
                 print_warnings=print_warnings
             )
@@ -101,7 +105,8 @@ class Spartacus:
                 continue
 
             if rotation_validity:
-                # row_data.quantify_segment_deviation()  # todo
+                row_data.compute_deviations()
+
                 # row_data.quantify_segment_risk()  # todo
                 row_data.set_rotation_correction_callback()
 
@@ -158,6 +163,7 @@ class Spartacus:
             row_data.check_joint_validity(print_warnings=False)
             row_data.set_segments()
             row_data.check_segments_correction_validity(print_warnings=False)
+            row_data.check_thoracohumeral_angle(print_warnings=False)
             row_data.set_rotation_correction_callback()
 
             row_data.import_data()
