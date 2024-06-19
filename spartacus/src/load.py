@@ -104,6 +104,8 @@ class Spartacus:
                 print("WARNING : No usable data for this row, in both rotation and translation...")
                 continue
 
+            row_data.compute_deviations()
+
             if rotation_validity:
                 row_data.compute_deviations()
 

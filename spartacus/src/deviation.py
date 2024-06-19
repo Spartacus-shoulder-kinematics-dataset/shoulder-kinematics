@@ -87,6 +87,12 @@ class Deviation:
 
         return bsys.frame.has_isb_landmarks and bsys.is_isb_oriented  # not sure about the is_isb_oriented
 
+    def axes_built_with_isb_landmarks(self, bsys: BiomechCoordinateSystem) -> float:
+        if Deviation.are_axes_built_with_isb_landmarks(bsys):
+            return 1
+
+        return DEVIATION_COEFF[self.mode]["direction"]
+
     @staticmethod
     def is_origin_isb(bsys: BiomechCoordinateSystem) -> bool:
         """
@@ -174,7 +180,7 @@ class SegmentDeviation(Deviation):
 
     @property
     def d3(self) -> float:
-        return self.are_axes_built_with_isb_landmarks(self.bsys)
+        return self.axes_built_with_isb_landmarks(self.bsys)
 
     @property
     def d4(self) -> float:
@@ -191,7 +197,7 @@ class SegmentDeviation(Deviation):
         """
         d1 = self.mislabeled_isb_axes(self.bsys)
         d2 = self.wrong_sign_isb_axes(self.bsys)
-        d3 = self.are_axes_built_with_isb_landmarks(self.bsys)
+        d3 = self.axes_built_with_isb_landmarks(self.bsys)
         d4 = self.origin_isb(self.bsys)
 
         return d1 * d2 * d3 * d4
