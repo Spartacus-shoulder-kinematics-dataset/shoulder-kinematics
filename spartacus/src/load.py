@@ -160,13 +160,14 @@ class Spartacus:
             row_data = RowData(row)
 
             row_data.check_all_segments_validity(print_warnings=False)
-            row_data.check_joint_validity(print_warnings=False)
             row_data.set_segments()
+            row_data.check_joint_validity(print_warnings=False)
             row_data.check_segments_correction_validity(print_warnings=False)
             row_data.check_thoracohumeral_angle(print_warnings=False)
             row_data.set_rotation_correction_callback()
 
             row_data.import_data()
+            row_data.compute_deviations()
 
             df_angle_series = row_data.to_angle_series_dataframe(correction=False)
             corrected_angle_series = row_data.to_angle_series_dataframe(correction=True)

@@ -277,8 +277,8 @@ class RowData:
                 euler_sequence=EulerSequence.from_string(self.row.euler_sequence),  # throw a None
                 translation_origin=AnatomicalLandmark.from_string(self.row.origin_displacement),
                 translation_frame=FrameType.from_string(self.row.displacement_cs),
-                parent_segment=self.parent_segment,
-                child_segment=self.child_segment,
+                parent_segment=self.parent_biomech_sys,
+                child_segment=self.child_biomech_sys,
             )
 
         elif no_translation:  # Only rotation is provided
@@ -287,8 +287,8 @@ class RowData:
                 euler_sequence=EulerSequence.from_string(self.row.euler_sequence),
                 translation_origin=None,
                 translation_frame=None,
-                parent_segment=self.parent_segment,
-                child_segment=self.child_segment,
+                parent_segment=self.parent_biomech_sys,
+                child_segment=self.child_biomech_sys,
             )
 
         else:  # translation and rotation are both provided
@@ -297,8 +297,8 @@ class RowData:
                 euler_sequence=EulerSequence.from_string(self.row.euler_sequence),
                 translation_origin=AnatomicalLandmark.from_string(self.row.origin_displacement),
                 translation_frame=FrameType.from_string(self.row.displacement_cs),
-                parent_segment=self.parent_segment,
-                child_segment=self.child_segment,
+                parent_segment=self.parent_biomech_sys,
+                child_segment=self.child_biomech_sys,
             )
 
     def set_segments(self):
@@ -797,34 +797,31 @@ class RowData:
         #     rotation_matrix=self.correct_isb_rotation_matrix_callback(rot1, rot2, rot3),
         #     euler_sequence=self.joint.isb_euler_sequence(),
 
-    def compute_deviations(self) -> float:
+    def compute_deviations(self):
         """
         Compute the deviation of the joint from the ISB recommendation.
-
-        Parameters
-        ----------
-        mode : str
-            The mode of the deviation to compute. Either "rotation" or "translation".
         """
-        rotation_parent_deviation = SegmentDeviation(mode="rotation", bsys=self.parent_biomech_sys)
-        rotation_child_deviation = SegmentDeviation(mode="rotation", bsys=self.child_biomech_sys)
-        rotation_joint_deviation = JointDeviation(
-            mode="rotation", joint=self.joint, thoracohumeral_angle=self.thoracohumeral_angle
-        )
+        if self.has_rotation_data:
+            rotation_parent_deviation = SegmentDeviation(mode="rotation", bsys=self.parent_biomech_sys)
+            rotation_child_deviation = SegmentDeviation(mode="rotation", bsys=self.child_biomech_sys)
+            rotation_joint_deviation = JointDeviation(
+                mode="rotation", joint=self.joint, thoracohumeral_angle=self.thoracohumeral_angle
+            )
 
-        self.rotation_deviation = [rotation_parent_deviation, rotation_child_deviation, rotation_joint_deviation]
+            self.rotation_deviation = [rotation_parent_deviation, rotation_child_deviation, rotation_joint_deviation]
 
-        translation_parent_deviation = SegmentDeviation(mode="translation", bsys=self.parent_biomech_sys)
-        translation_child_deviation = SegmentDeviation(mode="translation", bsys=self.child_biomech_sys)
-        translation_joint_deviation = JointDeviation(
-            mode="translation", joint=self.joint, thoracohumeral_angle=self.thoracohumeral_angle
-        )
+        if self.has_translation_data:
+            translation_parent_deviation = SegmentDeviation(mode="translation", bsys=self.parent_biomech_sys)
+            translation_child_deviation = SegmentDeviation(mode="translation", bsys=self.child_biomech_sys)
+            translation_joint_deviation = JointDeviation(
+                mode="translation", joint=self.joint, thoracohumeral_angle=self.thoracohumeral_angle
+            )
 
-        self.translation_deviation = [
-            translation_parent_deviation,
-            translation_child_deviation,
-            translation_joint_deviation,
-        ]
+            self.translation_deviation = [
+                translation_parent_deviation,
+                translation_child_deviation,
+                translation_joint_deviation,
+            ]
 
     # def is_joint_euler_angle_ISB_with_adaptation_from_segment(self):
     #     """
@@ -925,10 +922,20 @@ class RowData:
                 "shoulder_id",  # int
                 "in_vivo",  # bool
                 "xp_mean",  # string
+                "parent_d1",  # float
+                "parent_d2",  # float
+                "parent_d3",  # float
+                "parent_d4",  # float
+                "child_d1",  # float
+                "child_d2",  # float
+                "child_d3",  # float
+                "child_d4",  # float
+                "d5",  # float
+                "d6",  # float
+                "d7",  # float
+                "total_deviation",  # float
             ],
         )
-
-        # confidence_total = Deviation.confidence_total(row_data=self, type_risk="rotation")
 
         value_dof = np.zeros((self.data.shape[0], 3))
 
@@ -956,11 +963,22 @@ class RowData:
         angle_series_dataframe["joint"] = self.row.joint
         angle_series_dataframe["humeral_motion"] = self.row.humeral_motion
         angle_series_dataframe["humerothoracic_angle"] = self.data["humerothoracic_angle"]
-        angle_series_dataframe["unit"] = "rad"
-        # angle_series_dataframe["confidence"] = confidence_total
         angle_series_dataframe["shoulder_id"] = self.row.shoulder_id
         angle_series_dataframe["in_vivo"] = self.row.in_vivo
         angle_series_dataframe["xp_mean"] = self.row.experimental_mean
+
+        angle_series_dataframe["unit"] = "rad"
+        angle_series_dataframe["parent_d1"] = self.rotation_deviation[0].d1
+        angle_series_dataframe["parent_d2"] = self.rotation_deviation[0].d2
+        angle_series_dataframe["parent_d3"] = self.rotation_deviation[0].d3
+        angle_series_dataframe["parent_d4"] = self.rotation_deviation[0].d4
+        angle_series_dataframe["child_d1"] = self.rotation_deviation[1].d1
+        angle_series_dataframe["child_d2"] = self.rotation_deviation[1].d2
+        angle_series_dataframe["child_d3"] = self.rotation_deviation[1].d3
+        angle_series_dataframe["child_d4"] = self.rotation_deviation[1].d4
+        angle_series_dataframe["d5"] = self.rotation_deviation[2].d5
+        angle_series_dataframe["d6"] = self.rotation_deviation[2].d6
+        angle_series_dataframe["d7"] = self.rotation_deviation[2].d7
 
         if correction:
             (legend_dof1, legend_dof2, legend_dof3) = self.joint.isb_rotation_biomechanical_dof
