@@ -907,7 +907,20 @@ class RowData:
         pandas.DataFrame
             The dataframe with the angles in degrees
         """
-
+        deviation_cols = [
+            "parent_d1",  # float
+            "parent_d2",  # float
+            "parent_d3",  # float
+            "parent_d4",  # float
+            "child_d1",  # float
+            "child_d2",  # float
+            "child_d3",  # float
+            "child_d4",  # float
+            "d5",  # float
+            "d6",  # float
+            "d7",  # float
+            "total_deviation",  # float
+        ]
         angle_series_dataframe = pd.DataFrame(
             columns=[
                 "article",  # string
@@ -922,19 +935,8 @@ class RowData:
                 "shoulder_id",  # int
                 "in_vivo",  # bool
                 "xp_mean",  # string
-                "parent_d1",  # float
-                "parent_d2",  # float
-                "parent_d3",  # float
-                "parent_d4",  # float
-                "child_d1",  # float
-                "child_d2",  # float
-                "child_d3",  # float
-                "child_d4",  # float
-                "d5",  # float
-                "d6",  # float
-                "d7",  # float
-                "total_deviation",  # float
-            ],
+            ]
+            + deviation_cols,
         )
 
         value_dof = np.zeros((self.data.shape[0], 3))
@@ -1011,19 +1013,8 @@ class RowData:
                 "shoulder_id",
                 "in_vivo",
                 "xp_mean",
-                "parent_d1",
-                "parent_d2",
-                "parent_d3",
-                "parent_d4",
-                "child_d1",
-                "child_d2",
-                "child_d3",
-                "child_d4",
-                "d5",
-                "d6",
-                "d7",
-                "total_deviation",
-            ],
+            ]
+            + deviation_cols,
             value_vars=["value_dof1", "value_dof2", "value_dof3"],
             var_name="degree_of_freedom",
             value_name="value",
