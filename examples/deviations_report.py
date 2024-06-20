@@ -1,4 +1,5 @@
 import pandas as pd
+import plotly.express as px
 
 from spartacus import DataFolder, load_subdataset
 
@@ -39,6 +40,17 @@ for folder in DataFolder:
     except:
         print("could not make it yet for ", folder)
         continue
+
+for joint in deviation_df["joint"].unique():
+    subdf = deviation_df[deviation_df["joint"] == joint]
+    fig = px.imshow(
+        subdf[deviation_cols].values,
+        labels=dict(x=f"Deviations for {joint} joint", y="Authors", color="Value"),
+        x=deviation_cols,
+        y=subdf["dataset_authors"],
+    )
+    fig.update_xaxes(side="top")
+    fig.show()
 
 
 deviation_df.to_csv("deviation_report.csv", index=False)
