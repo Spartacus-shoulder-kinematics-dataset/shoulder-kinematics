@@ -62,7 +62,6 @@ class StartEndVector(VectorBase):
         return self.start, self.end
 
     def compute_default_vector(self) -> np.ndarray:
-        print(self.start, self.end, self.side)
         vector = get_constant(self.end, self.side) - get_constant(self.start, self.side)
         return vector / np.linalg.norm(vector)
 
@@ -290,38 +289,59 @@ class Frame:
     @property
     def postero_anterior_axis(self) -> VectorBase:
         for axis in self.axes:
-            if axis.principal_direction() in (CartesianAxis.plusX, CartesianAxis.minusX):
+            if axis.biomech_direction() in (
+                BiomechDirection.PlusPosteroAnterior,
+                BiomechDirection.MinusPosteroAnterior,
+            ):
                 return axis
 
     @property
     def infero_superior_axis(self) -> VectorBase:
         for axis in self.axes:
-            if axis.principal_direction() in (CartesianAxis.plusY, CartesianAxis.minusY):
+            if axis.biomech_direction() in (BiomechDirection.PlusInferoSuperior, BiomechDirection.MinusInferoSuperior):
                 return axis
 
     @property
     def medio_lateral_axis(self) -> VectorBase:
         for axis in self.axes:
-            if axis.principal_direction() in (CartesianAxis.plusZ, CartesianAxis.minusZ):
+            if axis.biomech_direction() in (BiomechDirection.PlusMedioLateral, BiomechDirection.MinusMedioLateral):
                 return axis
 
     @property
-    def postero_anterior_local_axis(self) -> CartesianAxis:
-        for axis in self.axes:
-            if axis.principal_direction() in (CartesianAxis.plusX, CartesianAxis.minusX):
-                return axis.principal_direction()
+    def get_default_rotation_matrix(self) -> np.ndarray:
+        """Returns the default rotation matrix of the frame,
+        R_isb_from_local = [ x_local_in_isb, y_local_in_isb, z_local_in_isb]"""
+        return np.hstack(
+            (
+                self.x_axis.compute_default_vector()[:, np.newaxis],
+                self.y_axis.compute_default_vector()[:, np.newaxis],
+                self.z_axis.compute_default_vector()[:, np.newaxis],
+            )
+        )
 
     @property
-    def infero_superior_local_axis(self) -> CartesianAxis:
-        for axis in self.axes:
-            if axis.principal_direction() in (CartesianAxis.plusY, CartesianAxis.minusY):
-                return axis.principal_direction()
+    def postero_anterior_local_value(self) -> np.ndarray:
+        return self.get_default_rotation_matrix[0, :]
+
+    @property
+    def infero_superior_local_value(self) -> np.ndarray:
+        return self.get_default_rotation_matrix[1, :]
+
+    @property
+    def medio_lateral_local_value(self) -> np.ndarray:
+        return self.get_default_rotation_matrix[2, :]
 
     @property
     def medio_lateral_local_axis(self) -> CartesianAxis:
-        for axis in self.axes:
-            if axis.principal_direction() in (CartesianAxis.plusZ, CartesianAxis.minusZ):
-                return axis.principal_direction()
+        return CartesianAxis.principal_axis(self.medio_lateral_local_value)
+
+    @property
+    def infero_superior_local_axis(self) -> CartesianAxis:
+        return CartesianAxis.principal_axis(self.infero_superior_local_value)
+
+    @property
+    def postero_anterior_local_axis(self) -> CartesianAxis:
+        return CartesianAxis.principal_axis(self.postero_anterior_local_value)
 
     @property
     def is_left_side(self) -> bool:
