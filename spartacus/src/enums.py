@@ -77,7 +77,7 @@ class DataFolder(Enum):
             self.FUNG_2001: "Fung et al.",
             self.GUTIERREZ_DELGADO_2017: "Gutierrez Delgado et al.",
             self.KOLZ_2020: "Henninger et al.",
-            self.MCCLURE_2001: "McClure et al.",
+            self.MCCLURE_2001: "Karduna et al.",
             self.KIJIMA_2015: "Kijima et al.",
             self.KIM_2017: "Kim et al.",
             self.KONOZO_2017: "Kozono et al.",

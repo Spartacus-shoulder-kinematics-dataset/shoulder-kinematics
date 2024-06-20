@@ -92,5 +92,15 @@ def test_deviation_henninger():
 
     subdf = df[df["joint"] == "glenohumeral"]
     np.testing.assert_almost_equal(
-        subdf[deviation_cols].values[0, :], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.])
+        subdf[deviation_cols].values[0, :], [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    )
+
+
+def test_deviation_karduna():
+    data = load_subdataset(name=DataFolder.MCCLURE_2001)
+    df = data.corrected_confident_data_values
+
+    subdf = df[df["joint"] == "scapulothoracic"]
+    np.testing.assert_almost_equal(
+        subdf[deviation_cols].values[0, :], [0.9, 1.0, 0.5, 0.9, 0.9, 1.0, 0.5, 0.9, 1.0, 1.0, 1.0, 0.164025]
     )
