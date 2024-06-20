@@ -1,6 +1,5 @@
 import numpy as np
 
-from .deviation_constant import DEVIATION_COEFF
 from .enums_biomech import CartesianAxis, BiomechDirection, AnatomicalLandmark, Segment
 from .frame_reader import Frame
 from .utils import compute_rotation_matrix_from_axes
@@ -93,9 +92,9 @@ class BiomechCoordinateSystem:
     def from_frame(cls, frame: Frame):
         return cls(
             segment=frame.segment,
-            antero_posterior_axis=frame.x_axis.principal_direction(),
-            infero_superior_axis=frame.y_axis.principal_direction(),
-            medio_lateral_axis=frame.z_axis.principal_direction(),
+            antero_posterior_axis=frame.postero_anterior_local_axis,
+            infero_superior_axis=frame.infero_superior_local_axis,
+            medio_lateral_axis=frame.medio_lateral_local_axis,
             origin=frame.origin,
             frame=frame,
         )
