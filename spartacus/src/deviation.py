@@ -36,7 +36,7 @@ class Deviation:
             bsys.medio_lateral_axis is CartesianAxis.minusZ
         )
 
-        return not (condition_1 and condition_2 and condition_3)
+        return condition_1 and condition_2 and condition_3
 
     def mislabeled_isb_axes(self, bsys: BiomechCoordinateSystem) -> float:
         if Deviation.are_axes_isb_labeled(bsys):
@@ -53,8 +53,7 @@ class Deviation:
         ----------
         bsys: BiomechCoordinateSystem
             The biomechanical coordinate system to check.
-        """
-        """
+
         Return True if any of the axis is in the wrong sens, False otherwise
         The wrong sens is defined as the axis pointing in the positive direction (which here correspond to forward, to the right and up).
         """
