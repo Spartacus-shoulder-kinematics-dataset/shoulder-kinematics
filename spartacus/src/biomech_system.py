@@ -109,10 +109,10 @@ class BiomechCoordinateSystem:
     @property
     def is_isb_origin(self) -> bool:
         segment_to_origin_isb = {
-            Segment.SCAPULA: AnatomicalLandmark.Scapula.origin_isb,
-            Segment.THORAX: AnatomicalLandmark.Thorax.origin_isb,
-            Segment.CLAVICLE: AnatomicalLandmark.Clavicle.origin_isb,
-            Segment.HUMERUS: AnatomicalLandmark.Humerus.origin_isb,
+            Segment.SCAPULA: AnatomicalLandmark.Scapula.origin_isb(),
+            Segment.THORAX: AnatomicalLandmark.Thorax.origin_isb(),
+            Segment.CLAVICLE: AnatomicalLandmark.Clavicle.origin_isb(),
+            Segment.HUMERUS: AnatomicalLandmark.Humerus.origin_isb(),
         }
 
         return segment_to_origin_isb.get(self.segment) == self.origin
