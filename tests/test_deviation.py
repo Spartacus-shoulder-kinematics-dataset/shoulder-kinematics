@@ -33,40 +33,64 @@ def test_deviation_begon():
     )
 
     subdf = df[df["joint"] == "glenohumeral"]
-    print(subdf[deviation_cols].values[0, :])
     np.testing.assert_almost_equal(
         subdf[deviation_cols].values[0, :], [0.9, 1.0, 0.5, 0.9, 0.9, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 0.18225]
     )
 
     subdf = df[df["joint"] == "scapulothoracic"]
-    print(subdf[deviation_cols].values[0, :])
     np.testing.assert_almost_equal(
         subdf[deviation_cols].values[0, :], [0.9, 1.0, 0.5, 1, 0.9, 1.0, 0.5, 0.9, 1.0, 1.0, 1.0, 0.18225]
     )
 
 
 def test_deviation_bourne():
-    data = load_subdataset(name=DataFolder.BEGON_2014)
+    data = load_subdataset(name=DataFolder.BOURNE_2003)
     df = data.corrected_confident_data_values
 
-    subdf = df[df["joint"] == "sternoclavicular"]
+    subdf = df[df["joint"] == "scapulothoracic"]
     np.testing.assert_almost_equal(
-        subdf[deviation_cols].values[0, :], [0.9, 1.0, 0.5, 1, 0.9, 1.0, 0.5, 1, 1.0, 1.0, 1.0, 0.2025]
+        subdf[deviation_cols].values[0, :], [0.9, 1.0, 0.5, 1.0, 0.9, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 0.2025]
     )
 
-    subdf = df[df["joint"] == "acromioclavicular"]
+
+def test_deviation_chu():
+    data = load_subdataset(name=DataFolder.CHU_2012)
+    df = data.corrected_confident_data_values
+
+    subdf = df[df["joint"] == "scapulothoracic"]
     np.testing.assert_almost_equal(
-        subdf[deviation_cols].values[0, :], [0.9, 1.0, 0.5, 1.0, 0.9, 1.0, 0.5, 0.9, 1.0, 1.0, 1.0, 0.18225]
+        subdf[deviation_cols].values[0, :], [1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5]
+    )
+
+
+def test_deviation_fung():
+    # not properly labeled yet (clavicle)
+    print("Test not implemented yet")
+    # data = load_subdataset(name=DataFolder.FUNG_2001)
+    #
+    # df = data.corrected_confident_data_values
+    #
+    # subdf = df[df["joint"] == "scapulothoracic"]
+    # np.testing.assert_almost_equal(
+    #     subdf[deviation_cols].values[0, :], [1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5]
+    # )
+
+    # subdf = df[df["joint"] == "sternoclavicular"]
+    # np.testing.assert_almost_equal(
+    #     subdf[deviation_cols].values[0, :], [1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5]
+    # )
+
+
+def test_deviation_henninger():
+    data = load_subdataset(name=DataFolder.KOLZ_2020)
+    df = data.corrected_confident_data_values
+
+    subdf = df[df["joint"] == "scapulothoracic"]
+    np.testing.assert_almost_equal(
+        subdf[deviation_cols].values[0, :], [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
     )
 
     subdf = df[df["joint"] == "glenohumeral"]
-    print(subdf[deviation_cols].values[0, :])
     np.testing.assert_almost_equal(
-        subdf[deviation_cols].values[0, :], [0.9, 1.0, 0.5, 0.9, 0.9, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 0.18225]
-    )
-
-    subdf = df[df["joint"] == "scapulothoracic"]
-    print(subdf[deviation_cols].values[0, :])
-    np.testing.assert_almost_equal(
-        subdf[deviation_cols].values[0, :], [0.9, 1.0, 0.5, 1, 0.9, 1.0, 0.5, 0.9, 1.0, 1.0, 1.0, 0.18225]
+        subdf[deviation_cols].values[0, :], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.])
     )
