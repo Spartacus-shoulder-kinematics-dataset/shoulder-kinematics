@@ -980,19 +980,8 @@ class RowData:
         angle_series_dataframe["d6"] = self.rotation_deviation[2].d6
         angle_series_dataframe["d7"] = self.rotation_deviation[2].d7
         angle_series_dataframe["total_deviation"] = (
-            self.rotation_deviation[0].d1
-            * self.rotation_deviation[0].d2
-            * self.rotation_deviation[0].d3
-            * self.rotation_deviation[0].d4
-            * self.rotation_deviation[1].d1
-            * self.rotation_deviation[1].d2
-            * self.rotation_deviation[1].d3
-            * self.rotation_deviation[1].d4
-            * self.rotation_deviation[2].d5
-            * self.rotation_deviation[2].d6
-            * self.rotation_deviation[2].d7
+            self.rotation_deviation[0].total() * self.rotation_deviation[1].total() * self.rotation_deviation[2].total()
         )
-        print("TOTAL", angle_series_dataframe["total_deviation"])
 
         if correction:
             (legend_dof1, legend_dof2, legend_dof3) = self.joint.isb_rotation_biomechanical_dof
