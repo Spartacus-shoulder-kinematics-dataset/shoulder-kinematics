@@ -20,7 +20,7 @@ from .corrections.angle_conversion_callbacks import (
     to_left_handed_frame,
 )
 from .corrections.kolz_matrices import get_kolz_rotation_matrix
-from .deviation import Deviation
+from .deviation import SegmentDeviation, JointDeviation
 from .enums_biomech import (
     Segment,
     FrameType,
@@ -33,6 +33,7 @@ from .enums_biomech import (
 from .frame_reader import Frame
 from .joint import Joint
 from .load_data import load_euler_csv
+from .thoracohumeral_angle import ThoracohumeralAngle
 from .utils import (
     get_segment_columns,
     get_segment_columns_direction,
@@ -64,6 +65,7 @@ class RowData:
 
         self.joint = None
         self.right_side = True
+        self.thoracohumeral_angle = None
 
         self.parent_biomech_sys = None
         self.parent_corrections = None
@@ -73,6 +75,9 @@ class RowData:
 
         self.has_rotation_data = None
         self.has_translation_data = None
+
+        self.rotation_deviation = None
+        self.translation_deviation = None
 
         self.parent_segment_usable_for_rotation_data = None
         self.child_segment_usable_for_rotation_data = None
@@ -171,6 +176,42 @@ class RowData:
 
         return output
 
+    def check_thoracohumeral_angle(self, print_warnings: bool = False):
+        """
+        Check if the thoracohumeral angle is well-defined in the database and set the attributes
+
+        Returns
+        -------
+        bool
+            True if the thoracohumeral angle is valid, False otherwise.
+        """
+        output = True
+
+        if self.row.thoracohumeral_sequence == "nan":
+            output = False
+            if print_warnings:
+                print(f"Joint {self.row.joint} has no thoracohumeral angle defined, " f"it should not be empty !!!")
+            return output
+
+        if self.row.thoracohumeral_sequence == "nan" and self.row.thoracohumeral_angle == "nan":
+            output = False
+            if print_warnings:
+                print(
+                    f"Joint {self.row.joint} has no thoracohumeral sequence defined, "
+                    f" and no thoracohumeral angle defined, "
+                    f"it should not be empty !!!"
+                )
+            return output
+
+        self.thoracohumeral_angle = ThoracohumeralAngle(
+            euler_sequence=EulerSequence.from_string(self.row.thoracohumeral_sequence),
+            angle=self.row.thoracohumeral_angle,
+            parent_segment=self.parent_biomech_sys,
+            child_segment=self.child_biomech_sys,
+        )
+
+        return output
+
     def check_joint_validity(self, print_warnings: bool = False) -> bool:
         """
         Check if the joint defined in the dataset is valid.
@@ -205,31 +246,7 @@ class RowData:
                 )
             return output
 
-        if no_euler_sequence:  # Only translation is provided
-            self.joint = Joint(
-                joint_type=JointType.from_string(self.row.joint),
-                euler_sequence=EulerSequence.from_string(self.row.euler_sequence),  # throw a None
-                translation_origin=AnatomicalLandmark.from_string(self.row.origin_displacement),
-                # translation_frame=FrameType.from_string(self.row.displacement_cs, self.row.joint),
-                translation_frame=FrameType.from_string(self.row.displacement_cs),
-            )
-
-        elif no_translation:  # Only rotation is provided
-            self.joint = Joint(
-                joint_type=JointType.from_string(self.row.joint),
-                euler_sequence=EulerSequence.from_string(self.row.euler_sequence),
-                translation_origin=None,
-                translation_frame=None,
-            )
-
-        else:  # translation and rotation are both provided
-            self.joint = Joint(
-                joint_type=JointType.from_string(self.row.joint),
-                euler_sequence=EulerSequence.from_string(self.row.euler_sequence),
-                translation_origin=AnatomicalLandmark.from_string(self.row.origin_displacement),
-                # translation_frame=FrameType.from_string(self.row.displacement_cs, self.row.joint),
-                translation_frame=FrameType.from_string(self.row.displacement_cs),
-            )
+        self.set_joint(no_euler_sequence=no_euler_sequence, no_translation=no_translation)
 
         if not check_parent_child_joint(self.joint, row=self.row, print_warnings=print_warnings):
             output = False
@@ -252,6 +269,37 @@ class RowData:
                 )
 
         return output
+
+    def set_joint(self, no_euler_sequence: bool = None, no_translation: bool = None):
+        if no_euler_sequence:  # Only translation is provided
+            self.joint = Joint(
+                joint_type=JointType.from_string(self.row.joint),
+                euler_sequence=EulerSequence.from_string(self.row.euler_sequence),  # throw a None
+                translation_origin=AnatomicalLandmark.from_string(self.row.origin_displacement),
+                translation_frame=FrameType.from_string(self.row.displacement_cs),
+                parent_segment=self.parent_biomech_sys,
+                child_segment=self.child_biomech_sys,
+            )
+
+        elif no_translation:  # Only rotation is provided
+            self.joint = Joint(
+                joint_type=JointType.from_string(self.row.joint),
+                euler_sequence=EulerSequence.from_string(self.row.euler_sequence),
+                translation_origin=None,
+                translation_frame=None,
+                parent_segment=self.parent_biomech_sys,
+                child_segment=self.child_biomech_sys,
+            )
+
+        else:  # translation and rotation are both provided
+            self.joint = Joint(
+                joint_type=JointType.from_string(self.row.joint),
+                euler_sequence=EulerSequence.from_string(self.row.euler_sequence),
+                translation_origin=AnatomicalLandmark.from_string(self.row.origin_displacement),
+                translation_frame=FrameType.from_string(self.row.displacement_cs),
+                parent_segment=self.parent_biomech_sys,
+                child_segment=self.child_biomech_sys,
+            )
 
     def set_segments(self):
         """
@@ -492,7 +540,7 @@ class RowData:
         # if both segments are isb oriented, but origin is on an isb axis, we expect no correction be filled
         # so that we can consider rotation data as isb
         if (
-            self.parent_biomech_sys.is_isb_oriented()
+            self.parent_biomech_sys.is_isb_oriented
             and self.parent_biomech_sys.is_origin_on_an_isb_axis()
             and not parent_is_thorax_global
         ):
@@ -500,13 +548,13 @@ class RowData:
             self.parent_segment_usable_for_rotation_data = parent_output
             self.parent_segment_usable_for_translation_data = False
 
-        if self.child_biomech_sys.is_isb_oriented() and self.child_biomech_sys.is_origin_on_an_isb_axis():
+        if self.child_biomech_sys.is_isb_oriented and self.child_biomech_sys.is_origin_on_an_isb_axis():
             child_output = self._check_segment_has_no_correction(child_correction, print_warnings=print_warnings)
             self.child_segment_usable_for_rotation_data = child_output
             self.child_segment_usable_for_translation_data = False
 
         if (
-            self.parent_biomech_sys.is_isb_oriented()
+            self.parent_biomech_sys.is_isb_oriented
             and not self.parent_biomech_sys.is_origin_on_an_isb_axis()
             and not parent_is_thorax_global
         ):
@@ -519,7 +567,7 @@ class RowData:
             self.parent_segment_usable_for_rotation_data = True
             self.parent_segment_usable_for_translation_data = False
 
-        if self.child_biomech_sys.is_isb_oriented() and not self.child_biomech_sys.is_origin_on_an_isb_axis():
+        if self.child_biomech_sys.is_isb_oriented and not self.child_biomech_sys.is_origin_on_an_isb_axis():
             child_output = True
             if self.child_segment == Segment.SCAPULA:
                 child_output = True
@@ -531,7 +579,7 @@ class RowData:
 
         # if segments are not isb, we expect the correction to_isb to be filled
         if (
-            not self.parent_biomech_sys.is_isb_oriented()
+            not self.parent_biomech_sys.is_isb_oriented
             and self.parent_biomech_sys.is_origin_on_an_isb_axis()
             and not parent_is_thorax_global
         ):
@@ -549,7 +597,7 @@ class RowData:
             self.parent_segment_usable_for_rotation_data = parent_output
             self.parent_segment_usable_for_translation_data = False
 
-        if not self.child_biomech_sys.is_isb_oriented() and self.child_biomech_sys.is_origin_on_an_isb_axis():
+        if not self.child_biomech_sys.is_isb_oriented and self.child_biomech_sys.is_origin_on_an_isb_axis():
             # child_output = self._check_segment_has_to_isb_or_like_correction(
             #     child_correction, print_warnings=print_warnings
             # )
@@ -565,7 +613,7 @@ class RowData:
             self.child_segment_usable_for_translation_data = False
 
         if (
-            not self.parent_biomech_sys.is_isb_oriented()
+            not self.parent_biomech_sys.is_isb_oriented
             and not self.parent_biomech_sys.is_origin_on_an_isb_axis()
             and not parent_is_thorax_global
         ):
@@ -596,11 +644,7 @@ class RowData:
                 self.parent_segment_usable_for_translation_data = False
                 self.parent_definition_risk = True
 
-            # todo: please implement the following risks
-            # self.parent_definition_risk = Risk.LOW  # known and corrected from the literature
-            # self.parent_definition_risk = Risk.HIGH  # unknown and uncorrected from the literature
-
-        if not self.child_biomech_sys.is_isb_oriented() and not self.child_biomech_sys.is_origin_on_an_isb_axis():
+        if not self.child_biomech_sys.is_isb_oriented and not self.child_biomech_sys.is_origin_on_an_isb_axis():
             child_output = True
             if self.child_segment == Segment.SCAPULA:
                 # child_output = (self._check_segment_has_to_isb_correction(
@@ -701,7 +745,7 @@ class RowData:
 
         self.euler_angles_correction_callback = lambda rot1, rot2, rot3: rotation_matrix_2_euler_angles(
             rotation_matrix=self.correct_isb_rotation_matrix_callback(rot1, rot2, rot3),
-            euler_sequence=self.joint.isb_euler_sequence(),
+            euler_sequence=self.joint.isb_euler_sequence,
         )
 
     def set_translation_correction_callback(self):
@@ -753,65 +797,82 @@ class RowData:
         #     rotation_matrix=self.correct_isb_rotation_matrix_callback(rot1, rot2, rot3),
         #     euler_sequence=self.joint.isb_euler_sequence(),
 
-    def quantify_segment_risk(self, type_risk: str):
+    def compute_deviations(self):
         """
-        Quantify the risk of the joint.
+        Compute the deviation of the joint from the ISB recommendation.
         """
-        risk_parent = self.parent_biomech_sys.get_segment_risk_quantification("proximal", type_risk)
-        risk_child = self.child_biomech_sys.get_segment_risk_quantification("distal", type_risk)
+        if self.has_rotation_data:
+            rotation_parent_deviation = SegmentDeviation(mode="rotation", bsys=self.parent_biomech_sys)
+            rotation_child_deviation = SegmentDeviation(mode="rotation", bsys=self.child_biomech_sys)
+            rotation_joint_deviation = JointDeviation(
+                mode="rotation", joint=self.joint, thoracohumeral_angle=self.thoracohumeral_angle
+            )
 
-        return risk_parent * risk_child
+            self.rotation_deviation = [rotation_parent_deviation, rotation_child_deviation, rotation_joint_deviation]
 
-    def is_joint_euler_angle_ISB_with_adaptation_from_segment(self):
-        """
-        Check if the joint euler angle is ISB with adaptation from segment.
+        if self.has_translation_data:
+            translation_parent_deviation = SegmentDeviation(mode="translation", bsys=self.parent_biomech_sys)
+            translation_child_deviation = SegmentDeviation(mode="translation", bsys=self.child_biomech_sys)
+            translation_joint_deviation = JointDeviation(
+                mode="translation", joint=self.joint, thoracohumeral_angle=self.thoracohumeral_angle
+            )
 
-        To do it we use the fact that the mediolat, inferosup and anteropost axis of the parent and child segment are
-        accessible through the biomech_sys object. As we know the equivalent between the anatomical axis and the ISB
-        axis we can deduce the adapted euler sequence that should have been used in the article if it was respecting
-        the ISB.
+            self.translation_deviation = [
+                translation_parent_deviation,
+                translation_child_deviation,
+                translation_joint_deviation,
+            ]
 
-        Returns
-        is_sequence_isb: bool
-        """
-        # We extract the euler sequences as found in the article and associated with the original segment definition
-        raw_euler_seq = self.joint.euler_sequence.value
-        # We extract the supposed euler sequence from the joint type
-        supposed_euler_seq = EulerSequence.isb_from_joint_type(self.joint.joint_type).value
-        # We know that in supposed_euler_seq
-        # Z is supposed to be the +mediolat (point right)
-        # Y is supposed to be the +inferosup (point up )
-        # X is supposed to be the +anteropost (point front)
-
-        # We should now check for the two first direction of the rotation the associated axis with
-        # the parent segment (distal segment)
-        adapted_euler_seq = ""
-        for charac in supposed_euler_seq.lower()[0:2]:
-            # TODO : probably put this in the biomech_sys function
-            if charac == "x":
-                adapted_euler_seq += self.parent_biomech_sys.anterior_posterior_axis.value[0]
-            elif charac == "y":
-                adapted_euler_seq += self.parent_biomech_sys.infero_superior_axis.value[0]
-            elif charac == "z":
-                adapted_euler_seq += self.parent_biomech_sys.medio_lateral_axis.value[0]
-
-        # We should now check for the last direction of the rotation the associated axis with
-        # the child segment (proximal segment)
-        if supposed_euler_seq.lower()[2] == "x":
-            adapted_euler_seq += self.child_biomech_sys.anterior_posterior_axis.value[0]
-        elif supposed_euler_seq.lower()[2] == "y":
-            adapted_euler_seq += self.child_biomech_sys.infero_superior_axis.value[0]
-        elif supposed_euler_seq.lower()[2] == "z":
-            adapted_euler_seq += self.child_biomech_sys.medio_lateral_axis.value[0]
-        # Now the adapted euler_seq is the euler sequence that should have been used in the article if it was respecting
-        # the ISB recomendation. So we can compare it to the raw euler sequence which has been used in the article.
-
-        # We remove all the minus ("-") sign in the adapted euler sequence as the orientation error is already taken into account
-        # in the deviation calculation.
-        adapted_euler_seq.replace("-", "")
-
-        is_sequence_isb = adapted_euler_seq == raw_euler_seq
-        return is_sequence_isb
+    # def is_joint_euler_angle_ISB_with_adaptation_from_segment(self):
+    #     """
+    #     Check if the joint euler angle is ISB with adaptation from segment.
+    #
+    #     To do it we use the fact that the mediolat, inferosup and anteropost axis of the parent and child segment are
+    #     accessible through the biomech_sys object. As we know the equivalent between the anatomical axis and the ISB
+    #     axis we can deduce the adapted euler sequence that should have been used in the article if it was respecting
+    #     the ISB.
+    #
+    #     Returns
+    #     is_sequence_isb: bool
+    #     """
+    #     # We extract the euler sequences as found in the article and associated with the original segment definition
+    #     raw_euler_seq = self.joint.euler_sequence.value
+    #     # We extract the supposed euler sequence from the joint type
+    #     supposed_euler_seq = EulerSequence.isb_from_joint_type(self.joint.joint_type).value
+    #     # We know that in supposed_euler_seq
+    #     # Z is supposed to be the +mediolat (point right)
+    #     # Y is supposed to be the +inferosup (point up )
+    #     # X is supposed to be the +anteropost (point front)
+    #
+    #     # We should now check for the two first direction of the rotation the associated axis with
+    #     # the parent segment (distal segment)
+    #     adapted_euler_seq = ""
+    #     for charac in supposed_euler_seq.lower()[0:2]:
+    #         # TODO : probably put this in the biomech_sys function
+    #         if charac == "x":
+    #             adapted_euler_seq += self.parent_biomech_sys.anterior_posterior_axis.value[0]
+    #         elif charac == "y":
+    #             adapted_euler_seq += self.parent_biomech_sys.infero_superior_axis.value[0]
+    #         elif charac == "z":
+    #             adapted_euler_seq += self.parent_biomech_sys.medio_lateral_axis.value[0]
+    #
+    #     # We should now check for the last direction of the rotation the associated axis with
+    #     # the child segment (proximal segment)
+    #     if supposed_euler_seq.lower()[2] == "x":
+    #         adapted_euler_seq += self.child_biomech_sys.anterior_posterior_axis.value[0]
+    #     elif supposed_euler_seq.lower()[2] == "y":
+    #         adapted_euler_seq += self.child_biomech_sys.infero_superior_axis.value[0]
+    #     elif supposed_euler_seq.lower()[2] == "z":
+    #         adapted_euler_seq += self.child_biomech_sys.medio_lateral_axis.value[0]
+    #     # Now the adapted euler_seq is the euler sequence that should have been used in the article if it was respecting
+    #     # the ISB recomendation. So we can compare it to the raw euler sequence which has been used in the article.
+    #
+    #     # We remove all the minus ("-") sign in the adapted euler sequence as the orientation error is already taken into account
+    #     # in the deviation calculation.
+    #     adapted_euler_seq.replace("-", "")
+    #
+    #     is_sequence_isb = adapted_euler_seq == raw_euler_seq
+    #     return is_sequence_isb
 
     def import_data(self):
         """this function import the data of the following row"""
@@ -846,7 +907,20 @@ class RowData:
         pandas.DataFrame
             The dataframe with the angles in degrees
         """
-
+        deviation_cols = [
+            "parent_d1",  # float
+            "parent_d2",  # float
+            "parent_d3",  # float
+            "parent_d4",  # float
+            "child_d1",  # float
+            "child_d2",  # float
+            "child_d3",  # float
+            "child_d4",  # float
+            "d5",  # float
+            "d6",  # float
+            "d7",  # float
+            "total_deviation",  # float
+        ]
         angle_series_dataframe = pd.DataFrame(
             columns=[
                 "article",  # string
@@ -861,11 +935,9 @@ class RowData:
                 "shoulder_id",  # int
                 "in_vivo",  # bool
                 "xp_mean",  # string
-            ],
+            ]
+            + deviation_cols,
         )
-
-        confidence_total = Deviation.confidence_total(row_data=self, type_risk="rotation")
-        # TODO : detect if this is angle or translation
 
         value_dof = np.zeros((self.data.shape[0], 3))
 
@@ -893,11 +965,25 @@ class RowData:
         angle_series_dataframe["joint"] = self.row.joint
         angle_series_dataframe["humeral_motion"] = self.row.humeral_motion
         angle_series_dataframe["humerothoracic_angle"] = self.data["humerothoracic_angle"]
-        angle_series_dataframe["unit"] = "rad"
-        angle_series_dataframe["confidence"] = confidence_total
         angle_series_dataframe["shoulder_id"] = self.row.shoulder_id
         angle_series_dataframe["in_vivo"] = self.row.in_vivo
         angle_series_dataframe["xp_mean"] = self.row.experimental_mean
+
+        angle_series_dataframe["unit"] = "rad"
+        angle_series_dataframe["parent_d1"] = self.rotation_deviation[0].d1
+        angle_series_dataframe["parent_d2"] = self.rotation_deviation[0].d2
+        angle_series_dataframe["parent_d3"] = self.rotation_deviation[0].d3
+        angle_series_dataframe["parent_d4"] = self.rotation_deviation[0].d4
+        angle_series_dataframe["child_d1"] = self.rotation_deviation[1].d1
+        angle_series_dataframe["child_d2"] = self.rotation_deviation[1].d2
+        angle_series_dataframe["child_d3"] = self.rotation_deviation[1].d3
+        angle_series_dataframe["child_d4"] = self.rotation_deviation[1].d4
+        angle_series_dataframe["d5"] = self.rotation_deviation[2].d5
+        angle_series_dataframe["d6"] = self.rotation_deviation[2].d6
+        angle_series_dataframe["d7"] = self.rotation_deviation[2].d7
+        angle_series_dataframe["total_deviation"] = (
+            self.rotation_deviation[0].total() * self.rotation_deviation[1].total() * self.rotation_deviation[2].total()
+        )
 
         if correction:
             (legend_dof1, legend_dof2, legend_dof3) = self.joint.isb_rotation_biomechanical_dof
@@ -927,7 +1013,8 @@ class RowData:
                 "shoulder_id",
                 "in_vivo",
                 "xp_mean",
-            ],
+            ]
+            + deviation_cols,
             value_vars=["value_dof1", "value_dof2", "value_dof3"],
             var_name="degree_of_freedom",
             value_name="value",

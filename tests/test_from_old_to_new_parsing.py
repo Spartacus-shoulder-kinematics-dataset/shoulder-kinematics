@@ -131,15 +131,9 @@ def test_new_parsing(author):
                 )
                 bsys_new = BiomechCoordinateSystem.from_frame(frame)
 
-            # second check
-            # if not check_is_isb_segment(row, bsys_new, print_warnings=print_warnings):
-            #     output = False
-
-            # if not check_is_isb_correctable(row, bsys_new, print_warnings=print_warnings):
-            #     output = False
-
-            # if not check_correction_methods(self, bsys, print_warnings=print_warnings):
-            #     output = False
+                assert frame.postero_anterior_local_axis == bsys_new.anterior_posterior_axis
+                assert frame.medio_lateral_local_axis == bsys_new.medio_lateral_axis
+                assert frame.infero_superior_local_axis == bsys_new.infero_superior_axis
 
             # third check if the segment is direct or not
             if not bsys_new.is_direct():

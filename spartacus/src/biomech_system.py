@@ -1,6 +1,5 @@
 import numpy as np
 
-from .deviation_constant import DEVIATION_COEFF
 from .enums_biomech import CartesianAxis, BiomechDirection, AnatomicalLandmark, Segment
 from .frame_reader import Frame
 from .utils import compute_rotation_matrix_from_axes
@@ -93,52 +92,30 @@ class BiomechCoordinateSystem:
     def from_frame(cls, frame: Frame):
         return cls(
             segment=frame.segment,
-            antero_posterior_axis=frame.x_axis.principal_direction(),
-            infero_superior_axis=frame.y_axis.principal_direction(),
-            medio_lateral_axis=frame.z_axis.principal_direction(),
+            antero_posterior_axis=frame.postero_anterior_local_axis,
+            infero_superior_axis=frame.infero_superior_local_axis,
+            medio_lateral_axis=frame.medio_lateral_local_axis,
             origin=frame.origin,
             frame=frame,
         )
 
-    def is_mislabeled(self):
-        """
-        Return True if the segment is mislabeled, False otherwise
-        Mislabeling is defined as the only difference with ISB being the wrong name of the axis. Which means that :
-            - the antero posterior axis is not along the x axis
-            - the infero superior axis is not along the y axis
-            - the medio lateral axis is not along the z axis
-        """
-
-        condition_1 = (self.anterior_posterior_axis is CartesianAxis.plusX) or (
-            self.anterior_posterior_axis is CartesianAxis.minusX
-        )
-        condition_2 = (self.infero_superior_axis is CartesianAxis.plusY) or (
-            self.infero_superior_axis is CartesianAxis.minusY
-        )
-        condition_3 = (self.medio_lateral_axis is CartesianAxis.plusZ) or (
-            self.medio_lateral_axis is CartesianAxis.minusZ
-        )
-
-        return not (condition_1 and condition_2 and condition_3)
-
+    @property
     def is_isb_oriented(self) -> bool:
         condition_1 = self.anterior_posterior_axis is CartesianAxis.plusX
         condition_2 = self.infero_superior_axis is CartesianAxis.plusY
         condition_3 = self.medio_lateral_axis is CartesianAxis.plusZ
         return condition_1 and condition_2 and condition_3
 
+    @property
     def is_isb_origin(self) -> bool:
         segment_to_origin_isb = {
-            Segment.SCAPULA: AnatomicalLandmark.Scapula.origin_isb,
-            Segment.THORAX: AnatomicalLandmark.Thorax.origin_isb,
-            Segment.CLAVICLE: AnatomicalLandmark.Clavicle.origin_isb,
-            Segment.HUMERUS: AnatomicalLandmark.Humerus.origin_isb,
+            Segment.SCAPULA: AnatomicalLandmark.Scapula.origin_isb(),
+            Segment.THORAX: AnatomicalLandmark.Thorax.origin_isb(),
+            Segment.CLAVICLE: AnatomicalLandmark.Clavicle.origin_isb(),
+            Segment.HUMERUS: AnatomicalLandmark.Humerus.origin_isb(),
         }
 
         return segment_to_origin_isb.get(self.segment) == self.origin
-
-    def is_an_isb_axe(self) -> bool:
-        raise NotImplementedError
 
     def is_origin_on_an_isb_axis(self) -> bool:
         """
@@ -149,7 +126,7 @@ class BiomechCoordinateSystem:
         The true definition would be, the origin is part of the process to build an ISB axis.
 
         """
-        if self.is_isb_origin():
+        if self.is_isb_origin:
             return True
         # todo: may check according to frame object
         ON_ISB_AXES = {
@@ -165,6 +142,7 @@ class BiomechCoordinateSystem:
         return self.origin in ON_ISB_AXES.get(self.segment, [])
 
     def is_isb(self) -> bool:
+        # excluding thorax is global
         return self.frame.is_isb if self.frame is not None else False
 
     def is_direct(self) -> bool:
@@ -185,40 +163,28 @@ class BiomechCoordinateSystem:
             medio_lateral_axis=self.medio_lateral_axis.value[1][:, np.newaxis],
         )
 
-    def is_any_axis_wrong_sens(self):
-        """
-        Return True if any of the axis is in the wrong sens, False otherwise
-        The wrong sens is defined as the axis pointing in the positive direction (which here correspond to forward, to the right and up).
-        """
+    # def get_segment_risk_quantification(self, type_risk):
+    #     """
+    #     Return the risk quantification of the segment which is the product of the risk
+    #     of each type of risk described in the dictionnary dict_coeff.
+    #
+    #     Parameters
+    #     ----------
+    #     type_risk: str
+    #         "rotation" or "displacement"
+    #     """
+    #
+    #     risk = 1
+    #     if self.is_mislabeled():
+    #         risk = risk * DEVIATION_COEFF[type_risk]["label"]
+    #
+    #     if not self.is_isb_origin():
+    #         risk = risk * DEVIATION_COEFF[type_risk]["origin"]
+    #
+    #     if self.is_any_axis_wrong_sens():
+    #         risk = risk * DEVIATION_COEFF[type_risk]["sens"]
 
-        is_ant_post_wrong_sens = is_axis_wrong_sens(self.anterior_posterior_axis)
-        is_med_lat_wrong_sens = is_axis_wrong_sens(self.medio_lateral_axis)
-        is_inf_sup_wrong_sens = is_axis_wrong_sens(self.infero_superior_axis)
-
-        return is_ant_post_wrong_sens or is_med_lat_wrong_sens or is_inf_sup_wrong_sens
-
-    def get_segment_risk_quantification(self, type_risk):
-        """
-        Return the risk quantification of the segment which is the product of the risk
-        of each type of risk described in the dictionnary dict_coeff.
-
-        Parameters
-        ----------
-        type_risk: str
-            "rotation" or "displacement"
-        """
-
-        risk = 1
-        if self.is_mislabeled():
-            risk = risk * DEVIATION_COEFF[type_risk]["label"]
-
-        if not self.is_isb_origin():
-            risk = risk * DEVIATION_COEFF[type_risk]["origin"]
-
-        if self.is_any_axis_wrong_sens():
-            risk = risk * DEVIATION_COEFF[type_risk]["sens"]
-
-        return risk
+    # return risk
 
     def __print__(self):
         print(f"Segment: {self.segment}")
@@ -226,11 +192,3 @@ class BiomechCoordinateSystem:
         print(f"Anterior Posterior Axis: {self.anterior_posterior_axis}")
         print(f"Medio Lateral Axis: {self.medio_lateral_axis}")
         print(f"Infero Superior Axis: {self.infero_superior_axis}")
-
-
-def is_axis_wrong_sens(axis) -> bool:
-    condition_1 = axis is CartesianAxis.minusX
-    condition_2 = axis is CartesianAxis.minusY
-    condition_3 = axis is CartesianAxis.minusZ
-
-    return condition_1 or condition_2 or condition_3

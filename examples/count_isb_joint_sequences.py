@@ -30,8 +30,8 @@ def main():
     for i, row in maximus.dataframe.iterrows():
         new_dict = dict()
 
-        print(row.article_author_year)
-        new_dict["article"] = row.article_author_year
+        print(row.dataset_authors)
+        new_dict["article"] = row.dataset_authors
         row_data = RowData(row)
 
         new_dict["parent"] = row.parent
@@ -40,7 +40,7 @@ def main():
         new_dict["joint"] = row.joint
 
         if not row_data.check_joint_validity(print_warnings=False):
-            print(row.article_author_year, "joint not valid")
+            print(row.dataset_authors, "joint not valid")
             new_dict["comment"] = "joint not valid"
             df_new = pd.concat([df_new, pd.DataFrame([new_dict])], ignore_index=True)
             continue
@@ -57,7 +57,7 @@ def main():
         new_dict["isb_euler_sequence"] = EulerSequence.isb_from_joint_type(row_data.joint.joint_type).value
 
         if row_data.joint.euler_sequence == EulerSequence.isb_from_joint_type(row_data.joint.joint_type):
-            print(row.article_author_year, "SAME SEQUENCE")
+            print(row.dataset_authors, "SAME SEQUENCE")
             new_dict["comment"] = "same sequence"
 
         new_angles = convert_euler_angles_and_frames_to_isb(
