@@ -128,6 +128,11 @@ class BiomechDirection(Enum):
 class AnatomicalVector:
     """Enum for the biomechanical vectors of the segment, all unit vectors"""
 
+    class Global(Enum):
+        INFEROSUPERIOR = "inferosuperior"
+        POSTEROANTERIOR = "posteroanterior"
+        MEDIOLATERAL = "mediolateral"
+
     class Thorax(Enum):
         SPINAL_CANAL_AXIS = "spinal canal axis"  # pointing infero-superior
 
@@ -137,6 +142,10 @@ class AnatomicalVector:
         INFEROSUPERIOR_GLENOID_AXIS = "inferosuperior glenoid axis"
         MEDIOLATERAL_GLENOID_NORMAL = "mediolateral glenoid normal"
         LATEROMEDIAL_GLENOID_NORMAL = "lateromedial glenoid normal"
+
+    class Clavicle(Enum):
+        POSTEROANTERIOR_AXIS = "clavicular posteroanterior axis"
+        MEDIOLATERAL_AXIS = "Long axis of the distal part of the clavicle, pointing laterally"
 
 
 class AnatomicalLandmark:
@@ -268,9 +277,12 @@ class AnatomicalLandmark:
             "inferosuperior glenoid axis": AnatomicalVector.Scapula.INFEROSUPERIOR_GLENOID_AXIS,
             "mediolateral glenoid normal": AnatomicalVector.Scapula.MEDIOLATERAL_GLENOID_NORMAL,
             "lateromedial glenoid normal": AnatomicalVector.Scapula.LATEROMEDIAL_GLENOID_NORMAL,
+            "clavicular posteroanterior axis": AnatomicalVector.Clavicle.POSTEROANTERIOR_AXIS,
+            "Long axis of the distal part of the clavicle, pointing laterally": AnatomicalVector.Clavicle.MEDIOLATERAL_AXIS,
             "TS": cls.Scapula.TRIGNONUM_SPINAE,
             "clavicle origin": cls.Clavicle.CUSTOM,
             "functional": cls.Other.FUNCTIONAL_CENTER,
+            "imaging inferosuperior axis": AnatomicalVector.Thorax.SPINAL_CANAL_AXIS,
         }
 
         the_enum = biomech_origin_to_enum.get(biomech_origin)

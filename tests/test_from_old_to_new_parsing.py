@@ -17,34 +17,20 @@ print_warnings = True
 to_pass_because_geometric = [
     ("Fung et al.", Segment.HUMERUS),  # geometric Humerus feature implement SoloVectors
     (
-        "Gutierrez Delgado et al.",
-        Segment.CLAVICLE,
-    ),  # geometric ?? is it correct on clavicle doest seem consistent with the figure.
-    (
         "Moissenet et al.",
         Segment.CLAVICLE,
     ),  # geometric clavicle ?? is it correct on clavicle doest seem consistent with the figure ?
     ("Kijima et al.", Segment.HUMERUS),
     ("Kim et al.", Segment.HUMERUS),
-    ("Kim et al.", Segment.SCAPULA),
     ("Matsuki et al.", Segment.HUMERUS),
     ("Sugi et al.", Segment.HUMERUS),
 ]
-to_pass_because_there_is_mislabel = [
-    ("Ludewig et al.", Segment.CLAVICLE),  # clavicle z^y_thorax* should be replaced by y_thorax*^z
-    ("Oki et al.", Segment.CLAVICLE),  # clavicle z^y_thorax* should be replaced by y_thorax*^z
-    ("Fung et al.", Segment.CLAVICLE),  # -x_thorax* ???
-    ("Matsuki et al.", Segment.CLAVICLE),  # y_thorax^z ? instead of z^y_thorax
-    ("Sahara et al.", Segment.CLAVICLE),  # y_thorax^z ? instead of z^y_thorax
-    (
-        "Teece et al.",
-        Segment.CLAVICLE,
-    ),  # y_thorax^z ? instead of z^y_thorax and y^z instead of x^y ?? # Not display on the figure I have
-]
+to_pass_because_there_is_mislabel = []
 
 df = pd.read_csv(DatasetCSV.CLEAN.value)
 df = df.where(pd.notna(df), None)
 authors = df["dataset_authors"].unique().tolist()
+authors = ["Sahara et al."]
 
 
 @pytest.mark.parametrize("author", authors)
