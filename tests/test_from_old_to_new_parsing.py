@@ -62,13 +62,15 @@ def test_new_parsing(author):
             if row.thorax_is_global and segment_enum == Segment.THORAX:
                 print("Thorax is global", row.thorax_is_global)
                 # build the coordinate system
-                bsys_new = BiomechCoordinateSystem.from_biomech_directions(
-                    x=BiomechDirection.from_string(x_direction),
-                    y=BiomechDirection.from_string(y_direction),
-                    z=BiomechDirection.from_string(z_direction),
-                    origin=None,
+                frame = Frame.from_global_thorax_strings(
+                    x_axis=row[segment_cols_direction[0]],
+                    y_axis=row[segment_cols_direction[1]],
+                    z_axis=row[segment_cols_direction[2]],
+                    origin=row[segment_cols_direction[3]],
                     segment=segment_enum,
+                    side="right" if row.side_as_right or segment_enum == Segment.THORAX else row.side,
                 )
+                bsys_new = BiomechCoordinateSystem.from_frame(frame)
             else:
 
                 frame = Frame.from_xyz_string(

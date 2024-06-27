@@ -305,22 +305,19 @@ class RowData:
         """
         Set the parent and child segments of the joint.
         """
+        segment_cols_direction = get_segment_columns_direction(self.parent_segment)
         if self.parent_segment == Segment.THORAX and self.row.thorax_is_global:
-            self.parent_biomech_sys = BiomechCoordinateSystem.from_biomech_directions(
-                x=BiomechDirection.from_string(
-                    self.row[self.parent_columns[0]]
-                ),  # when removed dedicated columns to directions, replaceby BiomechDirection.from_string(self.row[self.segment_cols_direction[0]])
-                y=BiomechDirection.from_string(
-                    self.row[self.parent_columns[1]]
-                ),  # when removed dedicated columns to directions, replaceby BiomechDirection.from_string(self.row[self.segment_cols_direction[1]])
-                z=BiomechDirection.from_string(
-                    self.row[self.parent_columns[2]]
-                ),  # when removed dedicated columns to directions, replaceby BiomechDirection.from_string(self.row[self.segment_cols_direction[2 ]])
-                origin=AnatomicalLandmark.from_string(self.row[self.parent_columns[3]]),
+            frame_parent = Frame.from_global_thorax_strings(
+                x_axis=self.row[segment_cols_direction[0]],
+                y_axis=self.row[segment_cols_direction[1]],
+                z_axis=self.row[segment_cols_direction[2]],
+                origin=self.row[segment_cols_direction[3]],
                 segment=self.parent_segment,
+                side="right" if self.row.side_as_right or self.parent_segment == Segment.THORAX else self.row.side,
             )
+            self.parent_biomech_sys = BiomechCoordinateSystem.from_frame(frame_parent)
         else:
-            segment_cols_direction = get_segment_columns_direction(self.parent_segment)
+
             frame_parent = Frame.from_xyz_string(
                 x_axis=self.row[segment_cols_direction[0]],
                 y_axis=self.row[segment_cols_direction[1]],

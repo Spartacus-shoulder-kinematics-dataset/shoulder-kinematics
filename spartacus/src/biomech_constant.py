@@ -7,8 +7,11 @@ from .enums_biomech import AnatomicalLandmark, AnatomicalVector
 
 class Global:
     INFERO_SUPERIOR = np.array([0.0, 1.0, 0.0])
+    SUPERO_INFERIOR = np.array([0, -1, 0])
     MEDIO_LATERAL = np.array([0.0, 0.0, 1.0])
+    LATERO_MEDIAL = np.array([0, 0, -1])
     POSTERO_ANTERIOR = np.array([1.0, 0.0, 0.0])
+    IMAGING_CENTER = np.array([np.nan, np.nan, np.nan])
 
 
 class Thorax:
@@ -140,8 +143,11 @@ def get_constant(landmark: Any, side: str) -> np.ndarray:
 
     if isinstance(landmark, AnatomicalVector.Global):
         landmark_mapping = {
+            AnatomicalLandmark.Global.IMAGING_ORIGIN: Global.IMAGING_CENTER,
             AnatomicalVector.Global.INFEROSUPERIOR: Global.INFERO_SUPERIOR,
+            AnatomicalVector.Global.SUPEROINFERIOR: Global.SUPERO_INFERIOR,
             AnatomicalVector.Global.MEDIOLATERAL: Global.MEDIO_LATERAL,
+            AnatomicalVector.Global.LATEROMEDIAL: Global.LATERO_MEDIAL,
             AnatomicalVector.Global.POSTEROANTERIOR: Global.POSTERO_ANTERIOR,
         }
         the_constant = landmark_mapping.get(landmark).copy()

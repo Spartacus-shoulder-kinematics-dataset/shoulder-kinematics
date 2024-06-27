@@ -132,6 +132,8 @@ class AnatomicalVector:
         INFEROSUPERIOR = "inferosuperior"
         POSTEROANTERIOR = "posteroanterior"
         MEDIOLATERAL = "mediolateral"
+        LATEROMEDIAL = "lateromedial"
+        SUPEROINFERIOR = "superoinferior"
 
     class Thorax(Enum):
         SPINAL_CANAL_AXIS = "spinal canal axis"  # pointing infero-superior
@@ -150,6 +152,9 @@ class AnatomicalVector:
 
 class AnatomicalLandmark:
     """Enum for the biomechanical origins of the segment"""
+
+    class Global(Enum):
+        IMAGING_ORIGIN = "imaging centre"
 
     class Thorax(Enum):
 
@@ -284,6 +289,11 @@ class AnatomicalLandmark:
             "clavicle origin": cls.Clavicle.CUSTOM,
             "functional": cls.Other.FUNCTIONAL_CENTER,
             "imaging inferosuperior axis": AnatomicalVector.Thorax.SPINAL_CANAL_AXIS,
+            "imaging superoinferior axis": AnatomicalVector.Global.SUPEROINFERIOR,
+            "imaging lateromedial axis": AnatomicalVector.Global.LATEROMEDIAL,
+            "imaging mediolateral axis": AnatomicalVector.Global.MEDIOLATERAL,
+            "imaging posteroanterior axis": AnatomicalVector.Global.POSTEROANTERIOR,
+            "imaging centre": AnatomicalLandmark.Global.IMAGING_ORIGIN,
         }
 
         the_enum = biomech_origin_to_enum.get(biomech_origin)

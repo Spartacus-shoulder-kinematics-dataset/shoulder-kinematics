@@ -216,6 +216,18 @@ class Frame:
         else:
             return cls.from_once_crossed(x_axis, y_axis, z_axis, origin, segment, side)
 
+    @classmethod
+    def from_global_thorax_strings(
+        cls, x_axis: str, y_axis: str, z_axis: str, origin: str, segment: Segment, side: str = None
+    ):
+        return cls(
+            x_axis=parse_axis(x_axis, arm_side=side),
+            y_axis=parse_axis(y_axis, arm_side=side),
+            z_axis=parse_axis(z_axis, arm_side=side),
+            origin=AnatomicalLandmark.from_string(origin),
+            segment=segment,
+        )
+
     @staticmethod
     def is_one_axis_crossed_twice(x_axis: str, y_axis: str, z_axis: str) -> bool:
         is_x_axis_crossed_twice = "x^" in z_axis and "^x" in y_axis
