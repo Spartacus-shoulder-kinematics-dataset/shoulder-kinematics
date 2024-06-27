@@ -25,12 +25,10 @@ to_pass_because_geometric = [
     ("Matsuki et al.", Segment.HUMERUS),
     ("Sugi et al.", Segment.HUMERUS),
 ]
-to_pass_because_there_is_mislabel = []
 
 df = pd.read_csv(DatasetCSV.CLEAN.value)
 df = df.where(pd.notna(df), None)
 authors = df["dataset_authors"].unique().tolist()
-authors = ["Sahara et al."]
 
 
 @pytest.mark.parametrize("author", authors)
@@ -45,7 +43,7 @@ def test_new_parsing(author):
             print(segment_enum)
             tuple_test = (row.dataset_authors, segment_enum)
 
-            if tuple_test in to_pass_because_geometric or tuple_test in to_pass_because_there_is_mislabel:
+            if tuple_test in to_pass_because_geometric:
                 count += 1
                 continue
 
