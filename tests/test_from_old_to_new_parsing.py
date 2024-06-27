@@ -26,6 +26,8 @@ df = pd.read_csv(DatasetCSV.CLEAN.value)
 df = df.where(pd.notna(df), None)
 authors = df["dataset_authors"].unique().tolist()
 
+df_expected_directions = pd.read_csv(DatasetCSV.BIOMECH_DIRECTIONS.value)
+
 
 @pytest.mark.parametrize("author", authors)
 def test_new_parsing(author):
@@ -34,6 +36,10 @@ def test_new_parsing(author):
 
     for i, row in subdf.iterrows():
         print(row.dataset_authors)
+        sub_df_expected_directions = df_expected_directions[df_expected_directions["dataset_id"] == row.dataset_id]
+        if len(sub_df_expected_directions) != 1:
+            raise ValueError("There should be only one row in the expected directions dataframe")
+        sub_df_expected_directions = sub_df_expected_directions.iloc[0]
         count = 0
         for segment_enum in Segment:
             print(segment_enum)
@@ -43,22 +49,23 @@ def test_new_parsing(author):
                 count += 1
                 continue
 
-            if row.dataset_authors == "Bourne et al." and segment_enum == Segment.HUMERUS:
-                print("")
-
             segment_cols = get_segment_columns(segment_enum)
             segment_cols_direction = get_segment_columns_direction(segment_enum)
             # first check
             if check_segment_filled_with_nan(row, segment_cols, print_warnings=print_warnings):
                 continue
 
+            x_direction = sub_df_expected_directions[segment_cols[0]]
+            y_direction = sub_df_expected_directions[segment_cols[1]]
+            z_direction = sub_df_expected_directions[segment_cols[2]]
+
             if row.thorax_is_global and segment_enum == Segment.THORAX:
                 print("Thorax is global", row.thorax_is_global)
                 # build the coordinate system
                 bsys_new = BiomechCoordinateSystem.from_biomech_directions(
-                    x=BiomechDirection.from_string(row[segment_cols[0]]),
-                    y=BiomechDirection.from_string(row[segment_cols[1]]),
-                    z=BiomechDirection.from_string(row[segment_cols[2]]),
+                    x=BiomechDirection.from_string(x_direction),
+                    y=BiomechDirection.from_string(y_direction),
+                    z=BiomechDirection.from_string(z_direction),
                     origin=None,
                     segment=segment_enum,
                 )
@@ -80,9 +87,9 @@ def test_new_parsing(author):
                 print(frame.z_axis.principal_direction())
                 print(frame.z_axis.compute_default_vector())
 
-                assert frame.x_axis.biomech_direction() == BiomechDirection.from_string(row[segment_cols[0]])
-                assert frame.y_axis.biomech_direction() == BiomechDirection.from_string(row[segment_cols[1]])
-                assert frame.z_axis.biomech_direction() == BiomechDirection.from_string(row[segment_cols[2]])
+                assert frame.x_axis.biomech_direction() == BiomechDirection.from_string(x_direction)
+                assert frame.y_axis.biomech_direction() == BiomechDirection.from_string(y_direction)
+                assert frame.z_axis.biomech_direction() == BiomechDirection.from_string(z_direction)
 
                 try:
                     is_isb_col = get_is_isb_column(segment_enum)
@@ -103,10 +110,10 @@ def test_new_parsing(author):
 
                 # build the coordinate system
                 bsys_old = BiomechCoordinateSystem.from_biomech_directions(
-                    x=BiomechDirection.from_string(row[segment_cols[0]]),
-                    y=BiomechDirection.from_string(row[segment_cols[1]]),
-                    z=BiomechDirection.from_string(row[segment_cols[2]]),
-                    origin=AnatomicalLandmark.from_string(row[segment_cols[3]]),
+                    x=BiomechDirection.from_string(x_direction),
+                    y=BiomechDirection.from_string(y_direction),
+                    z=BiomechDirection.from_string(z_direction),
+                    origin=AnatomicalLandmark.from_string(row[segment_cols_direction[3]]),
                     segment=segment_enum,
                 )
                 bsys_new = BiomechCoordinateSystem.from_frame(frame)
