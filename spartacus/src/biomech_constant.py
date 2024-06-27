@@ -122,6 +122,9 @@ class Clavicle:
     vec = np.cross(Global.INFERO_SUPERIOR, SC_to_AC)
     POSTEROANTERIOR_AXIS = vec / np.linalg.norm(vec)
     MEDIOLATERAL_AXIS = SC_to_AC / np.linalg.norm(SC_to_AC)
+    STERNOCLAVICULAR_SURFACE_CENTROID = Thorax.SC - np.array(
+        [5, 0, 0]
+    )  # made up guess behind SC along posteroanterior axis
 
 
 class Humerus:
@@ -182,6 +185,7 @@ def get_constant(landmark: Any, side: str) -> np.ndarray:
     if isinstance(landmark, AnatomicalLandmark.Clavicle) or isinstance(landmark, AnatomicalVector.Clavicle):
         landmark_mapping = {
             AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_JOINT_CENTER: Thorax.SC,
+            AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_SURFACE_CENTROID: Clavicle.STERNOCLAVICULAR_SURFACE_CENTROID,
             AnatomicalVector.Clavicle.POSTEROANTERIOR_AXIS: Clavicle.POSTEROANTERIOR_AXIS,
             AnatomicalVector.Clavicle.MEDIOLATERAL_AXIS: Clavicle.MEDIOLATERAL_AXIS,
         }

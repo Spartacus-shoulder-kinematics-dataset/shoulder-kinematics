@@ -16,10 +16,6 @@ print_warnings = True
 
 to_pass_because_geometric = [
     ("Fung et al.", Segment.HUMERUS),  # geometric Humerus feature implement SoloVectors
-    (
-        "Moissenet et al.",
-        Segment.CLAVICLE,
-    ),  # geometric clavicle ?? is it correct on clavicle doest seem consistent with the figure ?
     ("Kijima et al.", Segment.HUMERUS),
     ("Kim et al.", Segment.HUMERUS),
     ("Matsuki et al.", Segment.HUMERUS),

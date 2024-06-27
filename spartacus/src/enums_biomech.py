@@ -179,7 +179,7 @@ class AnatomicalLandmark:
         STERNOCLAVICULAR_JOINT_CENTER = "SCJC"
         MIDTHIRD = "MTC"
         CUSTOM = "CUSTOM"
-        # ACROMIOCLAVICULAR_JOINT_CENTER = "ACJC"
+        STERNOCLAVICULAR_SURFACE_CENTROID = "CSC"
 
         @classmethod
         def isb(cls):
@@ -261,7 +261,8 @@ class AnatomicalLandmark:
             "midpoint EM EL": cls.Humerus.MIDPOINT_EPICONDYLES,  # old
             "(EM+EL)/2": cls.Humerus.MIDPOINT_EPICONDYLES,
             "(EL+EM)/2": cls.Humerus.MIDPOINT_EPICONDYLES,
-            "SC": cls.Clavicle.STERNOCLAVICULAR_JOINT_CENTER,
+            "SC": cls.Clavicle.STERNOCLAVICULAR_JOINT_CENTER,  # most ventral point according to ISB
+            "CSC": cls.Clavicle.STERNOCLAVICULAR_SURFACE_CENTROID,  # from Moissenet et al. , supposedly behind SC
             "CM": cls.Clavicle.MIDTHIRD,
             "point of intersection between the mesh model and the Zc axis": cls.Clavicle.CUSTOM,
             "AC": cls.Scapula.ACROMIOCLAVICULAR_JOINT_CENTER,
