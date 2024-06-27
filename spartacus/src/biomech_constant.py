@@ -5,6 +5,12 @@ import numpy as np
 from .enums_biomech import AnatomicalLandmark, AnatomicalVector
 
 
+class Global:
+    INFERO_SUPERIOR = np.array([0.0, 1.0, 0.0])
+    MEDIO_LATERAL = np.array([0.0, 0.0, 1.0])
+    POSTERO_ANTERIOR = np.array([1.0, 0.0, 0.0])
+
+
 class Thorax:
     """
     This class stores thorax landmarks with default values is ISB frame to make sure we can stick to definitions.
@@ -107,6 +113,20 @@ class Scapula:
     ANTEROPOSTERIOR_GLENOID_AXIS = -POSTEROANTERIOR_GLENOID_AXIS
 
 
+class Clavicle:
+    """
+    This class stores clavicle landmarks with default values is ISB frame to make sure we can stick to definitions.
+    """
+
+    SC_to_AC = Scapula.AC - Thorax.SC
+    vec = np.cross(Global.INFERO_SUPERIOR, SC_to_AC)
+    POSTEROANTERIOR_AXIS = vec / np.linalg.norm(vec)
+    MEDIOLATERAL_AXIS = SC_to_AC / np.linalg.norm(SC_to_AC)
+    STERNOCLAVICULAR_SURFACE_CENTROID = Thorax.SC - np.array(
+        [5, 0, 0]
+    )  # made up guess behind SC along posteroanterior axis
+
+
 class Humerus:
 
     EL = np.array([-21, -104, 130])  # made up guess
@@ -117,6 +137,14 @@ class Humerus:
 
 def get_constant(landmark: Any, side: str) -> np.ndarray:
     the_constant = None
+
+    if isinstance(landmark, AnatomicalVector.Global):
+        landmark_mapping = {
+            AnatomicalVector.Global.INFEROSUPERIOR: Global.INFERO_SUPERIOR,
+            AnatomicalVector.Global.MEDIOLATERAL: Global.MEDIO_LATERAL,
+            AnatomicalVector.Global.POSTEROANTERIOR: Global.POSTERO_ANTERIOR,
+        }
+        the_constant = landmark_mapping.get(landmark).copy()
 
     if isinstance(landmark, AnatomicalLandmark.Thorax) or isinstance(landmark, AnatomicalVector.Thorax):
         landmark_mapping = {
@@ -154,9 +182,12 @@ def get_constant(landmark: Any, side: str) -> np.ndarray:
 
         the_constant = landmark_mapping.get(landmark).copy()
 
-    if isinstance(landmark, AnatomicalLandmark.Clavicle):
+    if isinstance(landmark, AnatomicalLandmark.Clavicle) or isinstance(landmark, AnatomicalVector.Clavicle):
         landmark_mapping = {
             AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_JOINT_CENTER: Thorax.SC,
+            AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_SURFACE_CENTROID: Clavicle.STERNOCLAVICULAR_SURFACE_CENTROID,
+            AnatomicalVector.Clavicle.POSTEROANTERIOR_AXIS: Clavicle.POSTEROANTERIOR_AXIS,
+            AnatomicalVector.Clavicle.MEDIOLATERAL_AXIS: Clavicle.MEDIOLATERAL_AXIS,
         }
 
         the_constant = landmark_mapping.get(landmark).copy()
@@ -170,6 +201,10 @@ def get_constant(landmark: Any, side: str) -> np.ndarray:
         }
 
         the_constant = landmark_mapping.get(landmark).copy()
+
+    if isinstance(landmark, AnatomicalLandmark):
+        if side == "left":
+            the_constant[-1] *= -1
 
     if the_constant is None:
         raise ValueError(f"Landmark {landmark} not found in landmarks")
