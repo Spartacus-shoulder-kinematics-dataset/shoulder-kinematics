@@ -332,6 +332,51 @@ class JointType(Enum):
 
         return the_enum
 
+    @property
+    def to_string(self):
+        dico = {
+            self.GLENO_HUMERAL: "glenohumeral",
+            self.SCAPULO_THORACIC: "scapulothoracic",
+            self.ACROMIO_CLAVICULAR: "acromioclavicular",
+            self.STERNO_CLAVICULAR: "sternoclavicular",
+            self.THORACO_HUMERAL: "thoracohumeral",
+        }
+
+        the_enum = dico.get(self)
+        if the_enum is None:
+            raise ValueError(f"{self} is not a valid joint.")
+
+        return the_enum
+
+    @property
+    def child(self):
+        dico = {
+            self.STERNO_CLAVICULAR: Segment.CLAVICLE,
+            self.ACROMIO_CLAVICULAR: Segment.SCAPULA,
+            self.SCAPULO_THORACIC: Segment.SCAPULA,
+            self.GLENO_HUMERAL: Segment.HUMERUS,
+        }
+
+        the_enum = dico.get(self)
+        if the_enum is None:
+            raise ValueError(f"{self} is not a valid joint.")
+        return the_enum
+
+    @property
+    def parent(self):
+        dico = {
+            self.STERNO_CLAVICULAR: Segment.THORAX,
+            self.ACROMIO_CLAVICULAR: Segment.CLAVICLE,
+            self.SCAPULO_THORACIC: Segment.THORAX,
+            self.GLENO_HUMERAL: Segment.SCAPULA,
+        }
+
+        the_enum = dico.get(self)
+        if the_enum is None:
+            raise ValueError(f"{self} is not a valid joint.")
+
+        return the_enum
+
 
 class EulerSequence(Enum):
     XYX = "xyx"

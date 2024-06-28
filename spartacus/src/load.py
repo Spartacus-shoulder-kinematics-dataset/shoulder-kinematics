@@ -78,7 +78,6 @@ class Spartacus:
         self.confident_dataframe = pd.DataFrame(columns=columns)
 
         for i, row in self.dataframe.iterrows():
-            # print(row.article_author_year)
 
             row_data = RowData(row)
             if print_warnings:
