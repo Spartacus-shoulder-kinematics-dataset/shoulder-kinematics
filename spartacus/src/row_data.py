@@ -202,7 +202,7 @@ class RowData:
                 )
             return output
 
-        self.thoracohumeral_angle = set_thoracohumeral_angle_from_row(self.row, self.joint)
+        self.thoracohumeral_angle = set_thoracohumeral_angle_from_row(self.row)
 
         return output
 

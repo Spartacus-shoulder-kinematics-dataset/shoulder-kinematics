@@ -2,7 +2,7 @@ import numpy as np
 
 from .biomech_system import BiomechCoordinateSystem
 from .corrections.angle_conversion_callbacks import convert_euler_angles_and_frames_to_isb
-from .enums_biomech import EulerSequence, CartesianAxis, JointType
+from .enums_biomech import EulerSequence, CartesianAxis, JointType, Segment
 
 
 class ThoracohumeralAngle:
@@ -17,7 +17,12 @@ class ThoracohumeralAngle:
         self.euler_sequence = euler_sequence
         self.angle = angle
         self.joint_type = JointType.THORACO_HUMERAL
+        if parent_segment.segment != Segment.THORAX:
+            raise ValueError("The parent segment must be the thorax.")
         self.parent_segment = parent_segment
+        if child_segment is not None:
+            if child_segment.segment != Segment.HUMERUS:
+                raise ValueError("The child segment must be the humerus.")
         self.child_segment = child_segment
 
     @property
@@ -27,7 +32,11 @@ class ThoracohumeralAngle:
     @property
     def is_elevation_angle_isb(self) -> bool:
         if self.is_euler_sequence_equivalent_to_isb:
-            return self.angle == "x"
+            return True
+            # might not be filled yet
+            # return self.angle is not None
+            # might not be true yet depending on motion frontal elevation vs internal/external rotation
+            # return self.angle == self.euler_sequence.value[1]
 
         return False
 
@@ -41,6 +50,8 @@ class ThoracohumeralAngle:
         if self.is_euler_sequence_isb:
             return True
         if self.euler_sequence is None:
+            return False
+        if self.child_segment is None:
             return False
 
         value_rot1 = 0.2

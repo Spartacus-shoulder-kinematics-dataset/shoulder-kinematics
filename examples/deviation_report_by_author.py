@@ -15,7 +15,7 @@ from spartacus.src.utils_setters import (
 print_warnings = True
 
 to_pass_because_geometric = [
-    ("Fung et al.", Segment.HUMERUS),  # geometric Humerus feature implement SoloVectors
+    ("Fung et al.", Segment.HUMERUS),
     ("Kijima et al.", Segment.HUMERUS),
     ("Kim et al.", Segment.HUMERUS),
     ("Matsuki et al.", Segment.HUMERUS),
@@ -112,17 +112,15 @@ for i, author in enumerate(authors):
         segment_cols = get_segment_columns(joint_type.child)
         if check_segment_filled_with_nan(first_row, segment_cols, print_warnings=print_warnings):
             continue
-        if (author, joint_type.parent) in to_pass_because_geometric or (
-            author,
-            joint_type.child,
-        ) in to_pass_because_geometric:
+        if (author, Segment.HUMERUS) in to_pass_because_geometric:
             continue
 
         joint = set_joint_from_row(first_row, joint_type)
-        thoracohumeral_angle = set_thoracohumeral_angle_from_row(first_row, joint=joint)
 
         rotation_parent_deviation = SegmentDeviation(mode="rotation", bsys=joint.parent_segment)
         rotation_child_deviation = SegmentDeviation(mode="rotation", bsys=joint.child_segment)
+
+        thoracohumeral_angle = set_thoracohumeral_angle_from_row(first_row)
         rotation_joint_deviation = JointDeviation(
             mode="rotation", joint=joint, thoracohumeral_angle=thoracohumeral_angle
         )
