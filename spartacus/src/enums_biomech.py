@@ -521,6 +521,10 @@ class Segment(Enum):
 
         return the_enum
 
+    @property
+    def to_string(self):
+        return self.value
+
 
 class Correction(Enum):
     """Enum for the segment coordinate system corrections"""

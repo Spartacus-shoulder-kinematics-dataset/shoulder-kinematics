@@ -35,6 +35,8 @@ class Joint:
     def is_euler_sequence_equivalent_to_isb(self) -> bool:
         if self.euler_sequence == self.isb_euler_sequence:
             return True
+        if self.euler_sequence is None:
+            return False
 
         value_rot1 = 0.2
         value_rot2 = 0.3

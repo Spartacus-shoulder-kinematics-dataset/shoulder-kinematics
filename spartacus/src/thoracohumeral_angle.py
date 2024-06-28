@@ -40,6 +40,8 @@ class ThoracohumeralAngle:
 
         if self.is_euler_sequence_isb:
             return True
+        if self.euler_sequence is None:
+            return False
 
         value_rot1 = 0.2
         value_rot2 = 0.3
