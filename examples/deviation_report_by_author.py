@@ -98,10 +98,10 @@ for i, author in enumerate(authors):
             continue
         bsys_segment = set_parent_segment_from_row(first_row, segment)
         deviation = SegmentDeviation(mode="rotation", bsys=bsys_segment)
-        dico_d[f"{segment.to_string}_d1"] = deviation.is_d1
-        dico_d[f"{segment.to_string}_d2"] = deviation.is_d2
-        dico_d[f"{segment.to_string}_d3"] = deviation.is_d3
-        dico_d[f"{segment.to_string}_d4"] = deviation.is_d4
+        dico_d[f"{segment.to_string}_d1"] = 1 if deviation.is_d1 else 0
+        dico_d[f"{segment.to_string}_d2"] = 1 if deviation.is_d2 else 0
+        dico_d[f"{segment.to_string}_d3"] = 1 if deviation.is_d3 else 0
+        dico_d[f"{segment.to_string}_d4"] = 1 if deviation.is_d4 else 0
 
     for joint_type in JointType:
         if joint_type == JointType.THORACO_HUMERAL:
@@ -127,9 +127,9 @@ for i, author in enumerate(authors):
             mode="rotation", joint=joint, thoracohumeral_angle=thoracohumeral_angle
         )
 
-        dico_d[f"{joint_type.to_string}_d5"] = rotation_joint_deviation.is_d5
-        dico_d[f"{joint_type.to_string}_d6"] = rotation_joint_deviation.is_d6
-        dico_d[f"thoracohumeral_d7"] = rotation_joint_deviation.is_d7
+        dico_d[f"{joint_type.to_string}_d5"] = 1 if rotation_joint_deviation.is_d5 else 0
+        dico_d[f"{joint_type.to_string}_d6"] = 1 if rotation_joint_deviation.is_d6 else 0
+        dico_d[f"thoracohumeral_d7"] = 1 if rotation_joint_deviation.is_d7 else 0
 
         rot_tot = (
             rotation_parent_deviation.total() * rotation_child_deviation.total() * rotation_joint_deviation.total()

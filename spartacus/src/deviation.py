@@ -171,19 +171,19 @@ class SegmentDeviation(Deviation):
 
     @property
     def is_d1(self) -> bool:
-        return self.are_axes_isb_labeled(self.bsys)
+        return not self.are_axes_isb_labeled(self.bsys)
 
     @property
     def is_d2(self) -> bool:
-        return self.are_axes_sign_correct(self.bsys)
+        return not self.are_axes_sign_correct(self.bsys)
 
     @property
     def is_d3(self) -> bool:
-        return self.are_axes_built_with_isb_landmarks(self.bsys)
+        return not self.are_axes_built_with_isb_landmarks(self.bsys)
 
     @property
     def is_d4(self) -> bool:
-        return self.is_origin_isb(self.bsys)
+        return not self.is_origin_isb(self.bsys)
 
     @property
     def d1(self) -> float:
@@ -226,15 +226,15 @@ class JointDeviation(Deviation):
 
     @property
     def is_d5(self) -> bool:
-        return self.is_euler_sequence_equivalent_to_isb(self.joint)
+        return not self.is_euler_sequence_equivalent_to_isb(self.joint)
 
     @property
     def is_d6(self) -> bool:
-        return self.is_translation_frame_proximal_isb(self.joint)
+        return not self.is_translation_frame_proximal_isb(self.joint)
 
     @property
     def is_d7(self) -> bool:
-        return self.is_thoraco_humeral_angle_isb(self.thoracohumeral_angle)
+        return not self.is_thoraco_humeral_angle_isb(self.thoracohumeral_angle)
 
     @property
     def d5(self) -> float:
