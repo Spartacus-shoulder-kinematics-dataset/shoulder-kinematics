@@ -151,6 +151,7 @@ class AnatomicalVector:
 
     class Humerus(Enum):
         DIAPHYSIS_INFEROSUPERIOR_AXIS = "diaphysis inferosuperior axis"
+        NECK_SHAFT_PLANE_NORMAL = "neck shaft plane normal"
 
 
 class AnatomicalLandmark:
@@ -272,6 +273,7 @@ class AnatomicalLandmark:
             "(EM+EL)/2": cls.Humerus.MIDPOINT_EPICONDYLES,
             "(EL+EM)/2": cls.Humerus.MIDPOINT_EPICONDYLES,
             "diaphysis inferosuperior axis": AnatomicalVector.Humerus.DIAPHYSIS_INFEROSUPERIOR_AXIS,
+            "neck shaft plane normal": AnatomicalVector.Humerus.NECK_SHAFT_PLANE_NORMAL,
             "SC": cls.Clavicle.STERNOCLAVICULAR_JOINT_CENTER,  # most ventral point according to ISB
             "CSC": cls.Clavicle.STERNOCLAVICULAR_SURFACE_CENTROID,  # from Moissenet et al. , supposedly behind SC
             "CM": cls.Clavicle.MIDTHIRD,

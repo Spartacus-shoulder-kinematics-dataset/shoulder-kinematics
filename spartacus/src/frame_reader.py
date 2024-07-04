@@ -156,6 +156,13 @@ class Frame:
         return cls.from_xy(x_axis, y_axis, origin, segment)
 
     @classmethod
+    def from_y_crossed_twice_build_z(
+        cls, x_axis: VectorBase, y_axis: VectorBase, origin: AnatomicalLandmark, segment: Segment
+    ):
+        z_axis = CrossedVector(x_axis, y_axis)
+        return cls.from_yz(y_axis, z_axis, origin, segment)
+
+    @classmethod
     def from_x_crossed_twice(cls, x_axis: VectorBase, z_axis: VectorBase, origin: AnatomicalLandmark, segment: Segment):
         y_axis = CrossedVector(z_axis, x_axis)
         return cls.from_xy(x_axis, y_axis, origin, segment)
@@ -202,6 +209,13 @@ class Frame:
                 return cls.from_y_crossed_twice_build_x(
                     y_axis=parse_axis(y_axis, arm_side=side),
                     z_axis=parse_axis(x_axis, cross_product_side="first", arm_side=side),
+                    origin=AnatomicalLandmark.from_string(origin),
+                    segment=segment,
+                )
+            if x_axis == "y^z" and "y^" in x_axis and "^y" in z_axis:
+                return cls.from_y_crossed_twice_build_z(
+                    x_axis=parse_axis(z_axis, cross_product_side="first", arm_side=side),
+                    y_axis=parse_axis(y_axis, arm_side=side),
                     origin=AnatomicalLandmark.from_string(origin),
                     segment=segment,
                 )

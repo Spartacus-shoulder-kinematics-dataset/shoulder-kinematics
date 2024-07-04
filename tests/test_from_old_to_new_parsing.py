@@ -14,10 +14,6 @@ from spartacus.src.utils import (
 
 print_warnings = True
 
-to_pass_because_geometric = [
-    ("Sugi et al.", Segment.HUMERUS),
-]
-
 df = pd.read_csv(DatasetCSV.CLEAN.value)
 df = df.where(pd.notna(df), None)
 authors = df["dataset_authors"].unique().tolist()
@@ -36,14 +32,10 @@ def test_new_parsing(author):
         if len(sub_df_expected_directions) != 1:
             raise ValueError("There should be only one row in the expected directions dataframe")
         sub_df_expected_directions = sub_df_expected_directions.iloc[0]
-        count = 0
+
         for segment_enum in Segment:
             print(segment_enum)
             tuple_test = (row.dataset_authors, segment_enum)
-
-            if tuple_test in to_pass_because_geometric:
-                count += 1
-                continue
 
             segment_cols = get_segment_columns(segment_enum)
             segment_cols_direction = get_segment_columns_direction(segment_enum)

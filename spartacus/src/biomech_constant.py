@@ -137,9 +137,8 @@ class Humerus:
     GH = np.array([-50, -15, 105])  # made up guess
     IG = np.array([-20.5, -16, 107])  # made up guess
     MID_EPICONDYLES = (EL + EM) / 2
-    DIAPHYSIS_INFEROSUPERIOR_AXIS = ((GH + IG) / 2 - MID_EPICONDYLES) / np.linalg.norm(
-        GH - MID_EPICONDYLES
-    )  # made up axis
+    DIAPHYSIS_INFEROSUPERIOR_AXIS = ((GH + IG) / 2 - MID_EPICONDYLES) / np.linalg.norm(GH - MID_EPICONDYLES)
+    NECK_SHAFT_PLANE_NORMAL = np.array([0.0, 2.0, -1.0]) / np.linalg.norm([0.0, 2.0, -1.0])
 
 
 def get_constant(landmark: Any, side: str) -> np.ndarray:
@@ -185,6 +184,7 @@ def get_constant(landmark: Any, side: str) -> np.ndarray:
         AnatomicalLandmark.Humerus.GLENOHUMERAL_HEAD: Humerus.GH,
         AnatomicalLandmark.Humerus.INTERTUBERCULAR_GROOVE: Humerus.IG,
         AnatomicalVector.Humerus.DIAPHYSIS_INFEROSUPERIOR_AXIS: Humerus.DIAPHYSIS_INFEROSUPERIOR_AXIS,
+        AnatomicalVector.Humerus.NECK_SHAFT_PLANE_NORMAL: Humerus.NECK_SHAFT_PLANE_NORMAL,
     }
 
     the_constant = landmark_mapping.get(landmark).copy()
