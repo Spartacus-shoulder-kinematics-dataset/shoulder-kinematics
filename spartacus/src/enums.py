@@ -5,8 +5,8 @@ from pathlib import Path
 class DatasetCSV(Enum):
     """Enum for the dataset csv files, with dynamic path"""
 
-    RAW = Path(__file__).parent.parent / "dataset" / "only_dataset_raw.csv"
     CLEAN = Path(__file__).parent.parent / "dataset" / "dataset_clean.csv"
+    BIOMECH_DIRECTIONS = Path(__file__).parent.parent / "dataset" / "dataset_segment_directions.csv"
 
 
 class DataFolder(Enum):

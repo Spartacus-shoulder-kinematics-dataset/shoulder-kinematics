@@ -30,10 +30,8 @@ from .enums_biomech import (
     AnatomicalLandmark,
     JointType,
 )
-from .frame_reader import Frame
 from .joint import Joint
 from .load_data import load_euler_csv
-from .thoracohumeral_angle import ThoracohumeralAngle
 from .utils import (
     get_segment_columns,
     get_segment_columns_direction,
@@ -41,6 +39,7 @@ from .utils import (
     get_is_correctable_column,
     get_is_isb_column,
 )
+from .utils_setters import set_parent_segment_from_row, set_child_segment_from_row, set_thoracohumeral_angle_from_row
 
 
 class RowData:
@@ -203,12 +202,7 @@ class RowData:
                 )
             return output
 
-        self.thoracohumeral_angle = ThoracohumeralAngle(
-            euler_sequence=EulerSequence.from_string(self.row.thoracohumeral_sequence),
-            angle=self.row.thoracohumeral_angle,
-            parent_segment=self.parent_biomech_sys,
-            child_segment=self.child_biomech_sys,
-        )
+        self.thoracohumeral_angle = set_thoracohumeral_angle_from_row(self.row)
 
         return output
 
@@ -305,42 +299,8 @@ class RowData:
         """
         Set the parent and child segments of the joint.
         """
-        if self.parent_segment == Segment.THORAX and self.row.thorax_is_global:
-            self.parent_biomech_sys = BiomechCoordinateSystem.from_biomech_directions(
-                x=BiomechDirection.from_string(
-                    self.row[self.parent_columns[0]]
-                ),  # when removed dedicated columns to directions, replaceby BiomechDirection.from_string(self.row[self.segment_cols_direction[0]])
-                y=BiomechDirection.from_string(
-                    self.row[self.parent_columns[1]]
-                ),  # when removed dedicated columns to directions, replaceby BiomechDirection.from_string(self.row[self.segment_cols_direction[1]])
-                z=BiomechDirection.from_string(
-                    self.row[self.parent_columns[2]]
-                ),  # when removed dedicated columns to directions, replaceby BiomechDirection.from_string(self.row[self.segment_cols_direction[2 ]])
-                origin=AnatomicalLandmark.from_string(self.row[self.parent_columns[3]]),
-                segment=self.parent_segment,
-            )
-        else:
-            segment_cols_direction = get_segment_columns_direction(self.parent_segment)
-            frame_parent = Frame.from_xyz_string(
-                x_axis=self.row[segment_cols_direction[0]],
-                y_axis=self.row[segment_cols_direction[1]],
-                z_axis=self.row[segment_cols_direction[2]],
-                origin=self.row[segment_cols_direction[3]],
-                segment=self.parent_segment,
-                side="right" if self.row.side_as_right or self.parent_segment == Segment.THORAX else self.row.side,
-            )
-            self.parent_biomech_sys = BiomechCoordinateSystem.from_frame(frame_parent)
-
-        segment_cols_direction = get_segment_columns_direction(self.child_segment)
-        frame_child = Frame.from_xyz_string(
-            x_axis=self.row[segment_cols_direction[0]],
-            y_axis=self.row[segment_cols_direction[1]],
-            z_axis=self.row[segment_cols_direction[2]],
-            origin=self.row[segment_cols_direction[3]],
-            segment=self.child_segment,
-            side="right" if self.row.side_as_right or self.child_segment == Segment.THORAX else self.row.side,
-        )
-        self.child_biomech_sys = BiomechCoordinateSystem.from_frame(frame_child)
+        self.parent_biomech_sys = set_parent_segment_from_row(self.row, self.parent_segment)
+        self.child_biomech_sys = set_child_segment_from_row(self.row, self.child_segment)
 
     def extract_corrections(self, segment: Segment) -> str:
         """

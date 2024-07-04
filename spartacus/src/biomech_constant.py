@@ -7,8 +7,11 @@ from .enums_biomech import AnatomicalLandmark, AnatomicalVector
 
 class Global:
     INFERO_SUPERIOR = np.array([0.0, 1.0, 0.0])
+    SUPERO_INFERIOR = np.array([0, -1, 0])
     MEDIO_LATERAL = np.array([0.0, 0.0, 1.0])
+    LATERO_MEDIAL = np.array([0, 0, -1])
     POSTERO_ANTERIOR = np.array([1.0, 0.0, 0.0])
+    IMAGING_CENTER = np.array([np.nan, np.nan, np.nan])
 
 
 class Thorax:
@@ -132,75 +135,59 @@ class Humerus:
     EL = np.array([-21, -104, 130])  # made up guess
     EM = np.array([-20, -105, 110])  # made up guess
     GH = np.array([-50, -15, 105])  # made up guess
+    IG = np.array([-20.5, -16, 107])  # made up guess
     MID_EPICONDYLES = (EL + EM) / 2
+    DIAPHYSIS_INFEROSUPERIOR_AXIS = ((GH + IG) / 2 - MID_EPICONDYLES) / np.linalg.norm(GH - MID_EPICONDYLES)
+    NECK_SHAFT_PLANE_NORMAL = np.array([0.0, 2.0, -1.0]) / np.linalg.norm([0.0, 2.0, -1.0])
 
 
 def get_constant(landmark: Any, side: str) -> np.ndarray:
-    the_constant = None
 
-    if isinstance(landmark, AnatomicalVector.Global):
-        landmark_mapping = {
-            AnatomicalVector.Global.INFEROSUPERIOR: Global.INFERO_SUPERIOR,
-            AnatomicalVector.Global.MEDIOLATERAL: Global.MEDIO_LATERAL,
-            AnatomicalVector.Global.POSTEROANTERIOR: Global.POSTERO_ANTERIOR,
-        }
-        the_constant = landmark_mapping.get(landmark).copy()
+    landmark_mapping = {
+        AnatomicalLandmark.Global.IMAGING_ORIGIN: Global.IMAGING_CENTER,
+        AnatomicalVector.Global.INFEROSUPERIOR: Global.INFERO_SUPERIOR,
+        AnatomicalVector.Global.SUPEROINFERIOR: Global.SUPERO_INFERIOR,
+        AnatomicalVector.Global.MEDIOLATERAL: Global.MEDIO_LATERAL,
+        AnatomicalVector.Global.LATEROMEDIAL: Global.LATERO_MEDIAL,
+        AnatomicalVector.Global.POSTEROANTERIOR: Global.POSTERO_ANTERIOR,
+        AnatomicalLandmark.Thorax.IJ: Thorax.IJ,
+        AnatomicalLandmark.Thorax.PX: Thorax.PX,
+        AnatomicalLandmark.Thorax.T1_ANTERIOR_FACE: Thorax.T1s,
+        AnatomicalLandmark.Thorax.T1: Thorax.T1,
+        AnatomicalLandmark.Thorax.C7: Thorax.C7,
+        AnatomicalLandmark.Thorax.T7: Thorax.T7,
+        AnatomicalLandmark.Thorax.T8: Thorax.T8,
+        AnatomicalLandmark.Thorax.T10: Thorax.T10,
+        AnatomicalLandmark.Thorax.MIDPOINT_C7_IJ: Thorax.MID_C7_IJ,
+        AnatomicalLandmark.Thorax.MIDPOINT_IJ_T1: Thorax.MID_IJ_T1,
+        AnatomicalLandmark.Thorax.MIDPOINT_T8_PX: Thorax.MID_T8_PX,
+        AnatomicalLandmark.Thorax.MIDPOINT_T10_PX: Thorax.MID_T10_PX,
+        AnatomicalVector.Thorax.SPINAL_CANAL_AXIS: Thorax.SPINAL_CANAL_AXIS,
+        AnatomicalLandmark.Scapula.ANGULAR_ACROMIALIS: Scapula.AA,
+        AnatomicalLandmark.Scapula.ACROMIOCLAVICULAR_JOINT_CENTER: Scapula.AC,
+        AnatomicalLandmark.Scapula.ANGULUS_INFERIOR: Scapula.AI,
+        AnatomicalVector.Scapula.POSTEROANTERIOR_GLENOID_AXIS: Scapula.POSTEROANTERIOR_GLENOID_AXIS,
+        AnatomicalVector.Scapula.ANTEROPOSTERIOR_GLENOID_AXIS: Scapula.ANTEROPOSTERIOR_GLENOID_AXIS,
+        AnatomicalVector.Scapula.INFEROSUPERIOR_GLENOID_AXIS: Scapula.INFEROSUPERIOR_GLENOID_AXIS,
+        AnatomicalVector.Scapula.MEDIOLATERAL_GLENOID_NORMAL: Scapula.MEDIOLATERAL_GLENOID_NORMAL,
+        AnatomicalVector.Scapula.LATEROMEDIAL_GLENOID_NORMAL: Scapula.LATEROMEDIAL_GLENOID_NORMAL,
+        AnatomicalLandmark.Scapula.INFERIOR_EDGE: Scapula.IE,
+        AnatomicalLandmark.Scapula.SUPERIOR_EDGE: Scapula.SE,
+        AnatomicalLandmark.Scapula.TRIGNONUM_SPINAE: Scapula.TS,
+        AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_JOINT_CENTER: Thorax.SC,
+        AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_SURFACE_CENTROID: Clavicle.STERNOCLAVICULAR_SURFACE_CENTROID,
+        AnatomicalVector.Clavicle.POSTEROANTERIOR_AXIS: Clavicle.POSTEROANTERIOR_AXIS,
+        AnatomicalVector.Clavicle.MEDIOLATERAL_AXIS: Clavicle.MEDIOLATERAL_AXIS,
+        AnatomicalLandmark.Humerus.MIDPOINT_EPICONDYLES: Humerus.MID_EPICONDYLES,
+        AnatomicalLandmark.Humerus.LATERAL_EPICONDYLE: Humerus.EL,
+        AnatomicalLandmark.Humerus.MEDIAL_EPICONDYLE: Humerus.EM,
+        AnatomicalLandmark.Humerus.GLENOHUMERAL_HEAD: Humerus.GH,
+        AnatomicalLandmark.Humerus.INTERTUBERCULAR_GROOVE: Humerus.IG,
+        AnatomicalVector.Humerus.DIAPHYSIS_INFEROSUPERIOR_AXIS: Humerus.DIAPHYSIS_INFEROSUPERIOR_AXIS,
+        AnatomicalVector.Humerus.NECK_SHAFT_PLANE_NORMAL: Humerus.NECK_SHAFT_PLANE_NORMAL,
+    }
 
-    if isinstance(landmark, AnatomicalLandmark.Thorax) or isinstance(landmark, AnatomicalVector.Thorax):
-        landmark_mapping = {
-            AnatomicalLandmark.Thorax.IJ: Thorax.IJ,
-            AnatomicalLandmark.Thorax.PX: Thorax.PX,
-            AnatomicalLandmark.Thorax.T1_ANTERIOR_FACE: Thorax.T1s,
-            AnatomicalLandmark.Thorax.T1: Thorax.T1,
-            AnatomicalLandmark.Thorax.C7: Thorax.C7,
-            AnatomicalLandmark.Thorax.T7: Thorax.T7,
-            AnatomicalLandmark.Thorax.T8: Thorax.T8,
-            AnatomicalLandmark.Thorax.T10: Thorax.T10,
-            AnatomicalLandmark.Thorax.MIDPOINT_C7_IJ: Thorax.MID_C7_IJ,
-            AnatomicalLandmark.Thorax.MIDPOINT_IJ_T1: Thorax.MID_IJ_T1,
-            AnatomicalLandmark.Thorax.MIDPOINT_T8_PX: Thorax.MID_T8_PX,
-            AnatomicalLandmark.Thorax.MIDPOINT_T10_PX: Thorax.MID_T10_PX,
-            AnatomicalVector.Thorax.SPINAL_CANAL_AXIS: Thorax.SPINAL_CANAL_AXIS,
-        }
-        the_constant = landmark_mapping.get(landmark).copy()
-
-    if isinstance(landmark, AnatomicalLandmark.Scapula) or isinstance(landmark, AnatomicalVector.Scapula):
-        landmark_mapping = {
-            AnatomicalLandmark.Scapula.ANGULAR_ACROMIALIS: Scapula.AA,
-            AnatomicalLandmark.Scapula.ACROMIOCLAVICULAR_JOINT_CENTER: Scapula.AC,
-            AnatomicalLandmark.Scapula.ANGULUS_INFERIOR: Scapula.AI,
-            AnatomicalVector.Scapula.POSTEROANTERIOR_GLENOID_AXIS: Scapula.POSTEROANTERIOR_GLENOID_AXIS,
-            AnatomicalVector.Scapula.ANTEROPOSTERIOR_GLENOID_AXIS: Scapula.ANTEROPOSTERIOR_GLENOID_AXIS,
-            AnatomicalVector.Scapula.INFEROSUPERIOR_GLENOID_AXIS: Scapula.INFEROSUPERIOR_GLENOID_AXIS,
-            AnatomicalVector.Scapula.MEDIOLATERAL_GLENOID_NORMAL: Scapula.MEDIOLATERAL_GLENOID_NORMAL,
-            AnatomicalVector.Scapula.LATEROMEDIAL_GLENOID_NORMAL: Scapula.LATEROMEDIAL_GLENOID_NORMAL,
-            # AnatomicalLandmark.Scapula.GLENOID_CAVITY_CONTOURS: Scapula.GC_CONTOURS,
-            AnatomicalLandmark.Scapula.INFERIOR_EDGE: Scapula.IE,
-            AnatomicalLandmark.Scapula.SUPERIOR_EDGE: Scapula.SE,
-            AnatomicalLandmark.Scapula.TRIGNONUM_SPINAE: Scapula.TS,
-        }
-
-        the_constant = landmark_mapping.get(landmark).copy()
-
-    if isinstance(landmark, AnatomicalLandmark.Clavicle) or isinstance(landmark, AnatomicalVector.Clavicle):
-        landmark_mapping = {
-            AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_JOINT_CENTER: Thorax.SC,
-            AnatomicalLandmark.Clavicle.STERNOCLAVICULAR_SURFACE_CENTROID: Clavicle.STERNOCLAVICULAR_SURFACE_CENTROID,
-            AnatomicalVector.Clavicle.POSTEROANTERIOR_AXIS: Clavicle.POSTEROANTERIOR_AXIS,
-            AnatomicalVector.Clavicle.MEDIOLATERAL_AXIS: Clavicle.MEDIOLATERAL_AXIS,
-        }
-
-        the_constant = landmark_mapping.get(landmark).copy()
-
-    if isinstance(landmark, AnatomicalLandmark.Humerus):
-        landmark_mapping = {
-            AnatomicalLandmark.Humerus.MIDPOINT_EPICONDYLES: Humerus.MID_EPICONDYLES,
-            AnatomicalLandmark.Humerus.LATERAL_EPICONDYLE: Humerus.EL,
-            AnatomicalLandmark.Humerus.MEDIAL_EPICONDYLE: Humerus.EM,
-            AnatomicalLandmark.Humerus.GLENOHUMERAL_HEAD: Humerus.GH,
-        }
-
-        the_constant = landmark_mapping.get(landmark).copy()
+    the_constant = landmark_mapping.get(landmark).copy()
 
     if isinstance(landmark, AnatomicalLandmark):
         if side == "left":

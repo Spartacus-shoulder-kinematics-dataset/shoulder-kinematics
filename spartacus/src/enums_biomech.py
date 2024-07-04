@@ -132,6 +132,8 @@ class AnatomicalVector:
         INFEROSUPERIOR = "inferosuperior"
         POSTEROANTERIOR = "posteroanterior"
         MEDIOLATERAL = "mediolateral"
+        LATEROMEDIAL = "lateromedial"
+        SUPEROINFERIOR = "superoinferior"
 
     class Thorax(Enum):
         SPINAL_CANAL_AXIS = "spinal canal axis"  # pointing infero-superior
@@ -147,9 +149,16 @@ class AnatomicalVector:
         POSTEROANTERIOR_AXIS = "clavicular posteroanterior axis"
         MEDIOLATERAL_AXIS = "Long axis of the distal part of the clavicle, pointing laterally"
 
+    class Humerus(Enum):
+        DIAPHYSIS_INFEROSUPERIOR_AXIS = "diaphysis inferosuperior axis"
+        NECK_SHAFT_PLANE_NORMAL = "neck shaft plane normal"
+
 
 class AnatomicalLandmark:
     """Enum for the biomechanical origins of the segment"""
+
+    class Global(Enum):
+        IMAGING_ORIGIN = "imaging centre"
 
     class Thorax(Enum):
 
@@ -213,6 +222,7 @@ class AnatomicalLandmark:
 
     class Humerus(Enum):
         GLENOHUMERAL_HEAD = "GH"
+        INTERTUBERCULAR_GROOVE = "IG"
         LATERAL_EPICONDYLE = "EL"
         MEDIAL_EPICONDYLE = "EM"
         MIDPOINT_EPICONDYLES = "midpoint epicondyles"  # middle of Medial and Lateral epicondyles
@@ -256,11 +266,14 @@ class AnatomicalLandmark:
             "(IJ+C7)/2": cls.Thorax.MIDPOINT_C7_IJ,
             "spinal canal axis from T1 to T7": AnatomicalVector.Thorax.SPINAL_CANAL_AXIS,
             "GH": cls.Humerus.GLENOHUMERAL_HEAD,
+            "IG": cls.Humerus.INTERTUBERCULAR_GROOVE,
             "EL": cls.Humerus.LATERAL_EPICONDYLE,
             "EM": cls.Humerus.MEDIAL_EPICONDYLE,
             "midpoint EM EL": cls.Humerus.MIDPOINT_EPICONDYLES,  # old
             "(EM+EL)/2": cls.Humerus.MIDPOINT_EPICONDYLES,
             "(EL+EM)/2": cls.Humerus.MIDPOINT_EPICONDYLES,
+            "diaphysis inferosuperior axis": AnatomicalVector.Humerus.DIAPHYSIS_INFEROSUPERIOR_AXIS,
+            "neck shaft plane normal": AnatomicalVector.Humerus.NECK_SHAFT_PLANE_NORMAL,
             "SC": cls.Clavicle.STERNOCLAVICULAR_JOINT_CENTER,  # most ventral point according to ISB
             "CSC": cls.Clavicle.STERNOCLAVICULAR_SURFACE_CENTROID,  # from Moissenet et al. , supposedly behind SC
             "CM": cls.Clavicle.MIDTHIRD,
@@ -284,6 +297,11 @@ class AnatomicalLandmark:
             "clavicle origin": cls.Clavicle.CUSTOM,
             "functional": cls.Other.FUNCTIONAL_CENTER,
             "imaging inferosuperior axis": AnatomicalVector.Thorax.SPINAL_CANAL_AXIS,
+            "imaging superoinferior axis": AnatomicalVector.Global.SUPEROINFERIOR,
+            "imaging lateromedial axis": AnatomicalVector.Global.LATEROMEDIAL,
+            "imaging mediolateral axis": AnatomicalVector.Global.MEDIOLATERAL,
+            "imaging posteroanterior axis": AnatomicalVector.Global.POSTEROANTERIOR,
+            "imaging centre": AnatomicalLandmark.Global.IMAGING_ORIGIN,
         }
 
         the_enum = biomech_origin_to_enum.get(biomech_origin)
@@ -319,6 +337,51 @@ class JointType(Enum):
         the_enum = dico.get(joint)
         if the_enum is None:
             raise ValueError(f"{joint} is not a valid joint.")
+
+        return the_enum
+
+    @property
+    def to_string(self):
+        dico = {
+            self.GLENO_HUMERAL: "glenohumeral",
+            self.SCAPULO_THORACIC: "scapulothoracic",
+            self.ACROMIO_CLAVICULAR: "acromioclavicular",
+            self.STERNO_CLAVICULAR: "sternoclavicular",
+            self.THORACO_HUMERAL: "thoracohumeral",
+        }
+
+        the_enum = dico.get(self)
+        if the_enum is None:
+            raise ValueError(f"{self} is not a valid joint.")
+
+        return the_enum
+
+    @property
+    def child(self):
+        dico = {
+            self.STERNO_CLAVICULAR: Segment.CLAVICLE,
+            self.ACROMIO_CLAVICULAR: Segment.SCAPULA,
+            self.SCAPULO_THORACIC: Segment.SCAPULA,
+            self.GLENO_HUMERAL: Segment.HUMERUS,
+        }
+
+        the_enum = dico.get(self)
+        if the_enum is None:
+            raise ValueError(f"{self} is not a valid joint.")
+        return the_enum
+
+    @property
+    def parent(self):
+        dico = {
+            self.STERNO_CLAVICULAR: Segment.THORAX,
+            self.ACROMIO_CLAVICULAR: Segment.CLAVICLE,
+            self.SCAPULO_THORACIC: Segment.THORAX,
+            self.GLENO_HUMERAL: Segment.SCAPULA,
+        }
+
+        the_enum = dico.get(self)
+        if the_enum is None:
+            raise ValueError(f"{self} is not a valid joint.")
 
         return the_enum
 
@@ -465,6 +528,10 @@ class Segment(Enum):
             raise ValueError(f"{segment} is not a valid segment.")
 
         return the_enum
+
+    @property
+    def to_string(self):
+        return self.value
 
 
 class Correction(Enum):
