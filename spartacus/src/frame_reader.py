@@ -149,9 +149,11 @@ class Frame:
         return cls.from_yz(y_axis, z_axis, origin, segment)
 
     @classmethod
-    def from_y_crossed_twice(cls, x_axis: VectorBase, y_axis: VectorBase, origin: AnatomicalLandmark, segment: Segment):
-        z_axis = CrossedVector(x_axis, y_axis)
-        return cls.from_yz(y_axis, z_axis, origin, segment)
+    def from_y_crossed_twice_build_x(
+        cls, y_axis: VectorBase, z_axis: VectorBase, origin: AnatomicalLandmark, segment: Segment
+    ):
+        x_axis = CrossedVector(y_axis, z_axis)
+        return cls.from_xy(x_axis, y_axis, origin, segment)
 
     @classmethod
     def from_x_crossed_twice(cls, x_axis: VectorBase, z_axis: VectorBase, origin: AnatomicalLandmark, segment: Segment):
@@ -177,7 +179,7 @@ class Frame:
     @classmethod
     def from_twice_crossed(cls, x_axis: str, y_axis: str, z_axis: str, origin: str, segment: Segment, side: str = None):
         is_x_axis_crossed_twice = "x^" in z_axis and "^x" in y_axis
-        is_y_axis_crossed_twice = "y^" in x_axis and "^y" in z_axis
+        is_y_axis_crossed_twice = "y^" in x_axis and "^y" in z_axis or "^y" in x_axis and "^y" in z_axis
         is_z_axis_crossed_twice = "z^" in y_axis and "^z" in x_axis
 
         if is_x_axis_crossed_twice:
@@ -189,7 +191,20 @@ class Frame:
             )
 
         if is_y_axis_crossed_twice:
-            return cls.from_y_crossed_twice(None, None, AnatomicalLandmark.from_string(origin), segment)
+            if z_axis == "x^y" and "y^" in x_axis and "^y" in z_axis:
+                return cls.from_y_crossed_twice_build_x(
+                    y_axis=parse_axis(y_axis, arm_side=side),
+                    z_axis=parse_axis(x_axis, cross_product_side="second", arm_side=side),
+                    origin=AnatomicalLandmark.from_string(origin),
+                    segment=segment,
+                )
+            if z_axis == "x^y" and "^y" in x_axis and "^y" in z_axis:
+                return cls.from_y_crossed_twice_build_x(
+                    y_axis=parse_axis(y_axis, arm_side=side),
+                    z_axis=parse_axis(x_axis, cross_product_side="first", arm_side=side),
+                    origin=AnatomicalLandmark.from_string(origin),
+                    segment=segment,
+                )
 
         if is_z_axis_crossed_twice:
             if x_axis == "y^z":
@@ -207,6 +222,10 @@ class Frame:
                     origin=AnatomicalLandmark.from_string(origin),
                     segment=segment,
                 )
+
+        raise ValueError(
+            "Invalid axis combination. Expected one of 'x^y', 'y^z', 'z^x' but got {x_axis}, {y_axis}, {z_axis}."
+        )
 
     @classmethod
     def from_xyz_string(cls, x_axis: str, y_axis: str, z_axis: str, origin: str, segment: Segment, side: str = None):
@@ -231,7 +250,7 @@ class Frame:
     @staticmethod
     def is_one_axis_crossed_twice(x_axis: str, y_axis: str, z_axis: str) -> bool:
         is_x_axis_crossed_twice = "x^" in z_axis and "^x" in y_axis
-        is_y_axis_crossed_twice = "y^" in x_axis and "^y" in z_axis
+        is_y_axis_crossed_twice = "y^" in x_axis and "^y" in z_axis or "^y" in x_axis and "^y" in z_axis
         is_z_axis_crossed_twice = "z^" in y_axis and "^z" in x_axis
 
         return is_x_axis_crossed_twice or is_y_axis_crossed_twice or is_z_axis_crossed_twice

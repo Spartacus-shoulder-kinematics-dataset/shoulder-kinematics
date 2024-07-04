@@ -16,9 +16,6 @@ print_warnings = True
 
 to_pass_because_geometric = [
     ("Fung et al.", Segment.HUMERUS),  # geometric Humerus feature implement SoloVectors
-    ("Kijima et al.", Segment.HUMERUS),
-    ("Kim et al.", Segment.HUMERUS),
-    ("Matsuki et al.", Segment.HUMERUS),
     ("Sugi et al.", Segment.HUMERUS),
 ]
 
@@ -81,6 +78,7 @@ def test_new_parsing(author):
                     segment=segment_enum,
                     side="right" if row.side_as_right or segment_enum == Segment.THORAX else row.side,
                 )
+
                 print(frame.side)
                 print(frame.x_axis.principal_direction())
                 print(frame.x_axis.compute_default_vector())
