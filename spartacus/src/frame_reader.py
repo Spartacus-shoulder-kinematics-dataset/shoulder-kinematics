@@ -180,7 +180,7 @@ class Frame:
     def from_twice_crossed(cls, x_axis: str, y_axis: str, z_axis: str, origin: str, segment: Segment, side: str = None):
         is_x_axis_crossed_twice = "x^" in z_axis and "^x" in y_axis
         is_y_axis_crossed_twice = "y^" in x_axis and "^y" in z_axis or "^y" in x_axis and "^y" in z_axis
-        is_z_axis_crossed_twice = "z^" in y_axis and "^z" in x_axis
+        is_z_axis_crossed_twice = "z^" in y_axis and "^z" in x_axis or "z^" in y_axis and "z^" in x_axis
 
         if is_x_axis_crossed_twice:
             return cls.from_x_crossed_twice(
@@ -207,7 +207,7 @@ class Frame:
                 )
 
         if is_z_axis_crossed_twice:
-            if x_axis == "y^z":
+            if x_axis == "y^z" and ("z^" in y_axis and "^z" in x_axis):
                 return cls.from_z_crossed_twice_build_y(
                     x_axis=parse_axis(y_axis, cross_product_side="second", arm_side=side),
                     z_axis=parse_axis(z_axis, arm_side=side),
@@ -215,9 +215,16 @@ class Frame:
                     segment=segment,
                 )
 
-            if y_axis == "z^x":
+            if y_axis == "z^x" and ("z^" in y_axis and "^z" in x_axis):
                 return cls.from_z_crossed_twice_build_x(
                     y_axis=parse_axis(x_axis, cross_product_side="first", arm_side=side),
+                    z_axis=parse_axis(z_axis, arm_side=side),
+                    origin=AnatomicalLandmark.from_string(origin),
+                    segment=segment,
+                )
+            if y_axis == "z^x" and ("z^" in y_axis and "z^" in x_axis):
+                return cls.from_z_crossed_twice_build_x(
+                    y_axis=parse_axis(x_axis, cross_product_side="second", arm_side=side),
                     z_axis=parse_axis(z_axis, arm_side=side),
                     origin=AnatomicalLandmark.from_string(origin),
                     segment=segment,
@@ -251,7 +258,7 @@ class Frame:
     def is_one_axis_crossed_twice(x_axis: str, y_axis: str, z_axis: str) -> bool:
         is_x_axis_crossed_twice = "x^" in z_axis and "^x" in y_axis
         is_y_axis_crossed_twice = "y^" in x_axis and "^y" in z_axis or "^y" in x_axis and "^y" in z_axis
-        is_z_axis_crossed_twice = "z^" in y_axis and "^z" in x_axis
+        is_z_axis_crossed_twice = "z^" in y_axis and "^z" in x_axis or "z^" in y_axis and "z^" in x_axis
 
         return is_x_axis_crossed_twice or is_y_axis_crossed_twice or is_z_axis_crossed_twice
 

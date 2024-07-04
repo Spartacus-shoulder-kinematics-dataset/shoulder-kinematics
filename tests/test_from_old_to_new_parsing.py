@@ -15,7 +15,6 @@ from spartacus.src.utils import (
 print_warnings = True
 
 to_pass_because_geometric = [
-    ("Fung et al.", Segment.HUMERUS),  # geometric Humerus feature implement SoloVectors
     ("Sugi et al.", Segment.HUMERUS),
 ]
 
