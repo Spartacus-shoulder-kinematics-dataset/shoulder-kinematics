@@ -198,6 +198,7 @@ def test_number_of_articles():
         "Chu et al.",
         "Fung et al.",
         "Henninger et al.",
+        "Karduna et al.",
         "Kijima et al.",
         # "Kozono et al.", todo: to be put again when thorax is decided
         "Ludewig et al.",
@@ -209,9 +210,9 @@ def test_number_of_articles():
         "Yoshida et al.",
     ]
     assert articles == experted_articles
-    assert len(articles) == 13
+    assert len(articles) == 14
 
-    assert confident_values.shape[0] == 811833
+    assert confident_values.shape[0] == 812040
 
 
 def print_data(data, random_checks):
