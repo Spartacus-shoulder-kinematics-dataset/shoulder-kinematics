@@ -36,7 +36,6 @@ class Spartacus:
     def remove_rows_not_ready_for_analysis(self):
         # Todo: remove this function ultimately
         # remove lines I know they are not ready for analysis
-        # drop line with "Charbonnier et al." in dataset_authors
         dataset_authors = [
             "Gutierrez Delgado et al.",  # not usable finally ?
             "Kim et al.",  # no data yet.
@@ -88,6 +87,7 @@ class Spartacus:
 
             if not row_data.check_all_segments_validity(print_warnings=print_warnings):
                 continue
+
             row_data.set_segments()
 
             if not row_data.check_joint_validity(print_warnings=print_warnings):
@@ -213,6 +213,7 @@ def load() -> Spartacus:
     # df = df[df["dataset_authors"] == "Oki et al."]
     # df = df[df["dataset_authors"] == "Teece et al."]
     # df = df[df["dataset_authors"] == "Yoshida et al."]
+    # df = df[df["dataset_authors"] == "Nishinaka et al."]
 
     print(df.shape)
     sp = Spartacus(dataframe=df)

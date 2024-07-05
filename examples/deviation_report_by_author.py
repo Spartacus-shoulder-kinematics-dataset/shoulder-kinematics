@@ -14,14 +14,6 @@ from spartacus.src.utils_setters import (
 
 print_warnings = True
 
-to_pass_because_geometric = [
-    ("Fung et al.", Segment.HUMERUS),
-    ("Kijima et al.", Segment.HUMERUS),
-    ("Kim et al.", Segment.HUMERUS),
-    ("Matsuki et al.", Segment.HUMERUS),
-    ("Sugi et al.", Segment.HUMERUS),
-]
-
 df = pd.read_csv(DatasetCSV.CLEAN.value)
 df = df.where(pd.notna(df), None)
 authors = df["dataset_authors"].unique().tolist()
@@ -90,9 +82,6 @@ for i, author in enumerate(authors):
 
     for segment in Segment:
 
-        if (author, segment) in to_pass_because_geometric:
-            continue
-
         segment_cols = get_segment_columns(segment)
         if check_segment_filled_with_nan(first_row, segment_cols, print_warnings=print_warnings):
             continue
@@ -111,8 +100,6 @@ for i, author in enumerate(authors):
             continue
         segment_cols = get_segment_columns(joint_type.child)
         if check_segment_filled_with_nan(first_row, segment_cols, print_warnings=print_warnings):
-            continue
-        if (author, Segment.HUMERUS) in to_pass_because_geometric:
             continue
 
         joint = set_joint_from_row(first_row, joint_type)
