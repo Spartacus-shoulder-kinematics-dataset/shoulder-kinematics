@@ -63,13 +63,13 @@ class Joint:
 
     @property
     def is_translation_frame_proximal_isb(self) -> bool:
-        if self.translation_frame == FrameType.CHILD:
-            return False
-        if self.translation_frame == FrameType.JCS:
-            return False
+        frame_type_dict = {
+            FrameType.CHILD: False,
+            FrameType.JCS: False,
+            FrameType.PARENT: True,
+        }
 
-        if self.translation_frame == FrameType.PARENT:
-            return True if self.parent_segment.is_isb() else False
+        return frame_type_dict.get(self.translation_frame, False)
 
     def is_sequence_convertible_through_factors(self, print_warning: bool = False) -> bool:
         """
