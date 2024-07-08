@@ -84,7 +84,8 @@ class Deviation:
         if bsys.segment == "thorax" and bsys.frame is None:
             return False
 
-        return bsys.frame.has_isb_landmarks and bsys.is_isb_oriented  # not sure about the is_isb_oriented
+        # return bsys.frame.has_isb_landmarks and bsys.is_isb_oriented  # not sure about the is_isb_oriented
+        return bsys.frame.has_isb_landmarks
 
     def axes_built_with_isb_landmarks(self, bsys: BiomechCoordinateSystem) -> float:
         if Deviation.are_axes_built_with_isb_landmarks(bsys):
