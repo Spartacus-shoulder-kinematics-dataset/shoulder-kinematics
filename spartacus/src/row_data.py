@@ -20,7 +20,6 @@ from .corrections.angle_conversion_callbacks import (
     to_left_handed_frame,
 )
 from .corrections.kolz_matrices import get_kolz_rotation_matrix
-from .deviation import SegmentDeviation, JointDeviation
 from .enums_biomech import (
     Segment,
     FrameType,
