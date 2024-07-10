@@ -4,6 +4,7 @@ the resulting orientation of the vector frame in an ISB global frame X-posteroan
 There is no physical meaning to the values stored in this script, they are just made up to make sure, we compute  the good orientation.
 IT woud
 """
+
 from typing import Any
 
 import numpy as np

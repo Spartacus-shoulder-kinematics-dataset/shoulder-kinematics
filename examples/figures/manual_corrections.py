@@ -6,7 +6,8 @@ def manual_corrections(sub_df):
     # DONE FOR GH ELEVATION.
     corrections_glenohumeral = {
         "Begon et al.": (-1, -1, -1),
-        "Henninger et al.": (1, -1, -1),
+        "Henninger et al.": (1, -1, 1),
+        # "Henninger et al.": (1, -1, -1),
         "Ludewig et al.": (-1, -1, -1),
         "Moissenet et al.": (1, -1, 1),
     }
