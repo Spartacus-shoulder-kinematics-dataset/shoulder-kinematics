@@ -36,7 +36,20 @@ def set_child_segment_from_row(row, segment: Segment):
         segment=segment,
         side="right" if row.side_as_right else row.side,
     )
-    child_biomech_sys = BiomechCoordinateSystem.from_frame(frame_child)
+
+    if frame_child.only_translation:
+        # for Nishinaka for example
+        child_biomech_sys = BiomechCoordinateSystem(
+            antero_posterior_axis=None,
+            infero_superior_axis=None,
+            medio_lateral_axis=None,
+            origin=frame_child.origin,
+            segment=segment,
+            frame=frame_child,
+        )
+    else:
+        child_biomech_sys = BiomechCoordinateSystem.from_frame(frame_child)
+
     return child_biomech_sys
 
 

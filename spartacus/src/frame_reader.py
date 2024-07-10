@@ -250,6 +250,16 @@ class Frame:
 
     @classmethod
     def from_xyz_string(cls, x_axis: str, y_axis: str, z_axis: str, origin: str, segment: Segment, side: str = None):
+        are_all_axes_empty = all(axis is None for axis in [x_axis, y_axis, z_axis])
+
+        if are_all_axes_empty and origin is None:
+            raise ValueError(
+                "All axes and origin are None. Make sure this is what is expected. "
+                f"Got x_axis: {x_axis}, y_axis: {y_axis}, z_axis: {z_axis}, origin: {origin}"
+            )
+
+        if are_all_axes_empty:
+            return cls(x_axis=None, y_axis=None, z_axis=None, origin=origin, segment=segment)
 
         if cls.is_one_axis_crossed_twice(x_axis, y_axis, z_axis):
             return cls.from_twice_crossed(x_axis, y_axis, z_axis, origin, segment, side)
@@ -279,6 +289,10 @@ class Frame:
     @property
     def landmarks(self) -> tuple[str, ...]:
         return tuple(dict.fromkeys(self.x_axis.landmarks + self.y_axis.landmarks + self.z_axis.landmarks).keys())
+
+    @property
+    def only_translation(self) -> bool:
+        return all([axis is None for axis in self.axes])
 
     @property
     def is_isb(self) -> bool:

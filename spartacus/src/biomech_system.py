@@ -16,14 +16,16 @@ class BiomechCoordinateSystem:
         frame: Frame = None,
     ):
         # verify isinstance
-        if not isinstance(antero_posterior_axis, CartesianAxis):
+        if antero_posterior_axis is not None and not isinstance(antero_posterior_axis, CartesianAxis):
             raise TypeError("antero_posterior_axis should be of type CartesianAxis")
-        if not isinstance(infero_superior_axis, CartesianAxis):
+        if infero_superior_axis is not None and not isinstance(infero_superior_axis, CartesianAxis):
             raise TypeError("infero_superior_axis should be of type CartesianAxis")
-        if not isinstance(medio_lateral_axis, CartesianAxis):
+        if medio_lateral_axis is not None and not isinstance(medio_lateral_axis, CartesianAxis):
             raise TypeError("medio_lateral_axis should be of type CartesianAxis")
         # verity they are all different
-        if (
+        if all(
+            [antero_posterior_axis is not None, infero_superior_axis is not None, medio_lateral_axis is not None]
+        ) and (
             antero_posterior_axis == infero_superior_axis
             or antero_posterior_axis == medio_lateral_axis
             or infero_superior_axis == medio_lateral_axis
@@ -162,29 +164,6 @@ class BiomechCoordinateSystem:
             infero_superior_axis=self.infero_superior_axis.value[1][:, np.newaxis],
             medio_lateral_axis=self.medio_lateral_axis.value[1][:, np.newaxis],
         )
-
-    # def get_segment_risk_quantification(self, type_risk):
-    #     """
-    #     Return the risk quantification of the segment which is the product of the risk
-    #     of each type of risk described in the dictionnary dict_coeff.
-    #
-    #     Parameters
-    #     ----------
-    #     type_risk: str
-    #         "rotation" or "displacement"
-    #     """
-    #
-    #     risk = 1
-    #     if self.is_mislabeled():
-    #         risk = risk * DEVIATION_COEFF[type_risk]["label"]
-    #
-    #     if not self.is_isb_origin():
-    #         risk = risk * DEVIATION_COEFF[type_risk]["origin"]
-    #
-    #     if self.is_any_axis_wrong_sens():
-    #         risk = risk * DEVIATION_COEFF[type_risk]["sens"]
-
-    # return risk
 
     def __print__(self):
         print(f"Segment: {self.segment}")

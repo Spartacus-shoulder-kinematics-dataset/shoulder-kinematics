@@ -20,7 +20,6 @@ from .corrections.angle_conversion_callbacks import (
     to_left_handed_frame,
 )
 from .corrections.kolz_matrices import get_kolz_rotation_matrix
-from .deviation import SegmentDeviation, JointDeviation
 from .enums_biomech import (
     Segment,
     FrameType,
@@ -930,20 +929,20 @@ class RowData:
         angle_series_dataframe["xp_mean"] = self.row.experimental_mean
 
         angle_series_dataframe["unit"] = "rad"
-        angle_series_dataframe["parent_d1"] = self.rotation_deviation[0].d1
-        angle_series_dataframe["parent_d2"] = self.rotation_deviation[0].d2
-        angle_series_dataframe["parent_d3"] = self.rotation_deviation[0].d3
-        angle_series_dataframe["parent_d4"] = self.rotation_deviation[0].d4
-        angle_series_dataframe["child_d1"] = self.rotation_deviation[1].d1
-        angle_series_dataframe["child_d2"] = self.rotation_deviation[1].d2
-        angle_series_dataframe["child_d3"] = self.rotation_deviation[1].d3
-        angle_series_dataframe["child_d4"] = self.rotation_deviation[1].d4
-        angle_series_dataframe["d5"] = self.rotation_deviation[2].d5
-        angle_series_dataframe["d6"] = self.rotation_deviation[2].d6
-        angle_series_dataframe["d7"] = self.rotation_deviation[2].d7
-        angle_series_dataframe["total_deviation"] = (
-            self.rotation_deviation[0].total() * self.rotation_deviation[1].total() * self.rotation_deviation[2].total()
-        )
+        # angle_series_dataframe["parent_d1"] = self.rotation_deviation[0].d1
+        # angle_series_dataframe["parent_d2"] = self.rotation_deviation[0].d2
+        # angle_series_dataframe["parent_d3"] = self.rotation_deviation[0].d3
+        # angle_series_dataframe["parent_d4"] = self.rotation_deviation[0].d4
+        # angle_series_dataframe["child_d1"] = self.rotation_deviation[1].d1
+        # angle_series_dataframe["child_d2"] = self.rotation_deviation[1].d2
+        # angle_series_dataframe["child_d3"] = self.rotation_deviation[1].d3
+        # angle_series_dataframe["child_d4"] = self.rotation_deviation[1].d4
+        # angle_series_dataframe["d5"] = self.rotation_deviation[2].d5
+        # angle_series_dataframe["d6"] = self.rotation_deviation[2].d6
+        # angle_series_dataframe["d7"] = self.rotation_deviation[2].d7
+        # angle_series_dataframe["total_deviation"] = (
+        #     self.rotation_deviation[0].total() * self.rotation_deviation[1].total() * self.rotation_deviation[2].total()
+        # )
 
         if correction:
             (legend_dof1, legend_dof2, legend_dof3) = self.joint.isb_rotation_biomechanical_dof

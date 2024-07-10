@@ -53,25 +53,25 @@ def test_parse_frame():
         AnatomicalLandmark.Scapula.TRIGNONUM_SPINAE,
         AnatomicalLandmark.Scapula.ANGULUS_INFERIOR,
     )
-    assert scapula_frame.is_isb == False
+    assert scapula_frame.is_isb is False
 
-    assert scapula_frame.is_x_axis_postero_anterior == False
-    assert scapula_frame.is_y_axis_supero_inferior == False
-    assert scapula_frame.is_z_axis_medio_lateral == False
+    assert scapula_frame.is_x_axis_postero_anterior is False
+    assert scapula_frame.is_y_axis_supero_inferior is False
+    assert scapula_frame.is_z_axis_medio_lateral is False
 
     assert scapula_frame.postero_anterior_axis == scapula_frame.y_axis
     assert scapula_frame.infero_superior_axis == scapula_frame.z_axis
     assert scapula_frame.medio_lateral_axis == scapula_frame.x_axis
 
-    assert scapula_frame.medio_lateral_local_axis == CartesianAxis.minusZ
-    assert scapula_frame.infero_superior_local_axis == CartesianAxis.plusY
-    assert scapula_frame.postero_anterior_local_axis == CartesianAxis.minusX
+    assert scapula_frame.medio_lateral_local_axis == CartesianAxis.minusX
+    assert scapula_frame.infero_superior_local_axis == CartesianAxis.plusZ
+    assert scapula_frame.postero_anterior_local_axis == CartesianAxis.minusY
 
 
 def isb_verification(frame: Frame):
-    assert frame.is_x_axis_postero_anterior == True
-    assert frame.is_y_axis_supero_inferior == True
-    assert frame.is_z_axis_medio_lateral == True
+    assert frame.is_x_axis_postero_anterior is True
+    assert frame.is_y_axis_supero_inferior is True
+    assert frame.is_z_axis_medio_lateral is True
 
     assert frame.postero_anterior_local_axis == CartesianAxis.plusX
     assert frame.infero_superior_local_axis == CartesianAxis.plusY
@@ -82,9 +82,9 @@ def isb_verification(frame: Frame):
     assert frame.medio_lateral_axis == frame.z_axis
 
     print(frame.origin)
-    assert frame.is_origin_isb == True
-    assert frame.has_isb_landmarks == True
-    assert frame.is_isb == True
+    assert frame.is_origin_isb is True
+    assert frame.has_isb_landmarks is True
+    assert frame.is_isb is True
 
 
 scapula_frame_template = lambda x_axis: Frame.from_xyz_string(
