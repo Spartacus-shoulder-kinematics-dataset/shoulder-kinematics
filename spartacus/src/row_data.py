@@ -13,6 +13,7 @@ from .checks import (
     check_is_translation_provided,
     check_parent_child_joint,
 )
+from .compliance import SegmentCompliance, JointCompliance
 from .corrections.angle_conversion_callbacks import (
     isb_framed_rotation_matrix_from_euler_angles,
     set_corrections_on_rotation_matrix,
@@ -761,18 +762,18 @@ class RowData:
         Compute the deviation of the joint from the ISB recommendation.
         """
         if self.has_rotation_data:
-            rotation_parent_deviation = SegmentDeviation(mode="rotation", bsys=self.parent_biomech_sys)
-            rotation_child_deviation = SegmentDeviation(mode="rotation", bsys=self.child_biomech_sys)
-            rotation_joint_deviation = JointDeviation(
+            rotation_parent_deviation = SegmentCompliance(mode="rotation", bsys=self.parent_biomech_sys)
+            rotation_child_deviation = SegmentCompliance(mode="rotation", bsys=self.child_biomech_sys)
+            rotation_joint_deviation = JointCompliance(
                 mode="rotation", joint=self.joint, thoracohumeral_angle=self.thoracohumeral_angle
             )
 
             self.rotation_deviation = [rotation_parent_deviation, rotation_child_deviation, rotation_joint_deviation]
 
         if self.has_translation_data:
-            translation_parent_deviation = SegmentDeviation(mode="translation", bsys=self.parent_biomech_sys)
-            translation_child_deviation = SegmentDeviation(mode="translation", bsys=self.child_biomech_sys)
-            translation_joint_deviation = JointDeviation(
+            translation_parent_deviation = SegmentCompliance(mode="translation", bsys=self.parent_biomech_sys)
+            translation_child_deviation = SegmentCompliance(mode="translation", bsys=self.child_biomech_sys)
+            translation_joint_deviation = JointCompliance(
                 mode="translation", joint=self.joint, thoracohumeral_angle=self.thoracohumeral_angle
             )
 
