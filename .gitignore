@@ -224,3 +224,7 @@ plots/
 examples/deviation_report.csv
 
 examples/deviation_table.csv
+
+examples/figures/Henninger et al.
+
+*.csv#

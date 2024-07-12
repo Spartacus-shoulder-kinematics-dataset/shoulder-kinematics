@@ -15,7 +15,9 @@ class DataFolder(Enum):
     CHU_2012 = Path(__file__).parent.parent / "data" / "#3_Chu_et_al"
     FUNG_2001 = Path(__file__).parent.parent / "data" / "#4_Fung_et_al"
     GUTIERREZ_DELGADO_2017 = Path(__file__).parent.parent / "data" / "#5_Gutierrez_Delgado_et_al"
-    KOLZ_2020 = Path(__file__).parent.parent / "data" / "#6_Henninger_et_al" / "6a_PA"
+    HENNINGER_2020 = Path(__file__).parent.parent / "data" / "#6_Henninger_et_al" / "6a_PA"
+    HENNINGER_2020_6b = Path(__file__).parent.parent / "data" / "#6_Henninger_et_al" / "6b_AC"
+    HENNINGER_2020_6c = Path(__file__).parent.parent / "data" / "#6_Henninger_et_al" / "6c_GC"
     MCCLURE_2001 = Path(__file__).parent.parent / "data" / "#7_Karduna_et_al"
     KIJIMA_2015 = Path(__file__).parent.parent / "data" / "#8_Kijima_et_al"
     KIM_2017 = Path(__file__).parent.parent / "data" / "#9_Kim_et_al"
@@ -40,7 +42,9 @@ class DataFolder(Enum):
             "#3_Chu_et_al": cls.CHU_2012,  # "Chu et al 2012"
             "#4_Fung_et_al": cls.FUNG_2001,  # "Fung et al 2001"
             "#5_Gutierrez_Delgado_et_al": cls.GUTIERREZ_DELGADO_2017,  # "Gutierrez Delgado et al 2017"
-            "#6_Henninger_et_al/6a_PA": cls.KOLZ_2020,  # "Kolz et al 2020
+            "#6_Henninger_et_al/6a_PA": cls.HENNINGER_2020,  # "Kolz et al 2020
+            "#6_Henninger_et_al/6b_AC": cls.HENNINGER_2020_6b,  # "Kolz et al 2020
+            "#6_Henninger_et_al/6c_GC": cls.HENNINGER_2020_6c,  # "Kolz et al 2020
             "#7_Karduna_et_al": cls.MCCLURE_2001,
             "#8_Kijima_et_al": cls.KIJIMA_2015,  # "Kijima et al 2015"
             "#9_Kim_et_al": cls.KIM_2017,  # "Kim et al 2017"
@@ -76,7 +80,9 @@ class DataFolder(Enum):
             self.CHU_2012: "Chu et al.",
             self.FUNG_2001: "Fung et al.",
             self.GUTIERREZ_DELGADO_2017: "Gutierrez Delgado et al.",
-            self.KOLZ_2020: "Henninger et al.",
+            self.HENNINGER_2020: "Henninger et al.",
+            self.HENNINGER_2020_6b: "Henninger et al. 6b AC",
+            self.HENNINGER_2020_6c: "Henninger et al. 6c GC",
             self.MCCLURE_2001: "Karduna et al.",
             self.KIJIMA_2015: "Kijima et al.",
             self.KIM_2017: "Kim et al.",

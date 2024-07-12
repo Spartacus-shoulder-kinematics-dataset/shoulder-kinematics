@@ -88,6 +88,7 @@ def main():
     mvt = "frontal elevation"
     df = import_data(correction=True)
     sub_df = df[df["humeral_motion"] == mvt]
+    sub_df = sub_df[sub_df["joint"] == "glenohumeral"]
     sub_df = manual_corrections(sub_df)
     dfi = DataFrameInterface(sub_df)
     plt = DataPlanchePlotting(dfi)
