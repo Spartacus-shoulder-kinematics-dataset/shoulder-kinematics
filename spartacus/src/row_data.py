@@ -99,8 +99,10 @@ class RowData:
 
         self.csv_filenames = None
         self.data = None
-        self.corrected_data = None
-        self.melted_corrected_data = None
+        self.df_3dof_per_line = None
+        self.df_1dof_per_line = None
+        self.corrected_df_3dof_per_line = None
+        self.corrected_df_1dof_per_line = None
 
     @property
     def left_side(self):
@@ -867,20 +869,6 @@ class RowData:
         pandas.DataFrame
             The dataframe with the angles in degrees
         """
-        # deviation_cols = [
-        #     "parent_d1",  # float
-        #     "parent_d2",  # float
-        #     "parent_d3",  # float
-        #     "parent_d4",  # float
-        #     "child_d1",  # float
-        #     "child_d2",  # float
-        #     "child_d3",  # float
-        #     "child_d4",  # float
-        #     "d5",  # float
-        #     "d6",  # float
-        #     "d7",  # float
-        #     "total_deviation",  # float
-        # ]
         angle_series_dataframe = pd.DataFrame(
             columns=[
                 "article",  # string
@@ -896,7 +884,6 @@ class RowData:
                 "in_vivo",  # bool
                 "xp_mean",  # string
             ],
-            # + deviation_cols,
         )
 
         value_dof = np.zeros((self.data.shape[0], 3))
@@ -930,60 +917,19 @@ class RowData:
         angle_series_dataframe["xp_mean"] = self.row.experimental_mean
 
         angle_series_dataframe["unit"] = "rad"
-        # angle_series_dataframe["parent_d1"] = self.rotation_deviation[0].d1
-        # angle_series_dataframe["parent_d2"] = self.rotation_deviation[0].d2
-        # angle_series_dataframe["parent_d3"] = self.rotation_deviation[0].d3
-        # angle_series_dataframe["parent_d4"] = self.rotation_deviation[0].d4
-        # angle_series_dataframe["child_d1"] = self.rotation_deviation[1].d1
-        # angle_series_dataframe["child_d2"] = self.rotation_deviation[1].d2
-        # angle_series_dataframe["child_d3"] = self.rotation_deviation[1].d3
-        # angle_series_dataframe["child_d4"] = self.rotation_deviation[1].d4
-        # angle_series_dataframe["d5"] = self.rotation_deviation[2].d5
-        # angle_series_dataframe["d6"] = self.rotation_deviation[2].d6
-        # angle_series_dataframe["d7"] = self.rotation_deviation[2].d7
-        # angle_series_dataframe["total_deviation"] = (
-        #     self.rotation_deviation[0].total() * self.rotation_deviation[1].total() * self.rotation_deviation[2].total()
-        # )
+
+        three_dof_legend = (
+            self.joint.isb_rotation_biomechanical_dof if correction else tuple(self.joint.euler_sequence.value)
+        )
 
         if correction:
-            (legend_dof1, legend_dof2, legend_dof3) = self.joint.isb_rotation_biomechanical_dof
+            self.corrected_df_3dof_per_line = angle_series_dataframe
+            self.corrected_df_1dof_per_line = convert_df_to_1dof_per_line(angle_series_dataframe, three_dof_legend)
+            return self.corrected_df_1dof_per_line
         else:
-            legend_dof1, legend_dof2, legend_dof3 = (
-                self.joint.euler_sequence.value[0],
-                self.joint.euler_sequence.value[1],
-                self.joint.euler_sequence.value[2],
-            )
-
-        legend_df = pd.DataFrame(
-            {
-                "degree_of_freedom": ["value_dof1", "value_dof2", "value_dof3"],
-                "biomechanical_dof": [legend_dof1, legend_dof2, legend_dof3],
-            }
-        )
-
-        self.corrected_data = angle_series_dataframe
-        self.melted_data = angle_series_dataframe.melt(
-            id_vars=[
-                "article",
-                "joint",
-                "humeral_motion",
-                "humerothoracic_angle",
-                "unit",
-                "confidence",
-                "shoulder_id",
-                "in_vivo",
-                "xp_mean",
-            ],
-            # + deviation_cols,
-            value_vars=["value_dof1", "value_dof2", "value_dof3"],
-            var_name="degree_of_freedom",
-            value_name="value",
-        )
-        self.melted_data = pd.merge(self.melted_data, legend_df, on="degree_of_freedom")
-        self.melted_data["degree_of_freedom"] = self.melted_data["degree_of_freedom"].replace(
-            {"value_dof1": 1, "value_dof2": 2, "value_dof3": 3}
-        )
-        return self.melted_data
+            self.df_3dof_per_line = angle_series_dataframe
+            self.df_1dof_per_line = convert_df_to_1dof_per_line(angle_series_dataframe, three_dof_legend)
+            return self.df_1dof_per_line
 
     def get_euler_csv_filenames(self) -> tuple[str, str, str]:
         """load the csv filenames from the row data"""
@@ -1031,3 +977,35 @@ class RowData:
         deg_corrected_dof_3 = np.rad2deg(corrected_dof_3)
 
         return deg_corrected_dof_1, deg_corrected_dof_2, deg_corrected_dof_3
+
+
+def convert_df_to_1dof_per_line(df: pd.DataFrame, dofs_legend: tuple[str, str, str]) -> pd.DataFrame:
+    """Convert a dataframe with 3 degrees of freedom per line to a dataframe with 1 degree of freedom per line"""
+    legend_df = pd.DataFrame(
+        {
+            "degree_of_freedom": ["value_dof1", "value_dof2", "value_dof3"],
+            "biomechanical_dof": [dofs_legend, dofs_legend, dofs_legend],
+        }
+    )
+
+    df_1dof_per_line = df.melt(
+        id_vars=[
+            "article",
+            "joint",
+            "humeral_motion",
+            "humerothoracic_angle",
+            "unit",
+            "confidence",
+            "shoulder_id",
+            "in_vivo",
+            "xp_mean",
+        ],
+        value_vars=["value_dof1", "value_dof2", "value_dof3"],
+        var_name="degree_of_freedom",
+        value_name="value",
+    )
+    df_1dof_per_line = pd.merge(df_1dof_per_line, legend_df, on="degree_of_freedom")
+    df_1dof_per_line["degree_of_freedom"] = df_1dof_per_line["degree_of_freedom"].replace(
+        {"value_dof1": 1, "value_dof2": 2, "value_dof3": 3}
+    )
+    return df_1dof_per_line
