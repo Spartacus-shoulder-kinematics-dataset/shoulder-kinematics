@@ -97,8 +97,9 @@ def main():
             )
 
             dico_d[f"{joint_type.to_string}_c4"] = 0 if rotation_joint_deviation.is_c4 else 1
-            dico_d[f"{joint_type.to_string}_c5"] = 0 if rotation_joint_deviation.is_c5 else 1
-            dico_d[f"thoracohumeral_d6"] = 0 if rotation_joint_deviation.is_c6 else 1
+            if joint.translation_origin is not None:
+                dico_d[f"{joint_type.to_string}_c5"] = 0 if rotation_joint_deviation.is_c5 else 1
+            dico_d[f"thoracohumeral_c6"] = 0 if rotation_joint_deviation.is_c6 else 1
 
         df_deviation = pd.concat([df_deviation, pd.DataFrame([dico_d])], ignore_index=True)
 
