@@ -69,7 +69,7 @@ class Joint:
             FrameType.PARENT: True,
         }
 
-        return frame_type_dict.get(self.translation_frame, False)
+        return frame_type_dict.get(self.translation_frame)
 
     def is_sequence_convertible_through_factors(self, print_warning: bool = False) -> bool:
         """
