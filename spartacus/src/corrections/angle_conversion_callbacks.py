@@ -117,8 +117,58 @@ def convert_euler_angles_and_frames_to_isb(
         bsys_child,
     )
 
-    new_rotation_matrix_object = mat_2_rotation(isb_framed_rotation_matrix)
-    return biorbd.Rotation.toEulerAngles(new_rotation_matrix_object, seq=new_sequence_str).to_array()
+    return rotation_matrix_2_euler_angles(isb_framed_rotation_matrix, EulerSequence.from_string(new_sequence_str))
+
+
+def quick_fix_x_rot_in_yxy(new_angles: np.ndarray, matrix: np.ndarray) -> np.ndarray:
+    """
+    🔄 Quick Fix for X Rotation in YXY Euler Angle Sequence: Resolving the β Ambiguity 🧭
+
+    This function addresses a critical issue in matrix-to-Euler conversions for YXY sequences,
+    specifically focusing on resolving the ambiguity of the x-axis rotation (β).
+
+    Key Concepts:
+    1. YXY Euler Angle Sequence: R = Ry(α) * Rx(β) * Ry(γ)
+       where α, γ ∈ [-π, π] and traditionally β ∈ [0, π]
+
+    R = [cos(α)cos(γ) - sin(α)cos(β)sin(γ)    sin(α)sin(β)    cos(α)sin(γ) + sin(α)cos(β)cos(γ)]
+        [sin(β)sin(γ)                         cos(β)          -sin(β)cos(γ)                    ]
+        [-sin(α)cos(γ) - cos(α)cos(β)sin(γ)   cos(α)sin(β)    -sin(α)sin(γ) + cos(α)cos(β)cos(γ)]
+
+    2. The Fundamental Issue:
+       Standard conversion (β = arccos(r22)) fails to distinguish between β and -β,
+       as cos(-β) = cos(β).
+
+    3. The Ambiguity:
+       (α, β, γ) and (α ± π, -β, γ ± π) can represent the same rotation.
+
+    4. Our Solution:
+       We introduce a check based on sin(β):
+       If matrix[1, 0] < 0 or matrix[1, 2] > 0, we infer β < 0 and adjust accordingly.
+
+    Parameters:
+    new_angles (np.ndarray): Array of Euler angles [α, β, γ] in radians,
+                             where β is the rotation around the x-axis.
+    matrix (np.ndarray): 3x3 rotation matrix corresponding to the YXY sequence.
+
+    Returns:
+    np.ndarray: Corrected Euler angles with the proper sign for the x rotation (β).
+
+    Note:
+    This function resolves the β sign ambiguity by checking matrix[1, 0] (sin(β)sin(γ))
+    and matrix[1, 2] (-sin(β)cos(γ)). It works for all values of γ and ensures correct
+    sign determination even with floating-point precision issues near extreme angles.
+
+    Remember: In the realm of 3D rotations, not all paths lead to Rome,
+    but they might lead to the same orientation! 🌐
+    """
+
+    if matrix[1, 0] < 0 or matrix[1, 2] > 0:
+        new_angles[1] *= -1
+        new_angles[0] += np.pi
+        new_angles[2] += np.pi
+
+    return new_angles
 
 
 def rotation_matrix_2_euler_angles(
@@ -126,7 +176,9 @@ def rotation_matrix_2_euler_angles(
     euler_sequence: EulerSequence,
 ) -> np.ndarray:
     rotation_matrix_object = mat_2_rotation(rotation_matrix)
-    return biorbd.Rotation.toEulerAngles(rotation_matrix_object, seq=euler_sequence.value.lower()).to_array()
+    new_angles = biorbd.Rotation.toEulerAngles(rotation_matrix_object, seq=euler_sequence.value.lower()).to_array()
+
+    return quick_fix_x_rot_in_yxy(new_angles, rotation_matrix) if euler_sequence == EulerSequence.YXY else new_angles
 
 
 def get_angle_conversion_callback_to_isb_with_sequence(
