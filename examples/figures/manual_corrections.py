@@ -5,11 +5,8 @@ def manual_corrections(sub_df):
     # ONLY FOR DISPLAYING PURPOSE, EXPECT THIS TO DISAPPEAR ANYTIME SOON
     # DONE FOR GH ELEVATION.
     corrections_glenohumeral = {
-        "Begon et al.": (-1, -1, -1),
-        "Henninger et al.": (1, -1, 1),
         # "Henninger et al.": (1, -1, -1),
-        "Ludewig et al.": (-1, -1, -1),
-        "Moissenet et al.": (1, -1, 1),
+        # "Yoshida et al.": (1, -1, -1),
     }
 
     corrections_scapulothoracic = {
@@ -85,7 +82,7 @@ def apply_correction(sub_df, joint, corrections):
 
 def main():
     export = False
-    mvt = "frontal elevation"
+    mvt = "sagittal elevation"
     df = import_data(correction=True)
     sub_df = df[df["humeral_motion"] == mvt]
     sub_df = sub_df[sub_df["joint"] == "glenohumeral"]

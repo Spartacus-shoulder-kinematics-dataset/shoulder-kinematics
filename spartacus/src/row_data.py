@@ -849,6 +849,12 @@ class RowData:
         # load the csv file
         self.csv_filenames = self.get_euler_csv_filenames()
         self.data = load_euler_csv(self.csv_filenames)
+
+        corrections = self.get_manual_corrections()
+        self.data["value_dof1"] = self.data["value_dof1"].apply(lambda x: x * corrections[0])
+        self.data["value_dof2"] = self.data["value_dof2"].apply(lambda x: x * corrections[1])
+        self.data["value_dof3"] = self.data["value_dof3"].apply(lambda x: x * corrections[2])
+
         self.data["article"] = self.row.dataset_authors
         self.data["joint"] = JointType.from_string(self.row.joint)
         self.data["humeral_motion"] = self.row.humeral_motion
@@ -945,6 +951,26 @@ class RowData:
             csv_paths += (os.path.join(folder_path, self.row[field]),) if self.row[field] is not None else (None,)
 
         return csv_paths
+
+    def get_manual_corrections(self) -> tuple[int, int, int]:
+        """load the raw corrections.csv applied on raw data, because we suspect the initial computation to be done wrong"""
+        folder_path = DataFolder.from_string(self.row["folder"]).value
+        # check if correction.csv is in the folder
+        manual_correction = [1, 1, 1]
+        correction_csv = "corrections.csv"
+        if correction_csv in os.listdir(folder_path):
+            correction_csv_path = os.path.join(folder_path, correction_csv)
+            correction_df = pd.read_csv(correction_csv_path, sep=",", header=None)
+            correction_df.columns = [
+                "csv",
+                "coefficient",
+            ]
+            for i, field in enumerate(["dof_1st_euler", "dof_2nd_euler", "dof_3rd_euler"]):
+                subdf = correction_df[correction_df["csv"] == self.row[field]]
+                if subdf.shape[0] == 1:
+                    manual_correction[i] = subdf["coefficient"].values[0]
+
+        return tuple(manual_correction)
 
     def get_translation_csv_filenames(self) -> tuple[str, str, str]:
         """load the csv filenames from the row data"""
