@@ -168,6 +168,10 @@ def quick_fix_x_rot_in_yxy(new_angles: np.ndarray, matrix: np.ndarray) -> np.nda
         new_angles[0] += np.pi
         new_angles[2] += np.pi
 
+        new_angles[0] = (new_angles[0] + np.pi) % (2 * np.pi) - np.pi  # α in [-π, π]
+        new_angles[1] = (new_angles[1] + np.pi) % (2 * np.pi) - np.pi  # β in [-π, π]
+        new_angles[2] = (new_angles[2] + np.pi) % (2 * np.pi) - np.pi  # γ in [-π, π]
+
     return new_angles
 
 
