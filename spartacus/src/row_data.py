@@ -676,14 +676,7 @@ class RowData:
 
         if self.left_side:
             self.mediolateral_matrix = lambda rot1, rot2, rot3: to_left_handed_frame(
-                matrix=isb_framed_rotation_matrix_from_euler_angles(
-                    rot1=rot1,
-                    rot2=rot2,
-                    rot3=rot3,
-                    previous_sequence_str=self.joint.euler_sequence.value,
-                    bsys_parent=self.parent_biomech_sys,
-                    bsys_child=self.child_biomech_sys,
-                )
+                self.isb_rotation_matrix_callback(rot1=rot1, rot2=rot2, rot3=rot3)
             )
         else:
             self.mediolateral_matrix = self.isb_rotation_matrix_callback
