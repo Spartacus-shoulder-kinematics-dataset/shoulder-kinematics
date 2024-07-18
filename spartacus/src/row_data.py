@@ -63,7 +63,7 @@ class RowData:
         self.child_columns = get_segment_columns(self.child_segment)
 
         self.joint = None
-        self.right_side = True
+        self.right_side = row.side_as_right
         self.thoracohumeral_angle = None
 
         self.parent_biomech_sys = None
@@ -676,7 +676,7 @@ class RowData:
 
         if self.left_side:
             self.mediolateral_matrix = lambda rot1, rot2, rot3: to_left_handed_frame(
-                maxtrix=isb_framed_rotation_matrix_from_euler_angles(
+                matrix=isb_framed_rotation_matrix_from_euler_angles(
                     rot1=rot1,
                     rot2=rot2,
                     rot3=rot3,
