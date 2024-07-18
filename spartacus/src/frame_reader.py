@@ -259,6 +259,7 @@ class Frame:
             )
 
         if are_all_axes_empty:
+            # previously for Nishinaka that as only the information on distal origin for joint translation information
             return cls(x_axis=None, y_axis=None, z_axis=None, origin=origin, segment=segment)
 
         if cls.is_one_axis_crossed_twice(x_axis, y_axis, z_axis):
