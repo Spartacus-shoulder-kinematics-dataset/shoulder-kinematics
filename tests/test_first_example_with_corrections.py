@@ -90,7 +90,7 @@ articles_data = {
         ["frontal plane elevation", "scapular plane elevation", "sagittal plane elevation"],
         ["glenohumeral", "scapulothoracic", "acromioclavicular", "sternoclavicular"],
         [1, 2, 3],
-        9001.038459374906,
+        -4175.255742861286,
         [(0, -42.66781099811504), (1, -41.373669548197405), (2, -40.171439291048856), (-1, 25.0)],
     ),
     "Matsumura et al.": (
@@ -119,7 +119,7 @@ articles_data = {
         ],
         ["glenohumeral", "scapulothoracic", "acromioclavicular", "sternoclavicular"],
         [1, 2, 3],
-        8884019.476285355,
+        1665134.6062432956,
         [(0, 5.512546219515222), (1, 5.512549776544782), (2, 5.512606226422835), (-1, -0.44703921745960906)],
     ),
     "Oki et al.": (
@@ -144,7 +144,7 @@ articles_data = {
         ["sagittal plane elevation"],
         ["glenohumeral", "scapulothoracic"],
         [1, 2, 3],
-        1445.1089898448326,
+        551.3161398751674,
         [(0, 44.304576869953905), (40, -24.893753727658684), (65, 34.51266), (-1, 19.2415854)],
     ),
     # Add other articles here in the same format

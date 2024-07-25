@@ -147,7 +147,7 @@ articles_data = {
         ["sagittal plane elevation"],
         ["glenohumeral", "scapulothoracic"],
         [1, 2, 3],
-        2011.9508906100002,
+        719.11944717,
         [(0, -2.8862207), (40, -20.767784), (65, 34.51266), (-1, 19.2415854)],
     ),
     # Add other articles here in the same format
