@@ -13,6 +13,24 @@ articles_data = {
     # total_value i.e. sum of all values
     # random_checks i.e. list of tuples (index, value) to check
     # ),
+    "Begon et al.": (
+        19296,
+        [
+            "frontal plane elevation",
+            "sagittal plane elevation",
+            "internal-external rotation 0 degree-abducted",
+            "internal-external rotation 90 degree-abducted",
+        ],
+        [
+            "glenohumeral",
+            "scapulothoracic",
+            "acromioclavicular",
+            "sternoclavicular",
+        ],
+        [1, 2, 3],
+        246412.948120887,
+        [(0, 17.262926453200514), (1001, 47.336688953809954), (2000, 42.92927676074317), (-1, 12.282290646030905)],
+    ),
     "Bourne et al.": (
         2550,
         ["frontal plane elevation", "horizontal flexion"],
@@ -45,24 +63,6 @@ articles_data = {
         306.06436262040665,
         [(0, np.nan), (1, np.nan), (2, np.nan), (-1, 7.421436415016586)],
     ),
-    "Begon et al.": (
-        19296,
-        [
-            "frontal plane elevation",
-            "sagittal plane elevation",
-            "internal-external rotation 0 degree-abducted",
-            "internal-external rotation 90 degree-abducted",
-        ],
-        [
-            "glenohumeral",
-            "scapulothoracic",
-            "acromioclavicular",
-            "sternoclavicular",
-        ],
-        [1, 2, 3],
-        -12714.85146291502,
-        [(0, 162.73707354679948), (1001, -47.33668895380996), (2000, -42.92927676074317), (-1, 12.282290646030903)],
-    ),
     "Henninger et al.": (
         80862,
         [
@@ -74,8 +74,8 @@ articles_data = {
         ],
         ["glenohumeral", "scapulothoracic"],
         [1, 2, 3],
-        1753489.2980004128,
-        [(0, 45.9866459013967), (1001, 76.9873557465161), (40001, -8.61904452693329), (-1, 18.710579311164597)],
+        1006110.1030133098,
+        [(0, -134.0133540986033), (1001, 76.9873557465161), (40001, 171.3809554730667), (-1, 18.710579311164597)],
     ),
     "Kozono et al.": (
         30,
