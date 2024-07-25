@@ -192,7 +192,7 @@ def test_article_data(article_name, expected_shape, humeral_motions, joints, dof
 def test_number_of_articles():
     # Check number of unique articles after processing all
     articles = list(confident_values["article"].unique())
-    experted_articles = [
+    expected_articles = [
         "Begon et al.",
         "Bourne et al.",
         "Chu et al.",
@@ -209,7 +209,7 @@ def test_number_of_articles():
         "Teece et al.",
         "Yoshida et al.",
     ]
-    assert articles == experted_articles
+    assert articles == expected_articles
 
     assert len(articles) == 14
 
