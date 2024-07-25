@@ -711,18 +711,52 @@ class RowData:
         )
         # load the csv file
         self.csv_filenames = self.get_euler_csv_filenames()
-        self.data = load_euler_csv(self.csv_filenames)
+        self.rotation_data = load_euler_csv(self.csv_filenames)
 
         corrections = self.get_manual_corrections()
-        self.data["value_dof1"] = self.data["value_dof1"].apply(lambda x: x * corrections[0])
-        self.data["value_dof2"] = self.data["value_dof2"].apply(lambda x: x * corrections[1])
-        self.data["value_dof3"] = self.data["value_dof3"].apply(lambda x: x * corrections[2])
+        self.rotation_data["value_dof1"] = self.data["value_dof1"].apply(lambda x: x * corrections[0])
+        self.rotation_data["value_dof2"] = self.data["value_dof2"].apply(lambda x: x * corrections[1])
+        self.rotation_data["value_dof3"] = self.data["value_dof3"].apply(lambda x: x * corrections[2])
 
-        self.data["article"] = self.row.dataset_authors
-        self.data["joint"] = JointType.from_string(self.row.joint)
-        self.data["humeral_motion"] = self.row.humeral_motion
+        self.csv_translation_filenames = self.get_translation_csv_filenames()
+        self.translation_data = load_euler_csv(self.csv_translation_filenames)
 
-    def to_angle_series_dataframe(self, correction: bool = True):
+        self.rotation_data["article"] = self.row.dataset_authors
+        self.rotation_data["joint"] = JointType.from_string(self.row.joint)
+        self.rotation_data["humeral_motion"] = self.row.humeral_motion
+
+        self.translation_data["article"] = self.row.shoulder_id
+        self.translation_data["joint"] = JointType.from_string(self.row.joint)
+        self.translation_data["humeral_motion"] = self.row.humeral_motion
+
+    def to_dataframe(self, correction: bool = True) -> pd.DataFrame:
+        self.to_series_dataframe(correction=correction, rotation=True)
+        self.to_series_dataframe(correction=correction, rotation=False)
+
+        prefix = f"{"corrected" if correction else ""}_df"
+        setattr(
+            self,
+            f"{prefix}_3dof_per_line",
+            pd.concat(
+                [
+                    getattr(self, f"{prefix}_rotation_3dof_per_line"),
+                    getattr(self, f"{prefix}_translation_3dof_per_line"),
+                ]
+            ),
+        )
+        setattr(
+            self,
+            f"{prefix}_1dof_per_line",
+            pd.concat(
+                [
+                    getattr(self, f"{prefix}_rotation_1dof_per_line"),
+                    getattr(self, f"{prefix}_translation_1dof_per_line"),
+                ]
+            ),
+        )
+        return getattr(self, f"{prefix}_1dof_per_line")
+
+    def to_series_dataframe(self, correction: bool = True, rotation: bool = None) -> pd.DataFrame:
         """
         This converts the row to a panda dataframe with the angles in degrees with the following columns:
          - article
@@ -738,67 +772,65 @@ class RowData:
         pandas.DataFrame
             The dataframe with the angles in degrees
         """
-        angle_series_dataframe = pd.DataFrame(
-            columns=[
-                "article",  # string
-                "joint",  # string
-                "humeral_motion",  # string
-                "humerothoracic_angle",  # float
-                "value_dof1",  # float
-                "value_dof2",  # float
-                "value_dof3",  # float
-                "unit",  # string "angle" or "translation"
-                "confidence",  # float
-                "shoulder_id",  # int
-                "in_vivo",  # bool
-                "xp_mean",  # string
-            ],
+        series_dataframe = get_empty_series_dataframe()
+
+        no_correction_legend = tuple(self.joint.euler_sequence.value) if rotation else ("x", "y", "z")
+        three_dof_legend = self.joint.isb_rotation_biomechanical_dof if correction else no_correction_legend
+        value_dof = self.calculate_dof_values(
+            self.rotation_data if rotation else self.translation_data,
+            correction_callable=self.apply_correction_in_radians if rotation else None,
         )
+        series_dataframe["unit"] = "rad" if rotation else "mm"
 
-        value_dof = np.zeros((self.data.shape[0], 3))
+        series_dataframe["value_dof1"] = value_dof[:, 0]
+        series_dataframe["value_dof2"] = value_dof[:, 1]
+        series_dataframe["value_dof3"] = value_dof[:, 2]
+        series_dataframe["article"] = self.row.dataset_authors
+        series_dataframe["joint"] = self.row.joint
+        series_dataframe["humeral_motion"] = self.row.humeral_motion
+        series_dataframe["humerothoracic_angle"] = self.data["humerothoracic_angle"]
+        series_dataframe["shoulder_id"] = self.row.shoulder_id
+        series_dataframe["in_vivo"] = self.row.in_vivo
+        series_dataframe["xp_mean"] = self.row.experimental_mean
 
-        if correction:
-            for i, row in enumerate(self.data.itertuples()):
-                deg_corrected_dof_1, deg_corrected_dof_2, deg_corrected_dof_3 = self.apply_correction_in_radians(
+        prefix = f"{"corrected" if correction else ""}_df_{"rotation" if rotation else "translation"}"
+        setattr(self, f"{prefix}_3dof_per_line", series_dataframe)
+        setattr(self, f"{prefix}_1dof_per_line", convert_df_to_1dof_per_line(series_dataframe, three_dof_legend))
+
+        return getattr(self, f"{prefix}_1dof_per_line")
+
+    @staticmethod
+    def calculate_dof_values(data: pd.DataFrame, correction_callable: callable = None):
+        """
+        Calculate the dof values, assign values of correction if needed
+
+        Parameters
+        ----------
+        data : pd.DataFrame
+            The data to calculate the dof values
+        correction_callable : callable, optional
+            The callable to apply the correction, by default None, thus no correction applied
+        """
+        value_dof = np.zeros((data.shape[0], 3))
+
+        if correction_callable is not None:
+            for i, row in enumerate(data.itertuples()):
+                corrected_dof_1, corrected_dof_2, corrected_dof_3 = correction_callable(
                     row.value_dof1, row.value_dof2, row.value_dof3
                 )
-                value_dof[i, 0] = deg_corrected_dof_1
-                value_dof[i, 1] = deg_corrected_dof_2
-                value_dof[i, 2] = deg_corrected_dof_3
+                value_dof[i, 0] = corrected_dof_1
+                value_dof[i, 1] = corrected_dof_2
+                value_dof[i, 2] = corrected_dof_3
 
             # unwrap the angles to avoid discontinuities between -180 and 180 for example
             for i in range(0, 3):
                 value_dof[:, i] = np.unwrap(value_dof[:, i], period=180)
         else:
-            value_dof[:, 0] = self.data["value_dof1"].values
-            value_dof[:, 1] = self.data["value_dof2"].values
-            value_dof[:, 2] = self.data["value_dof3"].values
+            value_dof[:, 0] = data["value_dof1"].values
+            value_dof[:, 1] = data["value_dof2"].values
+            value_dof[:, 2] = data["value_dof3"].values
 
-        angle_series_dataframe["value_dof1"] = value_dof[:, 0]
-        angle_series_dataframe["value_dof2"] = value_dof[:, 1]
-        angle_series_dataframe["value_dof3"] = value_dof[:, 2]
-        angle_series_dataframe["article"] = self.row.dataset_authors
-        angle_series_dataframe["joint"] = self.row.joint
-        angle_series_dataframe["humeral_motion"] = self.row.humeral_motion
-        angle_series_dataframe["humerothoracic_angle"] = self.data["humerothoracic_angle"]
-        angle_series_dataframe["shoulder_id"] = self.row.shoulder_id
-        angle_series_dataframe["in_vivo"] = self.row.in_vivo
-        angle_series_dataframe["xp_mean"] = self.row.experimental_mean
-
-        angle_series_dataframe["unit"] = "rad"
-
-        three_dof_legend = (
-            self.joint.isb_rotation_biomechanical_dof if correction else tuple(self.joint.euler_sequence.value)
-        )
-
-        if correction:
-            self.corrected_df_3dof_per_line = angle_series_dataframe
-            self.corrected_df_1dof_per_line = convert_df_to_1dof_per_line(angle_series_dataframe, three_dof_legend)
-            return self.corrected_df_1dof_per_line
-        else:
-            self.df_3dof_per_line = angle_series_dataframe
-            self.df_1dof_per_line = convert_df_to_1dof_per_line(angle_series_dataframe, three_dof_legend)
-            return self.df_1dof_per_line
+        return value_dof
 
     def get_euler_csv_filenames(self) -> tuple[str, str, str]:
         """load the csv filenames from the row data"""
@@ -898,3 +930,22 @@ def convert_df_to_1dof_per_line(df: pd.DataFrame, dofs_legend: tuple[str, str, s
         {"value_dof1": 1, "value_dof2": 2, "value_dof3": 3}
     )
     return df_1dof_per_line
+
+
+def get_empty_series_dataframe():
+    return pd.DataFrame(
+        columns=[
+            "article",  # string
+            "joint",  # string
+            "humeral_motion",  # string
+            "humerothoracic_angle",  # float
+            "value_dof1",  # float
+            "value_dof2",  # float
+            "value_dof3",  # float
+            "unit",  # string "angle" or "translation"
+            "confidence",  # float
+            "shoulder_id",  # int
+            "in_vivo",  # bool
+            "xp_mean",  # string
+        ],
+    )

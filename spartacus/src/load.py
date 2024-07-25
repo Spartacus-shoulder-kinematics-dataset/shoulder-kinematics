@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 from .enums import DatasetCSV, DataFolder
@@ -70,8 +69,6 @@ class Spartacus:
         """
         # columns
         columns = self.dataframe.columns
-        # add a callback_function column
-        columns = np.append(columns, "callback_function")
 
         # create an empty dataframe
         self.confident_dataframe = pd.DataFrame(columns=columns)
@@ -96,33 +93,21 @@ class Spartacus:
             if not row_data.check_thoracohumeral_angle(print_warnings=print_warnings):
                 continue
 
-            rotation_validity, translation_validity = row_data.check_segments_correction_validity(
-                print_warnings=print_warnings
-            )
-            if not rotation_validity and not translation_validity:
+            # rotation_validity, translation_validity = row_data.check_segments_correction_validity(
+            #     print_warnings=print_warnings
+            # )
+
+            if not row_data.has_rotation_data and not row_data.has_translation_data:
                 print("WARNING : No usable data for this row, in both rotation and translation...")
                 continue
 
+            # if not row_data.has_rotation_data and row_data.has_translation_data:
+            #     # Todo: handle translation, NISHINAKA for example
+            #     print("WARNING : Only translation handled for this row... not yet working")
+            #     continue
+
             row_data.compute_deviations()
-
-            if rotation_validity:
-                row_data.compute_deviations()
-                row_data.set_rotation_correction_callback()
-
-            if not row_data.usable_rotation_data:
-                if print_warnings:
-                    print("WARNING : inconsistency in the dataset")
-                    print(row.joint, row.dataset_authors)
-                    print("detected :", row_data.joint.joint_type)
-                    print("detected parent segment :", row.parent)
-                    row_data.parent_biomech_sys.__print__()
-                    print("detected child segment :", row.child)
-                    row_data.child_biomech_sys.__print__()
-                    print("detected joint coordinate system :", row_data.joint.euler_sequence)
-                    print("callback function :", row_data.euler_angles_correction_callback)
-                continue
-            # add the callback function to the dataframe
-            row.callback_function = row_data.euler_angles_correction_callback
+            row_data.set_rotation_correction_callback()
 
             # add the row to the dataframe
             self.confident_dataframe = pd.concat([self.confident_dataframe, row.to_frame().T], ignore_index=True)
@@ -168,13 +153,11 @@ class Spartacus:
             row_data.import_data()
             row_data.compute_deviations()
 
-            df_angle_series = row_data.to_angle_series_dataframe(correction=False)
-            corrected_angle_series = row_data.to_angle_series_dataframe(correction=True)
+            df_series = row_data.to_dataframe(correction=False)
+            df_corrected_series = row_data.to_series_dataframe(correction=True)
             # add the row to the dataframe
-            output_dataframe = pd.concat([output_dataframe, df_angle_series], ignore_index=True)
-            corrected_output_dataframe = pd.concat(
-                [corrected_output_dataframe, corrected_angle_series], ignore_index=True
-            )
+            output_dataframe = pd.concat([output_dataframe, df_series], ignore_index=True)
+            corrected_output_dataframe = pd.concat([corrected_output_dataframe, df_corrected_series], ignore_index=True)
 
         self.confident_data_values = output_dataframe
         self.corrected_confident_data_values = corrected_output_dataframe
@@ -211,7 +194,8 @@ def load() -> Spartacus:
     # df = df[df["dataset_authors"] == "Oki et al."]
     # df = df[df["dataset_authors"] == "Teece et al."]
     # df = df[df["dataset_authors"] == "Yoshida et al."]
-    df = df[df["dataset_authors"] != "Nishinaka et al."]
+    # df = df[df["dataset_authors"] != "Nishinaka et al."]
+    # df = df[df["dataset_authors"] == "Nishinaka et al."]
 
     print(df.shape)
     sp = Spartacus(dataframe=df)
