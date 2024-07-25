@@ -72,8 +72,9 @@ class RowData:
         self.child_biomech_sys = None
         self.child_corrections = None
 
-        self.has_rotation_data = None
-        self.has_translation_data = None
+        # indirect attributes
+        self._has_rotation_data = None  # has euler sequence
+        self._has_translation_data = None  # has coordinate system and origin
 
         self.rotation_deviation = None
         self.translation_deviation = None
@@ -103,6 +104,16 @@ class RowData:
         self.df_1dof_per_line = None
         self.corrected_df_3dof_per_line = None
         self.corrected_df_1dof_per_line = None
+
+    @property
+    def has_rotation_data(self) -> bool:
+        columns = ["dof_1st_euler", "dof_2nd_euler", "dof_3rd_euler"]
+        return any([self.row[column] is not None for column in columns])
+
+    @property
+    def has_translation_data(self) -> bool:
+        columns = ["dof_translation_x", "dof_translation_y", "dof_translation_z"]
+        return any([self.row[column] is not None for column in columns])
 
     @property
     def left_side(self):
@@ -229,8 +240,8 @@ class RowData:
         no_euler_sequence = not check_is_euler_sequence_provided(self.row, print_warnings=print_warnings)
         no_translation = not check_is_translation_provided(self.row, print_warnings=print_warnings)
 
-        self.has_rotation_data = not no_euler_sequence
-        self.has_translation_data = not no_translation
+        self._has_rotation_data = not no_euler_sequence
+        self._has_translation_data = not no_translation
 
         if no_euler_sequence and no_translation:
             output = False
@@ -239,6 +250,8 @@ class RowData:
                     f"Joint {self.row.joint} has no euler sequence defined, "
                     f" and no translation defined, "
                     f"it should not be empty !!!"
+                    f" Got euler sequence: {self.row.euler_sequence}, "
+                    f"Got translation: {self.row.origin_displacement}, {self.row.displacement_cs}"
                 )
             return output
 
@@ -520,12 +533,6 @@ class RowData:
             and not self.parent_biomech_sys.is_origin_on_an_isb_axis()
             and not parent_is_thorax_global
         ):
-            # if self.parent_segment == Segment.SCAPULA:
-            # parent_output = self._check_segment_has_kolz_correction(
-            #     parent_correction, print_warnings=print_warnings
-            # )
-            # else:
-            # self.parent_definition_risk = True
             self.parent_segment_usable_for_rotation_data = True
             self.parent_segment_usable_for_translation_data = False
 
@@ -533,7 +540,6 @@ class RowData:
             child_output = True
             if self.child_segment == Segment.SCAPULA:
                 child_output = True
-                # parent_output = self._check_segment_has_kolz_correction(child_correction, print_warnings=print_warnings)
             else:
                 self.child_definition_risk = True
             self.child_segment_usable_for_rotation_data = child_output
@@ -546,31 +552,11 @@ class RowData:
             and not parent_is_thorax_global
         ):
             parent_output = True
-            # parent_output = self._check_segment_has_to_isb_or_like_correction(
-            #     parent_correction, print_warnings=print_warnings
-            # )
-            # if self.parent_segment == Segment.SCAPULA:
-            #     parent_output = self._check_segment_has_kolz_correction(parent_correction, print_warnings=print_warnings)
-            # I believe there should be a kolz correction when the origin is on an isb axis
-            # if self.parent_segment == Segment.SCAPULA:
-            # if self._check_segment_has_kolz_correction(parent_correction, print_warnings=False):
-            #     parent_output = False
-            #     print("WARNING: Kolz correction should not be filled when the origin is on an isb axis")
             self.parent_segment_usable_for_rotation_data = parent_output
             self.parent_segment_usable_for_translation_data = False
 
         if not self.child_biomech_sys.is_isb_oriented and self.child_biomech_sys.is_origin_on_an_isb_axis():
-            # child_output = self._check_segment_has_to_isb_or_like_correction(
-            #     child_correction, print_warnings=print_warnings
-            # )
             child_output = True
-            # if self.child_segment == Segment.SCAPULA:
-            #     child_output = self._check_segment_has_kolz_correction(child_correction, print_warnings=print_warnings)
-            # I believe there should be a kolz correction when the origin is on an isb axis
-            # if self.child_segment == Segment.SCAPULA:
-            #     if self._check_segment_has_kolz_correction(child_correction, print_warnings=False):
-            #         child_output = False
-            #         print("WARNING: Kolz correction should not be filled when the origin is on an isb axis")
             self.child_segment_usable_for_rotation_data = child_output
             self.child_segment_usable_for_translation_data = False
 
@@ -581,26 +567,11 @@ class RowData:
         ):
             parent_output = True
             if self.parent_segment == Segment.SCAPULA:
-                # parent_output = self._check_segment_has_kolz_correction(
-                #     parent_correction, print_warnings=print_warnings
-                # )
                 self.parent_segment_usable_for_rotation_data = parent_output
                 self.parent_segment_usable_for_translation_data = False
                 self.parent_definition_risk = True  # should be a less high risk. because known from the literature
             else:
                 parent_output = True
-                # parent_output = self._check_segment_has_to_isb_like_correction(
-                #     parent_correction, print_warnings=print_warnings
-                # )
-                #
-                # if not parent_is_correctable:
-                #     parent_output = self._check_segment_has_no_correction(
-                #         parent_correction, print_warnings=print_warnings
-                #     )
-                # else:
-                #     print(
-                #         f"The column is_correctable should not be filled with a True for {self.parent_segment} segment."
-                #     )
 
                 self.parent_segment_usable_for_rotation_data = parent_output
                 self.parent_segment_usable_for_translation_data = False
@@ -609,27 +580,11 @@ class RowData:
         if not self.child_biomech_sys.is_isb_oriented and not self.child_biomech_sys.is_origin_on_an_isb_axis():
             child_output = True
             if self.child_segment == Segment.SCAPULA:
-                # child_output = (self._check_segment_has_to_isb_correction(
-                #     child_correction, print_warnings=print_warnings
-                # ) and
-                # child_output = self._check_segment_has_kolz_correction(child_correction, print_warnings=print_warnings)
                 self.child_segment_usable_for_rotation_data = child_output
                 self.child_segment_usable_for_translation_data = False
                 self.child_definition_risk = True  # should be a less high risk. because known from the literature
             else:
                 child_output = True
-                # child_output = self._check_segment_has_to_isb_like_correction(
-                #     child_correction, print_warnings=print_warnings
-                # )
-                #
-                # if not parent_is_correctable:
-                #     child_output = self._check_segment_has_no_correction(
-                #         child_correction, print_warnings=print_warnings
-                #     )
-                # else:
-                #     print(
-                #         f"The column is_correctable should not be filled with a True for {self.child_segment} segment."
-                #     )
 
                 self.parent_segment_usable_for_rotation_data = child_output
                 self.parent_segment_usable_for_translation_data = False
