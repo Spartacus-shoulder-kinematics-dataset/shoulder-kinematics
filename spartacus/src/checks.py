@@ -261,27 +261,47 @@ def check_is_euler_sequence_provided(row: pd.Series, print_warnings: bool = Fals
     """This function checks if the euler sequence is provided in the dataset."""
     if row.euler_sequence is None:
         if print_warnings:
-            print("WARNING : euler sequence is not provided, for joint", row.joint, row.dataset_authors)
+            print(
+                "WARNING : euler sequence is not provided, for joint",
+                row.joint,
+                row.dataset_authors,
+                f". Got {row.euler_sequence}",
+            )
         return False
     # todo: check nan should disappear
     if not isinstance(row.euler_sequence, str) and (row.euler_sequence == "nan" or np.isnan(row.euler_sequence)):
         if print_warnings:
-            print("WARNING : euler sequence is nan, for joint", row.joint, row.dataset_authors)
+            print(
+                "WARNING : euler sequence is nan, for joint",
+                row.joint,
+                row.dataset_authors,
+                f". Got {row.euler_sequence}",
+            )
         return False
-    # check the three letters
-    if not len(row.euler_sequence) == 3:
+    # check the three letters and remove "'" if present
+    if not len(row.euler_sequence.replace("'", "")) == 3:
         if print_warnings:
-            print("WARNING : euler sequence is not 3 letters long, for joint", row.joint, row.dataset_authors)
+            print(
+                "WARNING : euler sequence is not 3 letters long, for joint",
+                row.joint,
+                row.dataset_authors,
+                f". Got {row.euler_sequence}",
+            )
         return False
     # check if the letters are x, y, or z
     authorized_letters = ["x", "y", "z"]
     if (
         not row.euler_sequence[0] in authorized_letters
         or not row.euler_sequence[1] in authorized_letters
-        or not row.euler_sequence[2] in authorized_letters
+        or not row.euler_sequence[3] in authorized_letters
     ):
         if print_warnings:
-            print("WARNING : euler sequence is not x, y, or z, for joint", row.joint, row.dataset_authors)
+            print(
+                "WARNING : euler sequence is not x, y, or z, for joint",
+                row.joint,
+                row.dataset_authors,
+                f". Got {row.euler_sequence}",
+            )
         return False
 
     return True
