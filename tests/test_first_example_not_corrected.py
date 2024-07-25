@@ -18,7 +18,7 @@ articles_data = {
     # ),
     "Bourne et al.": (
         2550,
-        ["frontal elevation", "horizontal flexion"],
+        ["frontal plane elevation", "horizontal flexion"],
         ["scapulothoracic"],
         [1, 2, 3],
         32987.06725953286,
@@ -26,7 +26,7 @@ articles_data = {
     ),
     "Chu et al.": (
         96,
-        ["frontal elevation", "scapular elevation", "internal-external rotation 90 degree-abducted"],
+        ["frontal plane elevation", "scapular plane elevation", "internal-external rotation 90 degree-abducted"],
         ["scapulothoracic"],
         [1, 2, 3],
         -554.7492646716876,
@@ -34,7 +34,7 @@ articles_data = {
     ),
     "Fung et al.": (
         621,
-        ["frontal elevation", "scapular elevation", "sagittal elevation"],
+        ["frontal plane elevation", "scapular plane elevation", "sagittal plane elevation"],
         ["scapulothoracic"],
         [1, 2, 3],
         10808.1338,
@@ -42,7 +42,7 @@ articles_data = {
     ),
     "Kijima et al.": (
         48,
-        ["scapular elevation"],
+        ["scapular plane elevation"],
         ["glenohumeral", "scapulothoracic"],
         [1, 2, 3],
         1149.815953912212,
@@ -51,8 +51,8 @@ articles_data = {
     "Begon et al.": (
         19296,
         [
-            "frontal elevation",
-            "sagittal elevation",
+            "frontal plane elevation",
+            "sagittal plane elevation",
             "internal-external rotation 0 degree-abducted",
             "internal-external rotation 90 degree-abducted",
         ],
@@ -69,9 +69,9 @@ articles_data = {
     "Henninger et al.": (
         80862,
         [
-            "frontal elevation",
-            "scapular elevation",
-            "sagittal elevation",
+            "frontal plane elevation",
+            "scapular plane elevation",
+            "sagittal plane elevation",
             "internal-external rotation 0 degree-abducted",
             "internal-external rotation 90 degree-abducted",
         ],
@@ -90,7 +90,7 @@ articles_data = {
     ),
     "Ludewig et al.": (
         684,
-        ["frontal elevation", "scapular elevation", "sagittal elevation"],
+        ["frontal plane elevation", "scapular plane elevation", "sagittal plane elevation"],
         ["glenohumeral", "scapulothoracic", "acromioclavicular", "sternoclavicular"],
         [1, 2, 3],
         -3739.1000000000004,
@@ -98,7 +98,7 @@ articles_data = {
     ),
     "Matsumura et al.": (
         99,
-        ["frontal elevation", "scapular elevation", "sagittal elevation"],
+        ["frontal plane elevation", "scapular plane elevation", "sagittal plane elevation"],
         ["scapulothoracic"],
         [1, 2, 3],
         -558.4569560038939,
@@ -106,7 +106,7 @@ articles_data = {
     ),
     "Matsuki et al.": (
         1836,
-        ["scapular elevation"],
+        ["scapular plane elevation"],
         ["scapulothoracic", "glenohumeral", "sternoclavicular"],
         [1, 2, 3],
         # 9303.5162527,
@@ -116,8 +116,8 @@ articles_data = {
     "Moissenet et al.": (
         705264,
         [
-            "frontal elevation",
-            "sagittal elevation",
+            "frontal plane elevation",
+            "sagittal plane elevation",
             "horizontal flexion",
             "internal-external rotation 0 degree-abducted",
         ],
@@ -128,7 +128,7 @@ articles_data = {
     ),
     "Oki et al.": (
         354,
-        ["frontal elevation", "sagittal elevation", "horizontal flexion"],
+        ["frontal plane elevation", "sagittal plane elevation", "horizontal flexion"],
         ["scapulothoracic", "sternoclavicular"],
         [1, 2, 3],
         2343.222633228853,
@@ -136,7 +136,7 @@ articles_data = {
     ),
     "Teece et al.": (
         39,
-        ["scapular elevation"],
+        ["scapular plane elevation"],
         ["acromioclavicular"],
         [1, 2, 3],
         1061.3874465806718,
@@ -144,7 +144,7 @@ articles_data = {
     ),
     "Yoshida et al.": (
         84,
-        ["sagittal elevation"],
+        ["sagittal plane elevation"],
         ["glenohumeral", "scapulothoracic"],
         [1, 2, 3],
         2011.9508906100002,
