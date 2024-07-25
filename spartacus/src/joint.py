@@ -44,7 +44,7 @@ class Joint:
 
         new_angles = convert_euler_angles_and_frames_to_isb(
             previous_sequence_str=self.euler_sequence.value,
-            new_sequence_str=EulerSequence.isb_from_joint_type(self.joint_type).value,
+            new_sequence_str=EulerSequence.isb_from_joint_type(self.joint_type).to_string,
             rot1=value_rot1,
             rot2=value_rot2,
             rot3=value_rot3,
