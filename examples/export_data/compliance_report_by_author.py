@@ -5,7 +5,7 @@ from spartacus import DatasetCSV, Segment
 from spartacus import JointType
 from spartacus.src.checks import check_segment_filled_with_nan
 from spartacus.src.compliance import JointCompliance, SegmentCompliance
-from spartacus.src.utils import get_segment_columns
+from spartacus.src.utils import get_segment_columns_direction
 from spartacus.src.utils_setters import (
     set_joint_from_row,
     set_thoracohumeral_angle_from_row,
@@ -66,7 +66,7 @@ def main():
 
         for segment in Segment:
 
-            segment_cols = get_segment_columns(segment)
+            segment_cols = get_segment_columns_direction(segment)
             if not check_segment_filled_with_nan(first_row, segment_cols, print_warnings=print_warnings):
                 bsys_segment = set_parent_segment_from_row(first_row, segment)
                 compliance = SegmentCompliance(mode="rotation", bsys=bsys_segment)
