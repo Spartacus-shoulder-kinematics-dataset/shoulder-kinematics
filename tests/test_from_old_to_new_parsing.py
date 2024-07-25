@@ -40,7 +40,7 @@ def test_new_parsing(author):
             segment_cols = get_segment_columns(segment_enum)
             segment_cols_direction = get_segment_columns_direction(segment_enum)
             # first check
-            if check_segment_filled_with_nan(row, segment_cols, print_warnings=print_warnings):
+            if check_segment_filled_with_nan(row, segment_cols_direction, print_warnings=print_warnings):
                 continue
 
             x_direction = sub_df_expected_directions[segment_cols[0]]
@@ -82,22 +82,21 @@ def test_new_parsing(author):
                 assert frame.y_axis.biomech_direction() == BiomechDirection.from_string(y_direction)
                 assert frame.z_axis.biomech_direction() == BiomechDirection.from_string(z_direction)
 
-                try:
-                    is_isb_col = get_is_isb_column(segment_enum)
-                    assert frame.is_isb == row[is_isb_col]
+                is_isb_col = get_is_isb_column(segment_enum)
+                assert frame.is_isb == sub_df_expected_directions[is_isb_col]
 
-                except Exception as e:
-                    print(e)
-                    print("MISLABELED ISB:")
-                    print(tuple_test)
-                    print("to check ISB:")
-                    print("landmarks :", frame.landmarks)
-                    print("expected landmarks :", frame.expected_isb_landmarks)
-
-                    print(frame.origin)
-                    print(frame.is_isb_oriented)
-                    print("has isb landmark", frame.has_isb_landmarks)
-                    print("####################")
+                # except Exception as e:
+                #     print(e)
+                #     print("MISLABELED ISB:")
+                #     print(tuple_test)
+                #     print("to check ISB:")
+                #     print("landmarks :", frame.landmarks)
+                #     print("expected landmarks :", frame.expected_isb_landmarks)
+                #
+                #     print(frame.origin)
+                #     print(frame.is_isb_oriented)
+                #     print("has isb landmark", frame.has_isb_landmarks)
+                #     print("####################")
 
                 # build the coordinate system
                 bsys_old = BiomechCoordinateSystem.from_biomech_directions(
