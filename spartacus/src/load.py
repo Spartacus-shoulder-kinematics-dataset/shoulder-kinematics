@@ -107,8 +107,6 @@ class Spartacus:
 
             if rotation_validity:
                 row_data.compute_deviations()
-
-                # row_data.quantify_segment_risk()  # todo
                 row_data.set_rotation_correction_callback()
 
             if not row_data.usable_rotation_data:
@@ -213,7 +211,7 @@ def load() -> Spartacus:
     # df = df[df["dataset_authors"] == "Oki et al."]
     # df = df[df["dataset_authors"] == "Teece et al."]
     # df = df[df["dataset_authors"] == "Yoshida et al."]
-    # df = df[df["dataset_authors"] == "Nishinaka et al."]
+    df = df[df["dataset_authors"] == "Nishinaka et al."]
 
     print(df.shape)
     sp = Spartacus(dataframe=df)
