@@ -3,7 +3,7 @@ import numpy as np
 from .utils import TestUtils
 
 spartacus = TestUtils.spartacus_folder()
-module = TestUtils.load_module(spartacus + "/examples/compliance_report_by_author.py")
+module = TestUtils.load_module(spartacus + "/examples/export_data/compliance_report_by_author.py")
 compliance_report = module.main()
 
 
