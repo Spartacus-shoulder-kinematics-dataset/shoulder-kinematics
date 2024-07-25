@@ -442,6 +442,11 @@ class EulerSequence(Enum):
 
         return the_enum
 
+    @property
+    def to_string(self) -> str:
+        seq = self.value
+        return f"{seq[0]}{seq[1]}'{seq[2]}''"
+
 
 class FrameType:
 
