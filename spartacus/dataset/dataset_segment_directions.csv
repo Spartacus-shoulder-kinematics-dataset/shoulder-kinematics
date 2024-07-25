@@ -13,7 +13,7 @@ dataset_id,dataset_authors,thorax_x_sense,thorax_y_sense,thorax_z_sense,humerus_
 #12,Matsuki et al.,-mediolateral,+inferosuperior,+posteroanterior,-mediolateral,+inferosuperior,+posteroanterior,+posteroanterior,+inferosuperior,+mediolateral,-mediolateral,+inferosuperior,+posteroanterior
 #13,Matsumura et al.,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,,,,+posteroanterior,+inferosuperior,+mediolateral
 #14,Moissenet et al.,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral
-#15,Nishinaka et al.,-mediolateral,+inferosuperior,+posteroanterior,,,,,,,+posteroanterior,-mediolateral,+inferosuperior
+#15,Nishinaka et al.,-mediolateral,+inferosuperior,+posteroanterior,+posteroanterior,-mediolateral,+inferosuperior,,,,+posteroanterior,-mediolateral,+inferosuperior
 #16,Oki et al.,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral
 #17,Sahara et al.,-inferosuperior,+posteroanterior,+mediolateral,,,,-inferosuperior,+posteroanterior,+mediolateral,-inferosuperior,+posteroanterior,+mediolateral
 #18,Sugi et al.,-mediolateral,+inferosuperior,+posteroanterior,-mediolateral,+inferosuperior,+posteroanterior,,,,-mediolateral,+inferosuperior,+posteroanterior
