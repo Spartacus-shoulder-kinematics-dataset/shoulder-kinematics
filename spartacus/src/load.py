@@ -211,7 +211,7 @@ def load() -> Spartacus:
     # df = df[df["dataset_authors"] == "Oki et al."]
     # df = df[df["dataset_authors"] == "Teece et al."]
     # df = df[df["dataset_authors"] == "Yoshida et al."]
-    df = df[df["dataset_authors"] == "Nishinaka et al."]
+    df = df[df["dataset_authors"] != "Nishinaka et al."]
 
     print(df.shape)
     sp = Spartacus(dataframe=df)
