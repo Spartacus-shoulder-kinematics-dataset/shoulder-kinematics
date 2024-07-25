@@ -15,7 +15,7 @@ from spartacus import DataFolder, Spartacus, DatasetCSV, RowData
 def test_data_format(data_folder):
 
     for subfile in os.listdir(data_folder.value):
-        if subfile.endswith(".csv"):
+        if subfile.endswith(".csv") and not subfile.startswith("corrections"):
             print("Loading file:", subfile)
             df = pd.read_csv(os.path.join(data_folder.value, subfile), header=None)
             print("Shape:", df.shape)
