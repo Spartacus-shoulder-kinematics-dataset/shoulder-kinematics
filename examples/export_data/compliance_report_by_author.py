@@ -95,7 +95,7 @@ def main():
             rotation_joint_deviation = JointCompliance(
                 mode="rotation", joint=joint, thoracohumeral_angle=thoracohumeral_angle
             )
-
+            # missing a if for nishinaka
             dico_d[f"{joint_type.to_string}_c4"] = 0 if rotation_joint_deviation.is_c4 else 1
             if joint.translation_origin is not None:
                 dico_d[f"{joint_type.to_string}_c5"] = 0 if rotation_joint_deviation.is_c5 else 1

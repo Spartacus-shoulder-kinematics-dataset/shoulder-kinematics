@@ -31,14 +31,14 @@ def manual_corrections(sub_df):
     sub_df = apply_correction(sub_df, joint="sternoclavicular", corrections=corrections_sternoclavicular)
     sub_df = apply_correction(sub_df, joint="acromioclavicular", corrections=corrections_acromioclavicular)
 
-    specific_correction = {
-        "Moissenet et al.": (
-            lambda value: value * -1 if value > 0 else value,
-            lambda value: value,
-            lambda value: value * -1 if value > 0 else value,
-        )
-    }
-    sub_df = apply_specific_correction(sub_df, joint="glenohumeral", corrections=specific_correction)
+    # specific_correction = {
+    #     "Moissenet et al.": (
+    #         lambda value: value * -1 if value > 0 else value,
+    #         lambda value: value,
+    #         lambda value: value * -1 if value > 0 else value,
+    #     )
+    # }
+    # sub_df = apply_specific_correction(sub_df, joint="glenohumeral", corrections=specific_correction)
 
     return sub_df
 
