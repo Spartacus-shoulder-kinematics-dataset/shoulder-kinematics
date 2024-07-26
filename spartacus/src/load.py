@@ -32,28 +32,6 @@ class Spartacus:
         # dof_1st_euler, dof_2nd_euler, dof_3rd_euler, dof_translation_x, dof_translation_y, dof_translation_z
         self.dataframe = self.dataframe.where(pd.notna(self.dataframe), None)
 
-    def remove_rows_not_ready_for_analysis(self):
-        # Todo: remove this function ultimately
-        # remove lines I know they are not ready for analysis
-        dataset_authors = [
-            "Gutierrez Delgado et al.",  # not usable finally ?
-            "Kim et al.",  # no data yet.
-        ]
-        for a in dataset_authors:
-            self.dataframe.drop(
-                self.dataframe[self.dataframe["dataset_authors"].str.contains(a)].index,
-                inplace=True,
-            )
-        article_author_year = [
-            "Sahara et al.",  # no rotation data
-            "Sugi et al.",
-        ]
-        for a in article_author_year:
-            self.dataframe.drop(
-                self.dataframe[self.dataframe["dataset_authors"].str.contains(a)].index,
-                inplace=True,
-            )
-
     def set_correction_callbacks_from_segment_joint_validity(self, print_warnings: bool = False) -> pd.DataFrame:
         """
         This function will add a callback function to the dataframe.
@@ -127,6 +105,8 @@ class Spartacus:
                 "unit",
                 "confidence",
                 "shoulder_id",
+                "xp_mean",
+                "in_vivo",
             ]
         )
         corrected_output_dataframe = output_dataframe.copy()
@@ -192,6 +172,7 @@ def load() -> Spartacus:
     # df = df[df["dataset_authors"].isin(["Fung et al.", "Bourne"])]
     # df = df[df["dataset_authors"] == "Bourne"]
     # df = df[df["dataset_authors"] == "Chu et al."]
+    # df = df[df["dataset_authors"] == "Henninger et al."]
     # df = df[df["dataset_authors"] == "Dal Maso et al."] # expected to be the same
     # df = df[df["dataset_authors"] == "Fung et al."]  # One flipped angle in ST in the middle, looks ok
     # df = df[df["dataset_authors"] == "Kolz et al."]  # expected to shift because of correction for now
@@ -207,7 +188,6 @@ def load() -> Spartacus:
 
     print(df.shape)
     sp = Spartacus(dataframe=df)
-    sp.remove_rows_not_ready_for_analysis()
     sp.set_correction_callbacks_from_segment_joint_validity(print_warnings=True)
     sp.import_confident_data()
     # df = load_confident_data(df, print_warnings=True)
