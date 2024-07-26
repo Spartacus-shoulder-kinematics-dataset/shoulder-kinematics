@@ -1027,9 +1027,11 @@ def convert_df_to_1dof_per_line(df: pd.DataFrame, dofs_legend: tuple[str, str, s
         value_name="value",
     )
     df_1dof_per_line = pd.merge(df_1dof_per_line, legend_df, on="degree_of_freedom")
-    df_1dof_per_line["degree_of_freedom"] = df_1dof_per_line["degree_of_freedom"].replace(
-        {"value_dof1": 1, "value_dof2": 2, "value_dof3": 3}
-    ).infer_objects(copy=False)
+    df_1dof_per_line["degree_of_freedom"] = (
+        df_1dof_per_line["degree_of_freedom"]
+        .replace({"value_dof1": 1, "value_dof2": 2, "value_dof3": 3})
+        .infer_objects(copy=False)
+    )
     return df_1dof_per_line
 
 
