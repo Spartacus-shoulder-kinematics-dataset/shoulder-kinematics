@@ -727,9 +727,9 @@ class RowData:
         self.rotation_data = load_euler_csv(self.csv_filenames)
 
         corrections = self.get_manual_corrections()
-        self.rotation_data["value_dof1"] = self.data["value_dof1"].apply(lambda x: x * corrections[0])
-        self.rotation_data["value_dof2"] = self.data["value_dof2"].apply(lambda x: x * corrections[1])
-        self.rotation_data["value_dof3"] = self.data["value_dof3"].apply(lambda x: x * corrections[2])
+        self.rotation_data["value_dof1"] = self.rotation_data["value_dof1"].apply(lambda x: x * corrections[0])
+        self.rotation_data["value_dof2"] = self.rotation_data["value_dof2"].apply(lambda x: x * corrections[1])
+        self.rotation_data["value_dof3"] = self.rotation_data["value_dof3"].apply(lambda x: x * corrections[2])
 
         self.csv_translation_filenames = self.get_translation_csv_filenames()
         self.translation_data = load_euler_csv(self.csv_translation_filenames)
@@ -742,11 +742,37 @@ class RowData:
         self.translation_data["joint"] = JointType.from_string(self.row.joint)
         self.translation_data["humeral_motion"] = self.row.humeral_motion
 
-    def to_dataframe(self, correction: bool = True) -> pd.DataFrame:
-        self.to_series_dataframe(correction=correction, rotation=True)
-        self.to_series_dataframe(correction=correction, rotation=False)
+    def to_dataframe(self, correction: bool = True, rotation: bool = True, translation: bool = True) -> pd.DataFrame:
+        """
+        This converts the row to a panda dataframe with the angles in degrees with the following columns:
+            - article
+            - joint
+            - angle_translation
+            - degree_of_freedom
+            - movement
+            - humerothoracic_angle (one line per angle)
+            - value
 
-        prefix = f"{"corrected" if correction else ""}_df"
+        Parameters
+        ----------
+        correction : bool, optional
+            If True, apply the correction, by default True
+        rotation : bool, optional
+            If True, import rotation data, by default True
+        translation : bool, optional
+            If True, import translation data, by default True
+
+        Returns
+        -------
+        pandas.DataFrame
+            The dataframe with the data
+        """
+        if rotation:
+            self.to_series_dataframe(correction=correction, rotation=True)
+        if translation:
+            self.to_series_dataframe(correction=correction, rotation=False)
+
+        prefix = f"{"corrected_" if correction else ""}df"
         setattr(
             self,
             f"{prefix}_3dof_per_line",
@@ -787,26 +813,55 @@ class RowData:
         """
         series_dataframe = get_empty_series_dataframe()
 
-        no_correction_legend = tuple(self.joint.euler_sequence.value) if rotation else ("x", "y", "z")
-        three_dof_legend = self.joint.isb_rotation_biomechanical_dof if correction else no_correction_legend
+        data = self.rotation_data if rotation else self.translation_data
+        prefix = f"{"corrected_" if correction else ""}df_{"rotation" if rotation else "translation"}"
+
+        if data.empty:
+            setattr(self, f"{prefix}_3dof_per_line", series_dataframe)
+            setattr(
+                self,
+                f"{prefix}_1dof_per_line",
+                pd.DataFrame(
+                    columns=[
+                        "unit",
+                        "humerothoracic_angle",
+                        "value",
+                        "degree_of_freedom",
+                        "article",
+                        "joint",
+                        "humeral_motion",
+                        "shoulder_id",
+                        "in_vivo",
+                        "xp_mean",
+                        "biomechanical_dof",
+                    ]
+                ),
+            )
+            return series_dataframe
+
+        no_correction_legend = ("x", "y", "z") if not rotation else tuple(self.joint.euler_sequence.value)
+        correction_legend = ("x", "y", "z") if not rotation else self.joint.isb_rotation_biomechanical_dof
+        three_dof_legend = correction_legend if correction else no_correction_legend
         value_dof = self.calculate_dof_values(
-            self.rotation_data if rotation else self.translation_data,
-            correction_callable=self.apply_correction_in_radians if rotation else None,
+            data,
+            correction_callable=self.apply_correction_in_radians if rotation else self.apply_correction_to_translation,
         )
-        series_dataframe["unit"] = "rad" if rotation else "mm"
 
         series_dataframe["value_dof1"] = value_dof[:, 0]
         series_dataframe["value_dof2"] = value_dof[:, 1]
         series_dataframe["value_dof3"] = value_dof[:, 2]
+        series_dataframe["humerothoracic_angle"] = data["humerothoracic_angle"]
+
+        series_dataframe["unit"] = "rad" if rotation else "mm"
+
         series_dataframe["article"] = self.row.dataset_authors
         series_dataframe["joint"] = self.row.joint
         series_dataframe["humeral_motion"] = self.row.humeral_motion
-        series_dataframe["humerothoracic_angle"] = self.data["humerothoracic_angle"]
+
         series_dataframe["shoulder_id"] = self.row.shoulder_id
         series_dataframe["in_vivo"] = self.row.in_vivo
         series_dataframe["xp_mean"] = self.row.experimental_mean
 
-        prefix = f"{"corrected" if correction else ""}_df_{"rotation" if rotation else "translation"}"
         setattr(self, f"{prefix}_3dof_per_line", series_dataframe)
         setattr(self, f"{prefix}_1dof_per_line", convert_df_to_1dof_per_line(series_dataframe, three_dof_legend))
 
@@ -918,7 +973,7 @@ def convert_df_to_1dof_per_line(df: pd.DataFrame, dofs_legend: tuple[str, str, s
     legend_df = pd.DataFrame(
         {
             "degree_of_freedom": ["value_dof1", "value_dof2", "value_dof3"],
-            "biomechanical_dof": [dofs_legend, dofs_legend, dofs_legend],
+            "biomechanical_dof": [dofs_legend[0], dofs_legend[1], dofs_legend[2]],
         }
     )
 
