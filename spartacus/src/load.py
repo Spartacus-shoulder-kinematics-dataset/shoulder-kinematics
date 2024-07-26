@@ -186,6 +186,8 @@ def load() -> Spartacus:
     # df = df[df["dataset_authors"] != "Nishinaka et al."]
     # df = df[df["dataset_authors"] == "Nishinaka et al."]
 
+    df = df[df["dataset_authors"] != "Gutierrez Delgado et al."]
+
     print(df.shape)
     sp = Spartacus(dataframe=df)
     sp.set_correction_callbacks_from_segment_joint_validity(print_warnings=True)
