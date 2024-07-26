@@ -682,17 +682,17 @@ class RowData:
     @property
     def enough_compliant_for_translation(self) -> bool:
         """Check if the segment is compliant enough for merging translation data"""
-        parent_deviation = SegmentCompliance(mode="rotation", bsys=self.parent_biomech_sys)
-        child_deviation = SegmentCompliance(mode="rotation", bsys=self.child_biomech_sys)
+        parent_deviation = SegmentCompliance(mode="translation", bsys=self.parent_biomech_sys)
+        child_deviation = SegmentCompliance(mode="translation", bsys=self.child_biomech_sys)
 
         thoracohumeral_angle = set_thoracohumeral_angle_from_row(self.row)
         joint_deviation = JointCompliance(mode="rotation", joint=self.joint, thoracohumeral_angle=thoracohumeral_angle)
 
-        pc1 = parent_deviation.is_c1
-        pc2 = parent_deviation.is_c2
-        pc3 = parent_deviation.is_c3
-        cc3 = child_deviation.is_c3
-        c5 = joint_deviation.is_c5
+        pc1 = not parent_deviation.is_c1
+        pc2 = not parent_deviation.is_c2
+        pc3 = not parent_deviation.is_c3
+        cc3 = not child_deviation.is_c3
+        c5 = not joint_deviation.is_c5
 
         any_origin_is_wrong = not pc3 or not cc3
 
@@ -767,15 +767,31 @@ class RowData:
         pandas.DataFrame
             The dataframe with the data
         """
-        to_concat_3dof = []
-        to_concat_1dof = []
+        to_concat_3dof = [get_empty_series_dataframe()]
+        to_concat_1dof = [
+            pd.DataFrame(
+                columns=[
+                    "unit",
+                    "humerothoracic_angle",
+                    "value",
+                    "degree_of_freedom",
+                    "article",
+                    "joint",
+                    "humeral_motion",
+                    "shoulder_id",
+                    "in_vivo",
+                    "xp_mean",
+                    "biomechanical_dof",
+                ]
+            )
+        ]
         prefix = f"{"corrected_" if correction else ""}df"
 
         if rotation:
             self.to_series_dataframe(correction=correction, rotation=True)
             to_concat_1dof.append(getattr(self, f"{prefix}_rotation_1dof_per_line"))
             to_concat_3dof.append(getattr(self, f"{prefix}_rotation_3dof_per_line"))
-            
+
         if translation:
             self.to_series_dataframe(correction=correction, rotation=False)
             to_concat_1dof.append(getattr(self, f"{prefix}_translation_1dof_per_line"))
@@ -795,7 +811,7 @@ class RowData:
                 to_concat_1dof,
             ),
         )
-        return getattr(self, f"{prefix}_1dof_per_line")
+        return self.corrected_df_1dof_per_line if correction else self.df_1dof_per_line
 
     def to_series_dataframe(self, correction: bool = True, rotation: bool = None) -> pd.DataFrame:
         """
