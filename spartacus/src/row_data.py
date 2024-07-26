@@ -767,30 +767,32 @@ class RowData:
         pandas.DataFrame
             The dataframe with the data
         """
+        to_concat_3dof = []
+        to_concat_1dof = []
+        prefix = f"{"corrected_" if correction else ""}df"
+
         if rotation:
             self.to_series_dataframe(correction=correction, rotation=True)
+            to_concat_1dof.append(getattr(self, f"{prefix}_rotation_1dof_per_line"))
+            to_concat_3dof.append(getattr(self, f"{prefix}_rotation_3dof_per_line"))
+            
         if translation:
             self.to_series_dataframe(correction=correction, rotation=False)
+            to_concat_1dof.append(getattr(self, f"{prefix}_translation_1dof_per_line"))
+            to_concat_3dof.append(getattr(self, f"{prefix}_translation_3dof_per_line"))
 
-        prefix = f"{"corrected_" if correction else ""}df"
         setattr(
             self,
             f"{prefix}_3dof_per_line",
             pd.concat(
-                [
-                    getattr(self, f"{prefix}_rotation_3dof_per_line"),
-                    getattr(self, f"{prefix}_translation_3dof_per_line"),
-                ]
+                to_concat_3dof,
             ),
         )
         setattr(
             self,
             f"{prefix}_1dof_per_line",
             pd.concat(
-                [
-                    getattr(self, f"{prefix}_rotation_1dof_per_line"),
-                    getattr(self, f"{prefix}_translation_1dof_per_line"),
-                ]
+                to_concat_1dof,
             ),
         )
         return getattr(self, f"{prefix}_1dof_per_line")
