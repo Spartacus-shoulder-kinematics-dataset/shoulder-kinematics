@@ -679,6 +679,40 @@ class RowData:
                 translation_joint_deviation,
             ]
 
+    @property
+    def enough_compliant_for_translation(self) -> bool:
+        """Check if the segment is compliant enough for merging translation data"""
+        parent_deviation = SegmentCompliance(mode="rotation", bsys=self.parent_biomech_sys)
+        child_deviation = SegmentCompliance(mode="rotation", bsys=self.child_biomech_sys)
+
+        thoracohumeral_angle = set_thoracohumeral_angle_from_row(self.row)
+        joint_deviation = JointCompliance(mode="rotation", joint=self.joint, thoracohumeral_angle=thoracohumeral_angle)
+
+        pc1 = parent_deviation.is_c1
+        pc2 = parent_deviation.is_c2
+        pc3 = parent_deviation.is_c3
+        cc3 = child_deviation.is_c3
+        c5 = joint_deviation.is_c5
+
+        any_origin_is_wrong = not pc3 or not cc3
+
+        if any_origin_is_wrong:
+            return False
+
+        all_good = pc1 and pc2 and pc3 and cc3
+        orientation_correction = pc2 and pc3 and cc3  # flipping axis or changing the sign of the axis
+        accepted_orientation_offset = pc1 and pc3 and cc3
+
+        segment_conditions = all_good or orientation_correction or accepted_orientation_offset
+
+        if segment_conditions and c5:
+            return True
+
+        if segment_conditions and not c5:
+            # todo: if enough data, we can recompute the rotation matrices and convert the translations into another coordinate system
+            #   e.g. joint coordinate system (euler basis) to proximal segment coordinate system for Moissenet et al.
+            return False
+
     def import_data(self):
         """this function import the data of the following row"""
         print(
