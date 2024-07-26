@@ -93,18 +93,9 @@ class Spartacus:
             if not row_data.check_thoracohumeral_angle(print_warnings=print_warnings):
                 continue
 
-            # rotation_validity, translation_validity = row_data.check_segments_correction_validity(
-            #     print_warnings=print_warnings
-            # )
-
             if not row_data.has_rotation_data and not row_data.has_translation_data:
                 print("WARNING : No usable data for this row, in both rotation and translation...")
                 continue
-
-            # if not row_data.has_rotation_data and row_data.has_translation_data:
-            #     # Todo: handle translation, NISHINAKA for example
-            #     print("WARNING : Only translation handled for this row... not yet working")
-            #     continue
 
             row_data.compute_deviations()
             row_data.set_rotation_correction_callback()
@@ -141,20 +132,37 @@ class Spartacus:
         corrected_output_dataframe = output_dataframe.copy()
 
         for i, row in self.confident_dataframe.iterrows():
+
             row_data = RowData(row)
+
+            process_translation = row_data.has_translation_data
+            process_rotation = row_data.has_rotation_data
 
             row_data.check_all_segments_validity(print_warnings=False)
             row_data.set_segments()
             row_data.check_joint_validity(print_warnings=False)
             row_data.check_segments_correction_validity(print_warnings=False)
             row_data.check_thoracohumeral_angle(print_warnings=False)
-            row_data.set_rotation_correction_callback()
+
+            if not (process_translation and row_data.enough_compliant_for_translation):
+                process_translation = False
+            else:
+                row_data.set_translation_correction_callback()
+
+            if process_rotation:
+                row_data.set_rotation_correction_callback()
 
             row_data.import_data()
             row_data.compute_deviations()
 
-            df_series = row_data.to_dataframe(correction=False)
-            df_corrected_series = row_data.to_series_dataframe(correction=True)
+            df_series = row_data.to_dataframe(
+                correction=False,
+                translation=process_translation,
+                rotation=process_rotation,
+            )
+            df_corrected_series = row_data.to_dataframe(
+                correction=True, translation=process_translation, rotation=process_rotation
+            )
             # add the row to the dataframe
             output_dataframe = pd.concat([output_dataframe, df_series], ignore_index=True)
             corrected_output_dataframe = pd.concat([corrected_output_dataframe, df_corrected_series], ignore_index=True)
