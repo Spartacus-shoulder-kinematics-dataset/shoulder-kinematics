@@ -967,6 +967,21 @@ class RowData:
 
         return deg_corrected_dof_1, deg_corrected_dof_2, deg_corrected_dof_3
 
+    def apply_correction_to_translation(self, dof1, dof2, dof3) -> tuple[float, float, float]:
+        """Apply the correction to the translation in mm, as we use a matrix product, we need nan to be zeros"""
+
+        dof1 = dof1 if not np.isnan(dof1) else 0
+        dof2 = dof2 if not np.isnan(dof2) else 0
+        dof3 = dof3 if not np.isnan(dof3) else 0
+
+        corrected_dof_1, corrected_dof_2, corrected_dof_3 = self.translation_mediolateral_matrix(dof1, dof2, dof3)
+
+        deg_corrected_dof_1 = corrected_dof_1 if corrected_dof_1 != 0 else np.nan
+        deg_corrected_dof_2 = corrected_dof_2 if corrected_dof_2 != 0 else np.nan
+        deg_corrected_dof_3 = corrected_dof_3 if corrected_dof_3 != 0 else np.nan
+
+        return deg_corrected_dof_1, deg_corrected_dof_2, deg_corrected_dof_3
+
 
 def convert_df_to_1dof_per_line(df: pd.DataFrame, dofs_legend: tuple[str, str, str]) -> pd.DataFrame:
     """Convert a dataframe with 3 degrees of freedom per line to a dataframe with 1 degree of freedom per line"""
