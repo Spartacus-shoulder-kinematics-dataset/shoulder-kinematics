@@ -34,20 +34,20 @@ articles_data = {
         [(0, 20.8327), (30, -2.4029921148049445), (60, -8.436784721537704), (-1, -4.961429503563281)],
     ),
     "Fung et al.": (
-        621,
+        1242,
         ["frontal plane elevation", "scapular plane elevation", "sagittal plane elevation"],
         ["scapulothoracic"],
         [1, 2, 3],
-        10808.1338,
-        [(0, 36.8406), (30, 29.6062), (60, 18.136), (-1, 9.2942)],
+        -1650.2695999999999,
+        [(0, 36.84060000000001), (30, 29.6062), (60, 18.136000000000003), (-1, 26.8936)],
     ),
     "Kijima et al.": (
         48,
         ["scapular plane elevation"],
         ["glenohumeral", "scapulothoracic"],
         [1, 2, 3],
-        1149.815953912212,
-        [(0, np.nan), (1, np.nan), (2, np.nan), (-1, 35.639)],
+        306.06436262040665,
+        [(0, np.nan), (1, np.nan), (2, np.nan), (-1, 7.421436415016586)],
     ),
     "Begon et al.": (
         19296,
@@ -64,8 +64,8 @@ articles_data = {
             "sternoclavicular",
         ],
         [1, 2, 3],
-        132005.14853708498,
-        [(0, 162.73707354679948), (1001, -47.33668895380996), (2000, -42.92927676074317), (-1, 12.282290646030903)],
+        246412.948120887,
+        [(0, 17.262926453200514), (1001, 47.33668895380996), (2000, 42.92927676074317), (-1, 12.282290646030905)],
     ),
     "Henninger et al.": (
         80862,
@@ -78,8 +78,8 @@ articles_data = {
         ],
         ["glenohumeral", "scapulothoracic"],
         [1, 2, 3],
-        1608409.2980004128,
-        [(0, 45.9866459013967), (1001, 76.9873557465161), (40001, -8.61904452693329), (-1, 18.7105793111646)],
+        1006110.1030133098,
+        [(0, -134.0133540986033), (1001, 76.9873557465161), (40001, 171.3809554730667), (-1, 18.710579311164597)],
     ),
     "Kozono et al.": (
         30,
@@ -94,8 +94,8 @@ articles_data = {
         ["frontal plane elevation", "scapular plane elevation", "sagittal plane elevation"],
         ["glenohumeral", "scapulothoracic", "acromioclavicular", "sternoclavicular"],
         [1, 2, 3],
-        -3739.1000000000004,
-        [(0, -8.6), (1, -12.0), (2, -15.5), (-1, 25.0)],
+        -4175.255742861286,
+        [(0, -42.66781099811504), (1, -41.373669548197405), (2, -40.171439291048856), (-1, 25.0)],
     ),
     "Matsumura et al.": (
         99,
@@ -110,9 +110,8 @@ articles_data = {
         ["scapular plane elevation"],
         ["scapulothoracic", "glenohumeral", "sternoclavicular"],
         [1, 2, 3],
-        # 9303.5162527,
-        15809.42954754,
-        [(0, 13.69204545), (1, 17.77429908), (2, 21.54803033), (-1, np.nan)],
+        -18922.510132213356,
+        [(0, 0.7331976380416924), (1, 1.3163822061108446), (2, 2.009989683892475), (-1, np.nan)],
     ),
     "Moissenet et al.": (
         705264,
@@ -125,7 +124,7 @@ articles_data = {
         ["glenohumeral", "scapulothoracic", "acromioclavicular", "sternoclavicular"],
         [1, 2, 3],
         1922447.0594910611,
-        [(0, -26.1343382053074), (1, -26.1347999073885), (2, -26.1351365255401), (-1, -0.447039217459609)],
+        [(0, 5.512546219515222), (1, 5.512549776544782), (2, 5.512606226422835), (-1, -0.44703921745960906)],
     ),
     "Oki et al.": (
         354,
@@ -141,15 +140,15 @@ articles_data = {
         ["acromioclavicular"],
         [1, 2, 3],
         1061.3874465806718,
-        [(0, 67.4405), (10, 69.0854773140717), (22, 6.135648345805435), (-1, 13.37)],
+        [(0, 53.208998323357854), (10, 55.34423815737802), (22, 12.65697336292887), (-1, 21.697663050779525)],
     ),
     "Yoshida et al.": (
         84,
         ["sagittal plane elevation"],
         ["glenohumeral", "scapulothoracic"],
         [1, 2, 3],
-        719.11944717,
-        [(0, -2.8862207), (40, -20.767784), (65, 34.51266), (-1, 19.2415854)],
+        551.3161398751674,
+        [(0, 44.304576869953884), (40, -24.893753727658684), (65, 34.51266), (-1, 19.2415854)],
     ),
     # Add other articles here in the same format
 }
@@ -201,17 +200,18 @@ def test_number_of_articles():
         "Henninger et al.",
         "Karduna et al.",
         "Kijima et al.",
-        # "Kozono et al.", todo: to be put again when thorax is decided
+        "Kim et al.",
+        "Kozono et al.",
         "Ludewig et al.",
         "Matsuki et al.",
         "Matsumura et al.",
         "Moissenet et al.",
         "Oki et al.",
+        "Sahara et al." "Sugi et al.",
         "Teece et al.",
         "Yoshida et al.",
     ]
     assert articles == experted_articles
-    assert len(articles) == 14
 
     assert confident_values.shape[0] == 812040
 

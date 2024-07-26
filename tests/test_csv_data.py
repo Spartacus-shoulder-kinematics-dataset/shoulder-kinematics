@@ -49,7 +49,6 @@ def test_data_loading():
     df = pd.read_csv(DatasetCSV.CLEAN.value)
     print(df.shape)
     sp = Spartacus(dataframe=df)
-    sp.remove_rows_not_ready_for_analysis()
     for i, row in sp.dataframe.iterrows():
         row_data = RowData(row)
         row_data.import_data()

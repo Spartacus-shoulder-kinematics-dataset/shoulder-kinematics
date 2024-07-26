@@ -48,11 +48,11 @@ articles_data = {
         [(0, 20.832700000000003), (30, -2.4029921148049445), (60, -8.436784721537704), (-1, -4.961429503563281)],
     ),
     "Fung et al.": (
-        621,
+        1242,
         ["frontal plane elevation", "scapular plane elevation", "sagittal plane elevation"],
         ["scapulothoracic"],
         [1, 2, 3],
-        3676.4321999999997,
+        -1650.2695999999999,
         [(0, 36.84060000000001), (30, 29.6062), (60, 18.136000000000003), (-1, 9.294200000000002)],
     ),
     "Kijima et al.": (
@@ -201,12 +201,15 @@ def test_number_of_articles():
         "Henninger et al.",
         "Karduna et al.",
         "Kijima et al.",
-        # "Kozono et al.", todo: to be put again when thorax is decided
+        "Kim et al.",
+        "Kozono et al.",
         "Ludewig et al.",
         "Matsuki et al.",
         "Matsumura et al.",
         "Moissenet et al.",
         "Oki et al.",
+        "Sahara et al.",
+        "Sugi et al.",
         "Teece et al.",
         "Yoshida et al.",
     ]
