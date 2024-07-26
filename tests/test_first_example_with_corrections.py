@@ -155,6 +155,7 @@ transformed_data_article = [[name] + list(values) for name, values in articles_d
 spartacus = TestUtils.spartacus_folder()
 module = TestUtils.load_module(spartacus + "/examples/first_example.py")
 confident_values = module.main()
+confident_values = confident_values[confident_values["unit"] == "rad"]
 
 
 # This line parameterizes the test function below

@@ -5,6 +5,7 @@ import spartacus as sp
 
 spartacus_dataset = sp.load()
 confident_values = spartacus_dataset.confident_data_values
+confident_values = confident_values[confident_values["unit"] == "rad"]
 
 # Data for each article test
 articles_data = {
