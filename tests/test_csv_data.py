@@ -46,10 +46,11 @@ def test_data_format(data_folder):
 
 def test_data_loading():
     # open the file only_dataset_raw.csv
-    df = pd.read_csv(DatasetCSV.CLEAN.value)
+    df = pd.read_csv(DatasetCSV.DATASETS.value)
+    df_joint = pd.read_csv(DatasetCSV.JOINT.value)
     df = df[df["dataset_authors"] == "Guttierrez Delgado et al."]
     print(df.shape)
-    sp = Spartacus(dataframe=df)
+    sp = Spartacus(datasets=df, joint_data=df_joint)
     for i, row in sp.dataframe.iterrows():
         row_data = RowData(row)
         row_data.import_data()

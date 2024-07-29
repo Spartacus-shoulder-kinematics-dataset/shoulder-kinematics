@@ -215,14 +215,16 @@ def test_number_of_articles():
 
 
 def print_data(data, random_checks):
-    print("\n")
-    print("Shape:", data.shape)
-    print("Humeral motions:", data["humeral_motion"].unique())
-    print("Joints:", data["joint"].unique())
-    print("Degrees of freedom:", data["degree_of_freedom"].unique())
-    print("Total value:", data["value"].sum())
-    print("Random checks:")
-    for idx, value in random_checks:
-        print(f"Data {idx}: {data['value'].iloc[idx]}")
-        print(f"Check {idx}: {value}")
     print("")
+    print("FORMATTED DATA:")
+    print(f'"{data["article"].unique()[0]}": (')
+    print(f"\t {data.shape[0]},")
+    print(f'\t [{"".join(f"\'{motion}\', " for motion in data["humeral_motion"].unique())}],')
+    print(f'\t [{"".join(f"\'{joint}\', " for joint in data["joint"].unique())}],')
+    print(f"\t [{"".join(f"{dof}, " for dof in data["degree_of_freedom"].unique())}],")
+    print(f"\t {data["value"].sum()},")
+    print(f"\t [")
+    for idx, value in random_checks:
+        print(f"\t\t {idx, data.iloc[idx]['value']},")
+    print(f"\t ],")
+    print(f"),\n")
