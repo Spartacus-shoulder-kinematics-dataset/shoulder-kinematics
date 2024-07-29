@@ -767,51 +767,52 @@ class RowData:
         pandas.DataFrame
             The dataframe with the data
         """
-        to_concat_3dof = [get_empty_series_dataframe()]
-        to_concat_1dof = [
-            pd.DataFrame(
-                columns=[
-                    "unit",
-                    "humerothoracic_angle",
-                    "value",
-                    "degree_of_freedom",
-                    "article",
-                    "joint",
-                    "humeral_motion",
-                    "shoulder_id",
-                    "in_vivo",
-                    "xp_mean",
-                    "biomechanical_dof",
-                ]
-            )
-        ]
+        to_concat_3dof = []
+        # to_concat_1dof = [
+        #     pd.DataFrame(
+        #         columns=[
+        #             "unit",
+        #             "humerothoracic_angle",
+        #             "value",
+        #             "degree_of_freedom",
+        #             "article",
+        #             "joint",
+        #             "humeral_motion",
+        #             "shoulder_id",
+        #             "in_vivo",
+        #             "xp_mean",
+        #             "biomechanical_dof",
+        #         ]
+        #     )
+        # ]
         prefix = f"{"corrected_" if correction else ""}df"
 
         if rotation:
             self.to_series_dataframe(correction=correction, rotation=True)
-            to_concat_1dof.append(getattr(self, f"{prefix}_rotation_1dof_per_line"))
+            # to_concat_1dof.append(getattr(self, f"{prefix}_rotation_1dof_per_line"))
             to_concat_3dof.append(getattr(self, f"{prefix}_rotation_3dof_per_line"))
 
         if translation:
             self.to_series_dataframe(correction=correction, rotation=False)
-            to_concat_1dof.append(getattr(self, f"{prefix}_translation_1dof_per_line"))
+            # to_concat_1dof.append(getattr(self, f"{prefix}_translation_1dof_per_line"))
             to_concat_3dof.append(getattr(self, f"{prefix}_translation_3dof_per_line"))
 
         setattr(
             self,
             f"{prefix}_3dof_per_line",
             pd.concat(
-                to_concat_3dof,
+                to_concat_3dof if len(to_concat_3dof) >= 1 else [get_empty_series_dataframe()],
             ),
         )
-        setattr(
-            self,
-            f"{prefix}_1dof_per_line",
-            pd.concat(
-                to_concat_1dof,
-            ),
-        )
-        return self.corrected_df_1dof_per_line if correction else self.df_1dof_per_line
+        # setattr(
+        #     self,
+        #     f"{prefix}_1dof_per_line",
+        #     pd.concat(
+        #         to_concat_1dof,
+        #     ),
+        # )
+        # return self.corrected_df_1dof_per_line if correction else self.df_1dof_per_line
+        return self.corrected_df_3dof_per_line if correction else self.df_3dof_per_line
 
     def to_series_dataframe(self, correction: bool = True, rotation: bool = None) -> pd.DataFrame:
         """
@@ -836,25 +837,25 @@ class RowData:
 
         if data.empty:
             setattr(self, f"{prefix}_3dof_per_line", series_dataframe)
-            setattr(
-                self,
-                f"{prefix}_1dof_per_line",
-                pd.DataFrame(
-                    columns=[
-                        "unit",
-                        "humerothoracic_angle",
-                        "value",
-                        "degree_of_freedom",
-                        "article",
-                        "joint",
-                        "humeral_motion",
-                        "shoulder_id",
-                        "in_vivo",
-                        "xp_mean",
-                        "biomechanical_dof",
-                    ]
-                ),
-            )
+            # setattr(
+            #     self,
+            #     f"{prefix}_1dof_per_line",
+            #     pd.DataFrame(
+            #         columns=[
+            #             "unit",
+            #             "humerothoracic_angle",
+            #             "value",
+            #             "degree_of_freedom",
+            #             "article",
+            #             "joint",
+            #             "humeral_motion",
+            #             "shoulder_id",
+            #             "in_vivo",
+            #             "xp_mean",
+            #             "biomechanical_dof",
+            #         ]
+            #     ),
+            # )
             return series_dataframe
 
         no_correction_legend = ("x", "y", "z") if not rotation else tuple(self.joint.euler_sequence.value)
@@ -868,6 +869,9 @@ class RowData:
         series_dataframe["value_dof1"] = value_dof[:, 0]
         series_dataframe["value_dof2"] = value_dof[:, 1]
         series_dataframe["value_dof3"] = value_dof[:, 2]
+        series_dataframe["legend_dof1"] = three_dof_legend[0]
+        series_dataframe["legend_dof2"] = three_dof_legend[1]
+        series_dataframe["legend_dof3"] = three_dof_legend[2]
         series_dataframe["humerothoracic_angle"] = data["humerothoracic_angle"]
 
         series_dataframe["unit"] = "rad" if rotation else "mm"
@@ -881,9 +885,10 @@ class RowData:
         series_dataframe["xp_mean"] = self.row.experimental_mean
 
         setattr(self, f"{prefix}_3dof_per_line", series_dataframe)
-        setattr(self, f"{prefix}_1dof_per_line", convert_df_to_1dof_per_line(series_dataframe, three_dof_legend))
+        # setattr(self, f"{prefix}_1dof_per_line", convert_df_to_1dof_per_line(series_dataframe, three_dof_legend))
 
-        return getattr(self, f"{prefix}_1dof_per_line")
+        # return getattr(self, f"{prefix}_1dof_per_line")
+        return getattr(self, f"{prefix}_3dof_per_line")
 
     @staticmethod
     def calculate_dof_values(data: pd.DataFrame, correction_callable: callable = None):
@@ -1001,40 +1006,6 @@ class RowData:
         return deg_corrected_dof_1, deg_corrected_dof_2, deg_corrected_dof_3
 
 
-def convert_df_to_1dof_per_line(df: pd.DataFrame, dofs_legend: tuple[str, str, str]) -> pd.DataFrame:
-    """Convert a dataframe with 3 degrees of freedom per line to a dataframe with 1 degree of freedom per line"""
-    legend_df = pd.DataFrame(
-        {
-            "degree_of_freedom": ["value_dof1", "value_dof2", "value_dof3"],
-            "biomechanical_dof": [dofs_legend[0], dofs_legend[1], dofs_legend[2]],
-        }
-    )
-
-    df_1dof_per_line = df.melt(
-        id_vars=[
-            "article",
-            "joint",
-            "humeral_motion",
-            "humerothoracic_angle",
-            "unit",
-            "confidence",
-            "shoulder_id",
-            "in_vivo",
-            "xp_mean",
-        ],
-        value_vars=["value_dof1", "value_dof2", "value_dof3"],
-        var_name="degree_of_freedom",
-        value_name="value",
-    )
-    df_1dof_per_line = pd.merge(df_1dof_per_line, legend_df, on="degree_of_freedom")
-    df_1dof_per_line["degree_of_freedom"] = (
-        df_1dof_per_line["degree_of_freedom"]
-        .replace({"value_dof1": 1, "value_dof2": 2, "value_dof3": 3})
-        .infer_objects(copy=False)
-    )
-    return df_1dof_per_line
-
-
 def get_empty_series_dataframe():
     return pd.DataFrame(
         columns=[
@@ -1045,8 +1016,11 @@ def get_empty_series_dataframe():
             "value_dof1",  # float
             "value_dof2",  # float
             "value_dof3",  # float
+            "legend_dof1",  # string
+            "legend_dof2",  # string
+            "legend_dof3",  # string
             "unit",  # string "angle" or "translation"
-            "confidence",  # float
+            # "confidence",  # float
             "shoulder_id",  # int
             "in_vivo",  # bool
             "xp_mean",  # string

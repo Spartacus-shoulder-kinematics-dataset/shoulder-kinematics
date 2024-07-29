@@ -1,5 +1,6 @@
 import biorbd
 import numpy as np
+import pandas as pd
 
 from .enums_biomech import Segment
 
@@ -172,3 +173,69 @@ def compute_rotation_matrix_from_axes(
         ],
         dtype=np.float64,
     ).T  # where the transpose was missing in the original code
+
+
+def convert_df_to_1dof_per_line(df: pd.DataFrame) -> pd.DataFrame:
+    """Convert a dataframe with 3 degrees of freedom per line to a dataframe with 1 degree of freedom per line"""
+
+    # legend_df = pd.DataFrame(
+    #     {
+    #         "degree_of_freedom": ["value_dof1", "value_dof2", "value_dof3"],
+    #         "biomechanical_dof": [dofs_legend[0], dofs_legend[1], dofs_legend[2]],
+    #     }
+    # )
+    #
+    # df_1dof_per_line = df.melt(
+    #     id_vars=[
+    #         "article",
+    #         "joint",
+    #         "humeral_motion",
+    #         "humerothoracic_angle",
+    #         "unit",
+    #         "confidence",
+    #         "shoulder_id",
+    #         "in_vivo",
+    #         "xp_mean",
+    #     ],
+    #     value_vars=["value_dof1", "value_dof2", "value_dof3"],
+    #     var_name="degree_of_freedom",
+    #     value_name="value",
+    # )
+    # df_1dof_per_line = pd.merge(df_1dof_per_line, legend_df, on="degree_of_freedom")
+    # df_1dof_per_line["degree_of_freedom"] = (
+    #     df_1dof_per_line["degree_of_freedom"]
+    #     .replace({"value_dof1": 1, "value_dof2": 2, "value_dof3": 3})
+    #     .infer_objects(copy=False)
+    # )
+    # return df_1dof_per_line
+
+    # Identify the columns to use as id variables
+    # id_vars = [
+    #     "humerothoracic_angle",
+    #     "unit",
+    #     "article",
+    #     "joint",
+    #     "humeral_motion",
+    #     "shoulder_id",
+    #     "in_vivo",
+    #     "xp_mean",
+    # ]
+
+    df_transformed = pd.DataFrame(
+        {
+            "unit": df["unit"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
+            "article": df["article"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
+            "joint": df["joint"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
+            "humeral_motion": df["humeral_motion"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
+            "shoulder_id": df["shoulder_id"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
+            "in_vivo": df["in_vivo"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
+            "xp_mean": df["xp_mean"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
+            # The reorganized values
+            "humerothoracic_angle": df["humerothoracic_angle"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
+            "value": df[["value_dof1", "value_dof2", "value_dof3"]].values.T.flatten(),
+            "legend": df[["legend_dof1", "legend_dof2", "legend_dof3"]].values.T.flatten(),
+            "degree_of_freedom": np.array([[1, 2, 3]]).repeat(repeats=df.shape[0], axis=0).T.flatten(),
+        }
+    )
+
+    return df_transformed
