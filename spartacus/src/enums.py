@@ -6,6 +6,8 @@ class DatasetCSV(Enum):
     """Enum for the dataset csv files, with dynamic path"""
 
     CLEAN = Path(__file__).parent.parent / "dataset" / "dataset_clean.csv"
+    DATASETS = Path(__file__).parent.parent / "dataset" / "dataset_of_datasets.csv"
+    JOINT_DATA = Path(__file__).parent.parent / "dataset" / "dataset_clean_of_joint_data.csv"
     BIOMECH_DIRECTIONS = Path(__file__).parent.parent / "dataset" / "dataset_segment_directions.csv"
 
 

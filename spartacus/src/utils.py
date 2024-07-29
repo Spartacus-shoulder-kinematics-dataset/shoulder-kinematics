@@ -115,16 +115,6 @@ def get_correction_column(segment: Segment) -> str:
     return columns.get(segment, ValueError(f"{segment} is not a valid segment."))
 
 
-def get_is_correctable_column(segment: Segment) -> str:
-    columns = {
-        Segment.THORAX: "thorax_is_isb_correctable",
-        Segment.CLAVICLE: "clavicle_is_isb_correctable",
-        Segment.SCAPULA: "scapula_is_isb_correctable",
-        Segment.HUMERUS: "humerus_is_isb_correctable",
-    }
-    return columns.get(segment, ValueError(f"{segment} is not a valid segment."))
-
-
 def compute_rotation_matrix_from_axes(
     anterior_posterior_axis: np.ndarray,
     infero_superior_axis: np.ndarray,

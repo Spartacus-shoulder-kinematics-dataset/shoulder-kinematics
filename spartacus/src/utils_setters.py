@@ -1,5 +1,5 @@
 from .biomech_system import BiomechCoordinateSystem
-from .checks import check_segment_filled_with_nan
+
 from .enums_biomech import Segment, JointType, EulerSequence, AnatomicalLandmark, FrameType
 from .frame_reader import Frame
 from .joint import Joint
@@ -20,7 +20,8 @@ def set_parent_segment_from_row(row, segment: Segment):
         z_axis=row[segment_cols_direction[2]],
         origin=row[segment_cols_direction[3]],
         segment=segment,
-        side="right" if row.side_as_right or segment == Segment.THORAX else row.side,
+        # side="right" if row.side_as_right or segment == Segment.THORAX else row.side,
+        side="right" if row.side_as_right or segment == Segment.THORAX else "left",
     )
     parent_biomech_sys = BiomechCoordinateSystem.from_frame(frame_parent)
     return parent_biomech_sys
@@ -71,6 +72,7 @@ def set_joint_from_row(row, joint: JointType):
 
 
 def set_thoracohumeral_angle_from_row(row):
+    from .checks import check_segment_filled_with_nan
 
     # some data are very sparse, so we need to check if the humerus segment is filled
     has_no_humerus_info = check_segment_filled_with_nan(row, get_segment_columns_direction(Segment.HUMERUS))

@@ -33,7 +33,7 @@ from .load_data import load_euler_csv
 from .utils import (
     get_segment_columns_direction,
     get_correction_column,
-    get_is_correctable_column,
+    # get_is_correctable_column,
     get_is_isb_column,
 )
 from .utils_setters import set_parent_segment_from_row, set_child_segment_from_row, set_thoracohumeral_angle_from_row
@@ -115,45 +115,6 @@ class RowData:
     @property
     def left_side(self):
         return not self.right_side
-
-    def check_all_segments_validity(self, print_warnings: bool = False) -> bool:
-        """
-        Check all the segments of the row are valid.
-        First, we check if the segment is provided, i.e., no NaN values.
-        Second, we check if the segment defined as is_isb = True or False in the dataset
-        and if the orientations of axis defined in the dataset fits with isb definition.
-
-        (we don't mind if it's not a isb segment, we just don't want to have a segment
-        that matches the is_isb given)
-
-        Third, we check the frame are direct, det(R) = 1. We want to have a direct frame.
-
-        Returns
-        -------
-        bool
-            True if all the segments are valid, False otherwise.
-        """
-        output = True
-        for segment_enum in Segment:
-            # segment_cols = get_segment_columns(segment_enum)
-            segment_cols_direction = get_segment_columns_direction(segment_enum)
-            # first check
-            if check_segment_filled_with_nan(self.row, segment_cols_direction, print_warnings=print_warnings):
-                continue
-
-            bsys = set_parent_segment_from_row(self.row, segment_enum)
-
-            # third check if the segment is direct or not
-            if not bsys.is_direct():
-                if print_warnings:
-                    print(
-                        f"{self.row.dataset_authors}, "
-                        f"Segment {segment_enum.value} is not direct, "
-                        f"it should be !!!"
-                    )
-                output = False
-
-        return output
 
     def check_thoracohumeral_angle(self, print_warnings: bool = False):
         """
@@ -312,27 +273,27 @@ class RowData:
         else:
             return self.row["thorax_is_global"]
 
-    def extract_is_correctable(self, segment: Segment) -> bool:
-        """
-        Extract the database entry to state if the segment is correctable or not.
-        """
-
-        if self.row[get_is_correctable_column(segment)] is not None and np.isnan(
-            self.row[get_is_correctable_column(segment)]
-        ):
-            return None
-        if self.row[get_is_correctable_column(segment)] == "nan":
-            return None
-        if self.row[get_is_correctable_column(segment)] == "true":
-            return True
-        if self.row[get_is_correctable_column(segment)] == "false":
-            return False
-        if self.row[get_is_correctable_column(segment)]:
-            return True
-        if not self.row[get_is_correctable_column(segment)]:
-            return False
-
-        raise ValueError("The is_correctable column is not a boolean value")
+    # def extract_is_correctable(self, segment: Segment) -> bool:
+    #     """
+    #     Extract the database entry to state if the segment is correctable or not.
+    #     """
+    #
+    #     if self.row[get_is_correctable_column(segment)] is not None and np.isnan(
+    #         self.row[get_is_correctable_column(segment)]
+    #     ):
+    #         return None
+    #     if self.row[get_is_correctable_column(segment)] == "nan":
+    #         return None
+    #     if self.row[get_is_correctable_column(segment)] == "true":
+    #         return True
+    #     if self.row[get_is_correctable_column(segment)] == "false":
+    #         return False
+    #     if self.row[get_is_correctable_column(segment)]:
+    #         return True
+    #     if not self.row[get_is_correctable_column(segment)]:
+    #         return False
+    #
+    #     raise ValueError("The is_correctable column is not a boolean value")
 
     def extract_is_isb(self, segment: Segment) -> bool:
         """Extract the database entry to state if the segment is isb or not."""
@@ -448,7 +409,7 @@ class RowData:
 
         parent_correction = self.extract_corrections(self.parent_segment)
         self.parent_corrections = self.extract_corrections(self.parent_segment)
-        parent_is_correctable = self.extract_is_correctable(self.parent_segment)
+        # parent_is_correctable = self.extract_is_correctable(self.parent_segment)
         parent_is_thorax_global = False
 
         child_correction = self.extract_corrections(self.child_segment)
@@ -459,19 +420,19 @@ class RowData:
         if self.parent_segment == Segment.THORAX:
             if self.extract_is_thorax_global(self.parent_segment):
                 parent_is_thorax_global = True
-                if parent_is_correctable is True:
-                    parent_output = self._check_segment_has_to_isb_like_correction(
-                        parent_correction, print_warnings=print_warnings
-                    )
-                elif parent_is_correctable is False:
-                    parent_output = self._check_segment_has_no_correction(
-                        parent_correction, print_warnings=print_warnings
-                    )
-                else:
-                    print(
-                        "The correction of thorax should be filled with a boolean value, "
-                        "as it is a global coordinate system."
-                    )
+                # if parent_is_correctable is True:
+                #     parent_output = self._check_segment_has_to_isb_like_correction(
+                #         parent_correction, print_warnings=print_warnings
+                #     )
+                # elif parent_is_correctable is False:
+                #     parent_output = self._check_segment_has_no_correction(
+                #         parent_correction, print_warnings=print_warnings
+                #     )
+                # else:
+                #     print(
+                #         "The correction of thorax should be filled with a boolean value, "
+                #         "as it is a global coordinate system."
+                #     )
 
                 self.parent_segment_usable_for_rotation_data = parent_output
                 self.parent_segment_usable_for_translation_data = False
