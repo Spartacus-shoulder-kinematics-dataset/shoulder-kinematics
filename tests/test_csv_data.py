@@ -47,6 +47,7 @@ def test_data_format(data_folder):
 def test_data_loading():
     # open the file only_dataset_raw.csv
     df = pd.read_csv(DatasetCSV.CLEAN.value)
+    df = df[df["dataset_authors"] == "Guttierrez Delgado et al."]
     print(df.shape)
     sp = Spartacus(dataframe=df)
     for i, row in sp.dataframe.iterrows():

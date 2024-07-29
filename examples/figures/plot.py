@@ -26,6 +26,7 @@ def plot_mvt(df: DataFrame, dataset: str = ".", suffix: str = "", export: bool =
 
 def main():
     df = import_data(correction=True)
+    df = df[df["unit"] == "rad"]
     plot_mvt(df)
 
 

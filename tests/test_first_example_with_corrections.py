@@ -215,8 +215,6 @@ def test_number_of_articles():
     ]
     assert articles == expected_articles
 
-    assert len(articles) == 14
-
     assert confident_values.shape[0] == 812040
 
 

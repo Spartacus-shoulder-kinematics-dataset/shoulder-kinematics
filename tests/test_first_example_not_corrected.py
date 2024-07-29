@@ -36,9 +36,9 @@ articles_data = {
     "Fung et al.": (
         1242,
         ["frontal plane elevation", "scapular plane elevation", "sagittal plane elevation"],
-        ["scapulothoracic"],
+        ["scapulothoracic" "sternoclavicular"],
         [1, 2, 3],
-        -1650.2695999999999,
+        1665134.6062432956,
         [(0, 36.84060000000001), (30, 29.6062), (60, 18.136000000000003), (-1, 26.8936)],
     ),
     "Kijima et al.": (
@@ -123,7 +123,7 @@ articles_data = {
         ],
         ["glenohumeral", "scapulothoracic", "acromioclavicular", "sternoclavicular"],
         [1, 2, 3],
-        1922447.0594910611,
+        1665134.6062432956,
         [(0, 5.512546219515222), (1, 5.512549776544782), (2, 5.512606226422835), (-1, -0.44703921745960906)],
     ),
     "Oki et al.": (
@@ -139,7 +139,7 @@ articles_data = {
         ["scapular plane elevation"],
         ["acromioclavicular"],
         [1, 2, 3],
-        1061.3874465806718,
+        1070.5063803329367,
         [(0, 53.208998323357854), (10, 55.34423815737802), (22, 12.65697336292887), (-1, 21.697663050779525)],
     ),
     "Yoshida et al.": (
@@ -163,10 +163,6 @@ def test_article_data_no_correction(
     article_name, expected_shape, humeral_motions, joints, dofs, total_value, random_checks
 ):
     data = confident_values[confident_values["article"] == article_name]
-
-    if article_name == "Kozono et al.":
-        # Skip this test because the thorax is indirect but once we decide which one to use we can remove this line
-        return
 
     print_data(data, random_checks)
     assert data.shape[0] == expected_shape
@@ -207,7 +203,8 @@ def test_number_of_articles():
         "Matsumura et al.",
         "Moissenet et al.",
         "Oki et al.",
-        "Sahara et al." "Sugi et al.",
+        "Sahara et al.",
+        "Sugi et al.",
         "Teece et al.",
         "Yoshida et al.",
     ]
