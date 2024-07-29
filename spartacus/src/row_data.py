@@ -729,33 +729,14 @@ class RowData:
             The dataframe with the data
         """
         to_concat_3dof = []
-        # to_concat_1dof = [
-        #     pd.DataFrame(
-        #         columns=[
-        #             "unit",
-        #             "humerothoracic_angle",
-        #             "value",
-        #             "degree_of_freedom",
-        #             "article",
-        #             "joint",
-        #             "humeral_motion",
-        #             "shoulder_id",
-        #             "in_vivo",
-        #             "xp_mean",
-        #             "biomechanical_dof",
-        #         ]
-        #     )
-        # ]
         prefix = f"{"corrected_" if correction else ""}df"
 
         if rotation:
             self.to_series_dataframe(correction=correction, rotation=True)
-            # to_concat_1dof.append(getattr(self, f"{prefix}_rotation_1dof_per_line"))
             to_concat_3dof.append(getattr(self, f"{prefix}_rotation_3dof_per_line"))
 
         if translation:
             self.to_series_dataframe(correction=correction, rotation=False)
-            # to_concat_1dof.append(getattr(self, f"{prefix}_translation_1dof_per_line"))
             to_concat_3dof.append(getattr(self, f"{prefix}_translation_3dof_per_line"))
 
         setattr(
@@ -765,14 +746,6 @@ class RowData:
                 to_concat_3dof if len(to_concat_3dof) >= 1 else [get_empty_series_dataframe()],
             ),
         )
-        # setattr(
-        #     self,
-        #     f"{prefix}_1dof_per_line",
-        #     pd.concat(
-        #         to_concat_1dof,
-        #     ),
-        # )
-        # return self.corrected_df_1dof_per_line if correction else self.df_1dof_per_line
         return self.corrected_df_3dof_per_line if correction else self.df_3dof_per_line
 
     def to_series_dataframe(self, correction: bool = True, rotation: bool = None) -> pd.DataFrame:
