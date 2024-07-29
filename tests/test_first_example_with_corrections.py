@@ -50,7 +50,7 @@ articles_data = {
     "Fung et al.": (
         1242,
         ["frontal plane elevation", "scapular plane elevation", "sagittal plane elevation"],
-        ["scapulothoracic"],
+        ["scapulothoracic", "sternoclavicular"],
         [1, 2, 3],
         -1650.2695999999999,
         [(0, 36.84060000000001), (30, 29.6062), (60, 18.136000000000003), (-1, 9.294200000000002)],
@@ -164,13 +164,7 @@ confident_values = confident_values[confident_values["unit"] == "rad"]
 )
 def test_article_data(article_name, expected_shape, humeral_motions, joints, dofs, total_value, random_checks):
     data = confident_values[confident_values["article"] == article_name]
-
-    if article_name == "Kozono et al.":
-        # Skip this test because the thorax is indirect but once we decide which one to use we can remove this line
-        return
-
     print_data(data, random_checks)
-    assert data.shape[0] == expected_shape
 
     for motion in humeral_motions:
         assert motion in data["humeral_motion"].unique()
@@ -186,6 +180,8 @@ def test_article_data(article_name, expected_shape, humeral_motions, joints, dof
 
     for idx, value in random_checks:
         np.testing.assert_almost_equal(data["value"].iloc[idx], value)
+
+    assert data.shape[0] == expected_shape
 
     np.testing.assert_almost_equal(data["value"].sum(), total_value, decimal=10)
 
@@ -215,7 +211,7 @@ def test_number_of_articles():
     ]
     assert articles == expected_articles
 
-    assert confident_values.shape[0] == 812040
+    assert confident_values.shape[0] == 812850
 
 
 def print_data(data, random_checks):

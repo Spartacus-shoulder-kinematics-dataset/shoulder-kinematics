@@ -163,9 +163,7 @@ def test_article_data_no_correction(
     article_name, expected_shape, humeral_motions, joints, dofs, total_value, random_checks
 ):
     data = confident_values[confident_values["article"] == article_name]
-
     print_data(data, random_checks)
-    assert data.shape[0] == expected_shape
 
     for motion in humeral_motions:
         assert motion in data["humeral_motion"].unique()
@@ -181,6 +179,8 @@ def test_article_data_no_correction(
 
     for idx, value in random_checks:
         np.testing.assert_almost_equal(data["value"].iloc[idx], value)
+
+    assert data.shape[0] == expected_shape
 
     np.testing.assert_almost_equal(data["value"].sum(), total_value, decimal=10)
 
@@ -210,7 +210,7 @@ def test_number_of_articles():
     ]
     assert articles == experted_articles
 
-    assert confident_values.shape[0] == 812040
+    assert confident_values.shape[0] == 812850
 
 
 def print_data(data, random_checks):
