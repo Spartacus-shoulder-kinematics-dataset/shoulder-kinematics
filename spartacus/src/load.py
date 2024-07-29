@@ -4,6 +4,7 @@ import pandas as pd
 
 from .enums import DatasetCSV, DataFolder
 from .row_data import RowData
+from .utils import convert_df_to_1dof_per_line
 
 
 class Spartacus:
@@ -32,82 +33,100 @@ class Spartacus:
         # dof_1st_euler, dof_2nd_euler, dof_3rd_euler, dof_translation_x, dof_translation_y, dof_translation_z
         self.dataframe = self.dataframe.where(pd.notna(self.dataframe), None)
 
-    def set_correction_callbacks_from_segment_joint_validity(self, print_warnings: bool = False) -> pd.DataFrame:
-        """
-        This function will add a callback function to the dataframe.
-        Before setting the callback function, it will check the validity of the joint and the segments
-        declared in the dataframe.
-
-        !!! It skips the rows that are not valid.
-
-        Parameters
-        ---------
-        print_warnings: bool
-            This displays warning when necessary.
-        """
-        # columns
-        columns = self.dataframe.columns
-
-        # create an empty dataframe
-        self.confident_dataframe = pd.DataFrame(columns=columns)
-
-        for i, row in self.dataframe.iterrows():
-
-            row_data = RowData(row)
-            if print_warnings:
-                print("")
-                print("")
-                print("")
-                print("row_data.joint", row.dataset_authors)
-
-            if not row_data.check_all_segments_validity(print_warnings=print_warnings):
-                continue
-
-            row_data.set_segments()
-
-            if not row_data.check_joint_validity(print_warnings=print_warnings):
-                continue
-
-            if not row_data.check_thoracohumeral_angle(print_warnings=print_warnings):
-                continue
-
-            if not row_data.has_rotation_data and not row_data.has_translation_data:
-                print("WARNING : No usable data for this row, in both rotation and translation...")
-                continue
-
-            row_data.compute_deviations()
-            row_data.set_rotation_correction_callback()
-
-            # add the row to the dataframe
-            self.confident_dataframe = pd.concat([self.confident_dataframe, row.to_frame().T], ignore_index=True)
-
-        return self.confident_dataframe
+    # def set_correction_callbacks_from_segment_joint_validity(self, print_warnings: bool = False) -> pd.DataFrame:
+    #     """
+    #     This function will add a callback function to the dataframe.
+    #     Before setting the callback function, it will check the validity of the joint and the segments
+    #     declared in the dataframe.
+    #
+    #     !!! It skips the rows that are not valid.
+    #
+    #     Parameters
+    #     ---------
+    #     print_warnings: bool
+    #         This displays warning when necessary.
+    #     """
+    #     # columns
+    #     columns = self.dataframe.columns
+    #
+    #     # create an empty dataframe
+    #     self.confident_dataframe = pd.DataFrame(columns=columns)
+    #
+    #     for i, row in self.dataframe.iterrows():
+    #
+    #         row_data = RowData(row)
+    #         if print_warnings:
+    #             print("")
+    #             print("")
+    #             print("")
+    #             print("row_data.joint", row.dataset_authors)
+    #
+    #         if not row_data.check_all_segments_validity(print_warnings=print_warnings):
+    #             continue
+    #
+    #         row_data.set_segments()
+    #
+    #         if not row_data.check_joint_validity(print_warnings=print_warnings):
+    #             continue
+    #
+    #         if not row_data.check_thoracohumeral_angle(print_warnings=print_warnings):
+    #             continue
+    #
+    #         if not row_data.has_rotation_data and not row_data.has_translation_data:
+    #             print("WARNING : No usable data for this row, in both rotation and translation...")
+    #             continue
+    #
+    #         row_data.compute_deviations()
+    #         row_data.set_rotation_correction_callback()
+    #
+    #         # add the row to the dataframe
+    #         self.confident_dataframe = pd.concat([self.confident_dataframe, row.to_frame().T], ignore_index=True)
+    #
+    #     return self.confident_dataframe
 
     def import_confident_data(self) -> pd.DataFrame:
         """
         This function will import the data from the dataframe, using the callback functions.
         Only the data corresponding to the rows that are considered good and have a callback function will be imported.
         """
-        if self.confident_dataframe is None:
-            raise ValueError(
-                "The dataframe has not been checked yet. " "Use set_correction_callbacks_from_segment_joint_validity"
-            )
+        # if self.confident_dataframe is None:
+        #     raise ValueError(
+        #         "The dataframe has not been checked yet. " "Use set_correction_callbacks_from_segment_joint_validity"
+        #     )
+        self.confident_dataframe = self.dataframe
 
         output_dataframe = pd.DataFrame(
+            # columns=[
+            #     "article",
+            #     "joint",
+            #     # "degree_of_freedom",
+            #     # "biomechanical_dof",
+            #     "humeral_motion",
+            #     "humerothoracic_angle",
+            #     # "value",
+            #     "unit",
+            #     # "confidence",
+            #     "shoulder_id",
+            #     "xp_mean",
+            #     "in_vivo",
+            # ]
             columns=[
-                "article",
-                "joint",
-                "degree_of_freedom",
-                "biomechanical_dof",
-                "humeral_motion",
-                "humerothoracic_angle",
-                "value",
-                "unit",
-                "confidence",
-                "shoulder_id",
-                "xp_mean",
-                "in_vivo",
-            ]
+                "article",  # string
+                "joint",  # string
+                "humeral_motion",  # string
+                "humerothoracic_angle",  # float
+                "value_dof1",  # float
+                "value_dof2",  # float
+                "value_dof3",  # float
+                "legend_dof1",  # string
+                "legend_dof2",  # string
+                "legend_dof3",  # string
+                "unit",  # string "angle" or "translation"
+                # "confidence",  # float
+                "shoulder_id",  # int
+                "in_vivo",  # bool
+                "xp_mean",  # string
+            ],
         )
         corrected_output_dataframe = output_dataframe.copy()
 
@@ -147,8 +166,10 @@ class Spartacus:
             output_dataframe = pd.concat([output_dataframe, df_series], ignore_index=True)
             corrected_output_dataframe = pd.concat([corrected_output_dataframe, df_corrected_series], ignore_index=True)
 
-        self.confident_data_values = output_dataframe
-        self.corrected_confident_data_values = corrected_output_dataframe
+        # self.confident_data_values = output_dataframe
+        # self.corrected_confident_data_values = corrected_output_dataframe
+        self.confident_data_values = convert_df_to_1dof_per_line(output_dataframe)
+        self.corrected_confident_data_values = convert_df_to_1dof_per_line(corrected_output_dataframe)
 
         return self.corrected_confident_data_values
 
@@ -173,9 +194,7 @@ def load() -> Spartacus:
     # df = df[df["dataset_authors"] == "Bourne"]
     # df = df[df["dataset_authors"] == "Chu et al."]
     # df = df[df["dataset_authors"] == "Henninger et al."]
-    # df = df[df["dataset_authors"] == "Dal Maso et al."] # expected to be the same
     # df = df[df["dataset_authors"] == "Fung et al."]  # One flipped angle in ST in the middle, looks ok
-    # df = df[df["dataset_authors"] == "Kolz et al."]  # expected to shift because of correction for now
     # df = df[df["dataset_authors"] == "Kijima et al."]  # expected some Nan because only one dof for GH
     # df = df[df["dataset_authors"] == "Kozono et al."]
     # df = df[df["dataset_authors"] == "Lawrence et al."]
@@ -190,7 +209,7 @@ def load() -> Spartacus:
 
     print(df.shape)
     sp = Spartacus(dataframe=df)
-    sp.set_correction_callbacks_from_segment_joint_validity(print_warnings=True)
+    # sp.set_correction_callbacks_from_segment_joint_validity(print_warnings=True)
     sp.import_confident_data()
     # df = load_confident_data(df, print_warnings=True)
     print(df.shape)
@@ -204,6 +223,6 @@ def load_subdataset(name: DataFolder | str) -> Spartacus:
     datafolder_string = name if isinstance(name, str) else name.to_dataset_author()
     df = df[df["dataset_authors"] == datafolder_string]
     sp = Spartacus(dataframe=df)
-    sp.set_correction_callbacks_from_segment_joint_validity(print_warnings=True)
+    # sp.set_correction_callbacks_from_segment_joint_validity(print_warnings=True)
     sp.import_confident_data()
     return sp
