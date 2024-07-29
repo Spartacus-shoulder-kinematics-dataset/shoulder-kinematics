@@ -165,7 +165,7 @@ def load() -> Spartacus:
     # open the file only_dataset_raw.csv
     # df = pd.read_csv(DatasetCSV.CLEAN.value)
     df = pd.read_csv(DatasetCSV.DATASETS.value)
-    df_joint_data = pd.read_csv(DatasetCSV.JOINT_DATA.value)
+    df_joint_data = pd.read_csv(DatasetCSV.JOINT.value)
     # temporary for debugging
     # df = df[df["dataset_authors"] == "Fung et al."]
     # keep Fung and Bourne
@@ -183,6 +183,7 @@ def load() -> Spartacus:
     # df = df[df["dataset_authors"] == "Yoshida et al."]
     # df = df[df["dataset_authors"] != "Nishinaka et al."]
     # df = df[df["dataset_authors"] == "Nishinaka et al."]
+    # df = df["Kozono et al." == df["dataset_authors"]]
 
     df = df[df["dataset_authors"] != "Gutierrez Delgado et al."]
 
@@ -199,7 +200,7 @@ def load_subdataset(name: DataFolder | str) -> Spartacus:
     """Load the confident dataset"""
     # open the file only_dataset_raw.csv
     df = pd.read_csv(DatasetCSV.CLEAN.value)
-    df_joint_data = pd.read_csv(DatasetCSV.JOINT_DATA.value)
+    df_joint_data = pd.read_csv(DatasetCSV.JOINT.value)
 
     datafolder_string = name if isinstance(name, str) else name.to_dataset_author()
     df = df[df["dataset_authors"] == datafolder_string]

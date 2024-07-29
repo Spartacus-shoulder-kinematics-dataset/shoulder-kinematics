@@ -7,7 +7,7 @@ class DatasetCSV(Enum):
 
     CLEAN = Path(__file__).parent.parent / "dataset" / "dataset_clean.csv"
     DATASETS = Path(__file__).parent.parent / "dataset" / "dataset_of_datasets.csv"
-    JOINT_DATA = Path(__file__).parent.parent / "dataset" / "dataset_clean_of_joint_data.csv"
+    JOINT = Path(__file__).parent.parent / "dataset" / "dataset_clean_of_joint_data.csv"
     BIOMECH_DIRECTIONS = Path(__file__).parent.parent / "dataset" / "dataset_segment_directions.csv"
 
 

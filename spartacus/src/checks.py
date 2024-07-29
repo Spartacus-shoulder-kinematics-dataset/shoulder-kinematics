@@ -60,7 +60,7 @@ def _check_parent_child_joint(joint_type: JointType, parent_name: str, child_nam
         # Thorax is the parent segment of the scapula
         return parent_segment == Segment.THORAX and child_segment == Segment.SCAPULA
     else:
-        raise ValueError(f"{joint_type} is not a valid joint type.")
+        raise ValueError(f"{joint_type} is not a valid joint type. Got {joint_type}, {parent_name}, {child_name}")
 
 
 def check_segment_filled_with_nan(row: pd.Series, segment: list, print_warnings: bool = False):
@@ -137,48 +137,6 @@ def check_segment_filled_with_nan(row: pd.Series, segment: list, print_warnings:
 #         return False
 #
 #     return True
-
-
-def check_is_isb_correctable(row: pd.Series, bsys: BiomechCoordinateSystem, print_warnings: bool = False) -> bool:
-    """
-    This function checks if the segment is said to be isb correctable
-    if True then isb should be false
-    if none then isb should be true
-
-    Parameters
-    ----------
-    bsys : BiomechCoordinateSystem
-        The biomechanical coordinate system to check.
-    row : pandas.Series
-        The row of the dataset to check.
-    print_warnings : bool, optional
-        If True, print warnings when inconsistencies are found. The default is False.
-
-    Returns
-    -------
-    bool
-        True if is_correctable is consistent with is_isb, False otherwise.
-
-    Notes
-    -----
-
-    """
-    is_isb = row[get_is_isb_column(bsys.segment)]
-    is_correctable_col = row[get_is_correctable_column(bsys.segment)]
-    if is_isb:
-        output = is_correctable_col is None
-    if not is_isb:
-        output = is_correctable_col is not None
-
-    if not output and print_warnings:
-        print("WARNING : inconsistency in the dataset")
-        print("-- ", row.article_author_year, " --")
-        print(bsys.segment)
-        print("expected ISB:", is_isb)
-        print("expected ISB correctable:", is_correctable_col)
-        return False
-
-    return True
 
 
 def check_correction_methods(row: "RowData", bsys: BiomechCoordinateSystem, print_warnings: bool = False) -> bool:

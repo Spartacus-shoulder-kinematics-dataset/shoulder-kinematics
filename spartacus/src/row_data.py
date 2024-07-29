@@ -771,25 +771,6 @@ class RowData:
 
         if data.empty:
             setattr(self, f"{prefix}_3dof_per_line", series_dataframe)
-            # setattr(
-            #     self,
-            #     f"{prefix}_1dof_per_line",
-            #     pd.DataFrame(
-            #         columns=[
-            #             "unit",
-            #             "humerothoracic_angle",
-            #             "value",
-            #             "degree_of_freedom",
-            #             "article",
-            #             "joint",
-            #             "humeral_motion",
-            #             "shoulder_id",
-            #             "in_vivo",
-            #             "xp_mean",
-            #             "biomechanical_dof",
-            #         ]
-            #     ),
-            # )
             return series_dataframe
 
         no_correction_legend = ("x", "y", "z") if not rotation else tuple(self.joint.euler_sequence.value)
@@ -800,9 +781,9 @@ class RowData:
             correction_callable=self.apply_correction_in_radians if rotation else self.apply_correction_to_translation,
         )
 
-        series_dataframe["value_dof1"] = value_dof[:, 0]
-        series_dataframe["value_dof2"] = value_dof[:, 1]
-        series_dataframe["value_dof3"] = value_dof[:, 2]
+        series_dataframe["value_dof1"] = value_dof[:, 0] if correction else data["value_dof1"]
+        series_dataframe["value_dof2"] = value_dof[:, 1] if correction else data["value_dof1"]
+        series_dataframe["value_dof3"] = value_dof[:, 2] if correction else data["value_dof1"]
         series_dataframe["legend_dof1"] = three_dof_legend[0]
         series_dataframe["legend_dof2"] = three_dof_legend[1]
         series_dataframe["legend_dof3"] = three_dof_legend[2]
@@ -818,10 +799,11 @@ class RowData:
         series_dataframe["in_vivo"] = self.row.in_vivo
         series_dataframe["xp_mean"] = self.row.experimental_mean
 
-        setattr(self, f"{prefix}_3dof_per_line", series_dataframe)
-        # setattr(self, f"{prefix}_1dof_per_line", convert_df_to_1dof_per_line(series_dataframe, three_dof_legend))
+        # remove row where value_dof1, value_dof2 or value_dof3 is NaN
+        series_dataframe = series_dataframe.dropna(subset=["value_dof1", "value_dof2", "value_dof3"])
 
-        # return getattr(self, f"{prefix}_1dof_per_line")
+        setattr(self, f"{prefix}_3dof_per_line", series_dataframe)
+
         return getattr(self, f"{prefix}_3dof_per_line")
 
     @staticmethod
