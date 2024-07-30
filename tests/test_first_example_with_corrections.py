@@ -27,41 +27,108 @@ articles_data = {
             "acromioclavicular",
             "sternoclavicular",
         ],
-        [1, 2, 3],
-        246412.948120887,
-        [(0, 17.262926453200514), (1001, 47.336688953809954), (2000, 42.92927676074317), (-1, 12.282290646030905)],
+        [
+            1,
+            2,
+            3,
+        ],
+        246412.94812088698,
+        [
+            (0, 17.262926453200514),
+            (1001, -119.102109559619),
+            (2000, -23.049162405300553),
+            (-1, 12.282290646030905),
+        ],
     ),
     "Bourne et al.": (
         2550,
-        ["frontal plane elevation", "horizontal flexion"],
-        ["scapulothoracic"],
-        [1, 2, 3],
-        32987.06725953286,
-        [(0, -16.366300000000003), (1001, 21.925651818083278), (2000, -38.92291527743668), (-1, 17.319848672019763)],
+        [
+            "frontal plane elevation",
+            "horizontal flexion",
+        ],
+        [
+            "scapulothoracic",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        32987.067259532865,
+        [
+            (0, -16.366300000000003),
+            (1001, 25.037999894224672),
+            (2000, 41.36033610887097),
+            (-1, 17.319848672019763),
+        ],
     ),
     "Chu et al.": (
         96,
-        ["frontal plane elevation", "scapular plane elevation", "internal-external rotation 90 degree-abducted"],
-        ["scapulothoracic"],
-        [1, 2, 3],
+        [
+            "frontal plane elevation",
+            "scapular plane elevation",
+            "internal-external rotation 90 degree-abducted",
+        ],
+        [
+            "scapulothoracic",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
         -554.7492646716876,
-        [(0, 20.832700000000003), (30, -2.4029921148049445), (60, -8.436784721537704), (-1, -4.961429503563281)],
+        [
+            (0, 20.832700000000003),
+            (30, 32.982835336421985),
+            (60, -30.84605712625064),
+            (-1, -4.961429503563281),
+        ],
     ),
     "Fung et al.": (
         1242,
-        ["frontal plane elevation", "scapular plane elevation", "sagittal plane elevation"],
-        ["scapulothoracic", "sternoclavicular"],
-        [1, 2, 3],
-        -1650.2695999999999,
-        [(0, 36.84060000000001), (30, 29.6062), (60, 18.136000000000003), (-1, 9.294200000000002)],
+        [
+            "frontal plane elevation",
+            "scapular plane elevation",
+            "sagittal plane elevation",
+        ],
+        [
+            "scapulothoracic",
+            "sternoclavicular",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        -1650.2696000000005,
+        [
+            (0, 36.84060000000001),
+            (30, 29.6062),
+            (60, 18.136000000000003),
+            (-1, 26.8936),
+        ],
     ),
     "Kijima et al.": (
-        48,
-        ["scapular plane elevation"],
-        ["glenohumeral", "scapulothoracic"],
-        [1, 2, 3],
+        24,
+        [
+            "scapular plane elevation",
+        ],
+        [
+            "scapulothoracic",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
         306.06436262040665,
-        [(0, np.nan), (1, np.nan), (2, np.nan), (-1, 7.421436415016586)],
+        [
+            (0, -5.259839861608079),
+            (1, -0.7364922144008017),
+            (2, 4.471509771399723),
+            (-1, 7.421436415016586),
+        ],
     ),
     "Henninger et al.": (
         80862,
@@ -72,10 +139,22 @@ articles_data = {
             "internal-external rotation 0 degree-abducted",
             "internal-external rotation 90 degree-abducted",
         ],
-        ["glenohumeral", "scapulothoracic"],
-        [1, 2, 3],
-        1006110.1030133098,
-        [(0, -134.0133540986033), (1001, 76.9873557465161), (40001, 171.3809554730667), (-1, 18.710579311164597)],
+        [
+            "glenohumeral",
+            "scapulothoracic",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        1006110.1030133099,
+        [
+            (0, -134.0133540986033),
+            (1001, -14.755523818348605),
+            (40001, -122.66448550507789),
+            (-1, 18.710579311164597),
+        ],
     ),
     "Kozono et al.": (
         30,
@@ -95,19 +174,48 @@ articles_data = {
     ),
     "Matsumura et al.": (
         99,
-        ["frontal plane elevation", "scapular plane elevation", "sagittal plane elevation"],
-        ["scapulothoracic"],
-        [1, 2, 3],
+        [
+            "frontal plane elevation",
+            "scapular plane elevation",
+            "sagittal plane elevation",
+        ],
+        [
+            "scapulothoracic",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
         -558.4569560038939,
-        [(0, -23.068), (20, 32.595395315826835), (60, -0.8599417044686809), (-1, 11.970999999999998)],
+        [
+            (0, -23.068),
+            (20, -31.07429794520548),
+            (60, 8.572884301488248),
+            (-1, 11.970999999999998),
+        ],
     ),
     "Matsuki et al.": (
-        1836,  #     288
-        ["scapular plane elevation"],
-        ["scapulothoracic", "glenohumeral", "sternoclavicular"],
-        [1, 2, 3],
-        -18922.510132213356,
-        [(0, 0.7331976380416924), (1, 1.3163822061108446), (2, 2.009989683892475), (-1, np.nan)],
+        1152,
+        [
+            "scapular plane elevation",
+        ],
+        [
+            "scapulothoracic",
+            "sternoclavicular",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        -18922.510132213352,
+        [
+            (0, 0.7331976380416924),
+            (1, 1.3163822061108446),
+            (2, 2.009989683892475),
+            (-1, 27.07331661),
+        ],
     ),
     "Moissenet et al.": (
         705264,
@@ -117,18 +225,48 @@ articles_data = {
             "horizontal flexion",
             "internal-external rotation 0 degree-abducted",
         ],
-        ["glenohumeral", "scapulothoracic", "acromioclavicular", "sternoclavicular"],
-        [1, 2, 3],
-        1665134.6062432956,
-        [(0, 5.512546219515222), (1, 5.512549776544782), (2, 5.512606226422835), (-1, -0.44703921745960906)],
+        [
+            "glenohumeral",
+            "scapulothoracic",
+            "acromioclavicular",
+            "sternoclavicular",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        1665134.6062432944,
+        [
+            (0, 5.512546219515222),
+            (1, 5.512549776544782),
+            (2, 5.512606226422835),
+            (-1, -0.44703921745960906),
+        ],
     ),
     "Oki et al.": (
         354,
-        ["frontal plane elevation", "sagittal plane elevation", "horizontal flexion"],
-        ["scapulothoracic", "sternoclavicular"],
-        [1, 2, 3],
+        [
+            "frontal plane elevation",
+            "sagittal plane elevation",
+            "horizontal flexion",
+        ],
+        [
+            "scapulothoracic",
+            "sternoclavicular",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
         2343.2226332288533,
-        [(0, -23.571499999999997), (100, 23.698003331400965), (200, 15.424283835508106), (-1, 31.7351)],
+        [
+            (0, -23.571499999999997),
+            (100, -44.2176),
+            (200, 25.290555552753258),
+            (-1, 31.7351),
+        ],
     ),
     "Teece et al.": (
         39,
@@ -141,11 +279,25 @@ articles_data = {
     ),
     "Yoshida et al.": (
         84,
-        ["sagittal plane elevation"],
-        ["glenohumeral", "scapulothoracic"],
-        [1, 2, 3],
+        [
+            "sagittal plane elevation",
+        ],
+        [
+            "glenohumeral",
+            "scapulothoracic",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
         551.3161398751674,
-        [(0, 44.304576869953905), (40, -24.893753727658684), (65, 34.51266), (-1, 19.2415854)],
+        [
+            (0, 44.304576869953884),
+            (40, -86.8033893128552),
+            (65, -7.024499957334007),
+            (-1, 19.2415854),
+        ],
     ),
     # Add other articles here in the same format
 }
@@ -198,20 +350,18 @@ def test_number_of_articles():
         "Karduna et al.",
         "Kijima et al.",
         "Kim et al.",
-        "Kozono et al.",
         "Ludewig et al.",
         "Matsuki et al.",
         "Matsumura et al.",
         "Moissenet et al.",
         "Oki et al.",
         "Sahara et al.",
-        "Sugi et al.",
         "Teece et al.",
         "Yoshida et al.",
     ]
     assert articles == expected_articles
 
-    assert confident_values.shape[0] == 812850
+    assert confident_values.shape[0] == 812034
 
 
 def print_data(data, random_checks):
