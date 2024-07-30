@@ -782,8 +782,8 @@ class RowData:
         )
 
         series_dataframe["value_dof1"] = value_dof[:, 0] if correction else data["value_dof1"]
-        series_dataframe["value_dof2"] = value_dof[:, 1] if correction else data["value_dof1"]
-        series_dataframe["value_dof3"] = value_dof[:, 2] if correction else data["value_dof1"]
+        series_dataframe["value_dof2"] = value_dof[:, 1] if correction else data["value_dof2"]
+        series_dataframe["value_dof3"] = value_dof[:, 2] if correction else data["value_dof3"]
         series_dataframe["legend_dof1"] = three_dof_legend[0]
         series_dataframe["legend_dof2"] = three_dof_legend[1]
         series_dataframe["legend_dof3"] = three_dof_legend[2]
@@ -800,8 +800,7 @@ class RowData:
         series_dataframe["xp_mean"] = self.row.experimental_mean
 
         # remove row where value_dof1, value_dof2 or value_dof3 is NaN
-        series_dataframe = series_dataframe.dropna(subset=["value_dof1", "value_dof2", "value_dof3"])
-
+        series_dataframe = series_dataframe.dropna(subset=["value_dof1", "value_dof2", "value_dof3"], how="all")
         setattr(self, f"{prefix}_3dof_per_line", series_dataframe)
 
         return getattr(self, f"{prefix}_3dof_per_line")
