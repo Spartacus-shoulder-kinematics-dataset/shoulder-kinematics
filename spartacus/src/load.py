@@ -143,8 +143,6 @@ class Spartacus:
             output_dataframe = pd.concat([output_dataframe, df_series], ignore_index=True)
             corrected_output_dataframe = pd.concat([corrected_output_dataframe, df_corrected_series], ignore_index=True)
 
-        # self.confident_data_values = output_dataframe
-        # self.corrected_confident_data_values = corrected_output_dataframe
         self.confident_data_values = convert_df_to_1dof_per_line(output_dataframe)
         self.corrected_confident_data_values = convert_df_to_1dof_per_line(corrected_output_dataframe)
 
