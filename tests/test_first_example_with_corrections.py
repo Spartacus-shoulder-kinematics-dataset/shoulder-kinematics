@@ -156,14 +156,15 @@ articles_data = {
             (-1, 18.710579311164597),
         ],
     ),
-    "Kozono et al.": (
-        30,
-        ["internal-external rotation 0 degree-abducted"],
-        ["glenohumeral"],
-        [1, 2, 3],
-        0,
-        [(0, np.nan), (1, np.nan), (2, np.nan), (-1, np.nan)],
-    ),
+    # Not in the corrected data
+    # "Kozono et al.": (
+    #     30,
+    #     ["internal-external rotation 0 degree-abducted"],
+    #     ["glenohumeral"],
+    #     [1, 2, 3],
+    #     0,
+    #     [(0, np.nan), (1, np.nan), (2, np.nan), (-1, np.nan)],
+    # ),
     "Ludewig et al.": (
         684,
         ["frontal plane elevation", "scapular plane elevation", "sagittal plane elevation"],
