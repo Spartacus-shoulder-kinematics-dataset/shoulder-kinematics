@@ -27,13 +27,11 @@ class DataFrameInterface:
     def has_only_translational_data(self) -> bool:
         return not self.has_rotational_data and self.has_translational_data
 
-    @property
     def rotational_interface(self):
-        return DataFrameInterface(self.df[self.df["unit"] == "angle"])
+        return DataFrameInterface(self.df[self.df["unit"] == "rad"])
 
-    @property
     def translational_interface(self):
-        return DataFrameInterface(self.df[self.df["unit"] == "angle"])
+        return DataFrameInterface(self.df[self.df["unit"] == "mm"])
 
     @property
     def motions(self) -> list[str]:
