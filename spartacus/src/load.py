@@ -77,6 +77,7 @@ class Spartacus:
             self.joint_data.drop("dataset_authors", axis=1),
             left_on="dataset_id",
             right_on="dataset_id",
+            suffixes=("", "useless_string"),
         )
         return self.confident_dataframe
 
@@ -199,11 +200,12 @@ def load() -> Spartacus:
 def load_subdataset(name: DataFolder | str) -> Spartacus:
     """Load the confident dataset"""
     # open the file only_dataset_raw.csv
-    df = pd.read_csv(DatasetCSV.CLEAN.value)
+    df = pd.read_csv(DatasetCSV.DATASETS.value)
     df_joint_data = pd.read_csv(DatasetCSV.JOINT.value)
 
     datafolder_string = name if isinstance(name, str) else name.to_dataset_author()
     df = df[df["dataset_authors"] == datafolder_string]
+    df_joint_data = df_joint_data[df_joint_data["dataset_authors"] == datafolder_string]
 
     sp = Spartacus(datasets=df, joint_data=df_joint_data)
     sp.check_dataset_segments(print_warnings=True)

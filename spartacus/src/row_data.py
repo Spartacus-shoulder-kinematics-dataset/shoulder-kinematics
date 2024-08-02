@@ -20,6 +20,7 @@ from .corrections.angle_conversion_callbacks import (
     to_left_handed_frame,
 )
 from .corrections.kolz_matrices import get_kolz_rotation_matrix
+from .corrections.unwrap_utils import unwrap_for_yxy_glenohumeral_joint
 from .enums_biomech import (
     Segment,
     FrameType,
@@ -776,14 +777,21 @@ class RowData:
         no_correction_legend = ("x", "y", "z") if not rotation else tuple(self.joint.euler_sequence.value)
         correction_legend = ("x", "y", "z") if not rotation else self.joint.isb_rotation_biomechanical_dof
         three_dof_legend = correction_legend if correction else no_correction_legend
-        value_dof = self.calculate_dof_values(
-            data,
-            correction_callable=self.apply_correction_in_radians if rotation else self.apply_correction_to_translation,
-        )
+        if correction:
+            value_dof = self.calculate_dof_values(
+                data,
+                correction_callable=(
+                    self.apply_correction_in_radians if rotation else self.apply_correction_to_translation
+                ),
+            )
+            series_dataframe["value_dof1"] = value_dof[:, 0] if correction else data["value_dof1"]
+            series_dataframe["value_dof2"] = value_dof[:, 1] if correction else data["value_dof2"]
+            series_dataframe["value_dof3"] = value_dof[:, 2] if correction else data["value_dof3"]
+        else:
+            series_dataframe["value_dof1"] = data["value_dof1"]
+            series_dataframe["value_dof2"] = data["value_dof2"]
+            series_dataframe["value_dof3"] = data["value_dof3"]
 
-        series_dataframe["value_dof1"] = value_dof[:, 0] if correction else data["value_dof1"]
-        series_dataframe["value_dof2"] = value_dof[:, 1] if correction else data["value_dof2"]
-        series_dataframe["value_dof3"] = value_dof[:, 2] if correction else data["value_dof3"]
         series_dataframe["legend_dof1"] = three_dof_legend[0]
         series_dataframe["legend_dof2"] = three_dof_legend[1]
         series_dataframe["legend_dof3"] = three_dof_legend[2]
@@ -828,9 +836,18 @@ class RowData:
                 value_dof[i, 1] = corrected_dof_2
                 value_dof[i, 2] = corrected_dof_3
 
+            mvt = data["humeral_motion"].unique()[0]
+            joint = data["joint"].unique()[0]
+            if joint == JointType.GLENO_HUMERAL and mvt in (
+                "scapular plane elevation",
+                "frontal plane elevation",
+                "sagittal plane elevation",
+            ):
+                value_dof = unwrap_for_yxy_glenohumeral_joint(value_dof)
             # unwrap the angles to avoid discontinuities between -180 and 180 for example
-            for i in range(0, 3):
-                value_dof[:, i] = np.unwrap(value_dof[:, i], period=180)
+            else:
+                for i in range(0, 3):
+                    value_dof[:, i] = np.unwrap(value_dof[:, i], period=180)
         else:
             value_dof[:, 0] = data["value_dof1"].values
             value_dof[:, 1] = data["value_dof2"].values
