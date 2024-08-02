@@ -91,9 +91,6 @@ def main():
             first_row = subdf[subdf["joint"] == joint_type_str].iloc[0]
             joint = set_joint_from_row(first_row, joint_type)
 
-            rotation_parent_deviation = SegmentCompliance(mode="rotation", bsys=joint.parent_segment)
-            rotation_child_deviation = SegmentCompliance(mode="rotation", bsys=joint.child_segment)
-
             thoracohumeral_angle = set_thoracohumeral_angle_from_row(first_row)
             rotation_joint_deviation = JointCompliance(
                 mode="rotation", joint=joint, thoracohumeral_angle=thoracohumeral_angle
