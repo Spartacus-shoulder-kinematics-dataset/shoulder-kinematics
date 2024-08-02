@@ -22,7 +22,9 @@ class Spartacus:
         self.datasets = datasets
         self.joint_data = joint_data
         # merge the datasets and the joint data through the column dataset_id, dataset_id, joint_data is the bigger file
-        self.dataframe = pd.merge(datasets, joint_data, left_on="dataset_id", right_on="dataset_id")
+        self.dataframe = pd.merge(
+            datasets, joint_data, left_on="dataset_id", right_on="dataset_id", suffixes=("", "useless_string")
+        )
         self.confident_dataframe = None
 
         self.clean_df()

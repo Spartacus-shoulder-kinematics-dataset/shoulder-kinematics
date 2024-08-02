@@ -17,7 +17,10 @@ from spartacus.src.utils_setters import (
 def main():
     print_warnings = True
 
-    df = pd.read_csv(DatasetCSV.CLEAN.value)
+    datasets = pd.read_csv(DatasetCSV.DATASETS.value)
+    joint_data = pd.read_csv(DatasetCSV.JOINT.value)
+    df = pd.merge(datasets, joint_data, left_on="dataset_id", right_on="dataset_id", suffixes=("", "useless_string"))
+
     df = df.where(pd.notna(df), None)
     authors = df["dataset_authors"].unique().tolist()
 
