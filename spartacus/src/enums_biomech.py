@@ -420,6 +420,9 @@ class EulerSequence(Enum):
     def from_string(cls, sequence: str):
         if sequence is None:
             return None
+        if not isinstance(sequence, str):
+            if np.isnan(sequence):
+                return None
 
         sequence_name_to_enum = {
             "xy'x''": cls.XYX,

@@ -11,8 +11,9 @@ from src.corrections.angle_conversion_callbacks import convert_euler_angles_and_
 
 
 def main():
-    df = pd.read_csv(DatasetCSV.CLEAN.value)
-    maximus = sp.Spartacus(dataframe=df)
+    datasets = pd.read_csv(DatasetCSV.DATASETS.value)
+    joint_data = pd.read_csv(DatasetCSV.JOINT.value)
+    maximus = sp.Spartacus(datasets=datasets, joint_data=joint_data)
 
     df_new = pd.DataFrame(
         columns=[
@@ -62,7 +63,7 @@ def main():
 
         new_angles = convert_euler_angles_and_frames_to_isb(
             previous_sequence_str=row_data.joint.euler_sequence.value,
-            new_sequence_str=EulerSequence.isb_from_joint_type(row_data.joint.joint_type).value,
+            new_sequence_str=EulerSequence.isb_from_joint_type(row_data.joint.joint_type).to_string,
             rot1=0.2,
             rot2=0.3,
             rot3=0.4,
