@@ -2,7 +2,7 @@ import seaborn as sns
 
 
 BIOMECHANICAL_DOF_LEGEND = {
-    "glenohumeral": ("Plane of elevation", "Elevation", "Internal(+)/external(-) rotation"),
+    "glenohumeral": ("Plane of elevation", "Elevation(-)/Depression(+)", "Internal(+)/external(-) rotation"),
     "scapulothoracic": (
         "Protraction(+)/retraction(-)",
         "Medial(+)/lateral(-) rotation",
