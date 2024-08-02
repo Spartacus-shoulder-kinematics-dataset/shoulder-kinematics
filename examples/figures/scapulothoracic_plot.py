@@ -25,7 +25,7 @@ def manual_corrections(sub_df):
 
 def main():
     export = True
-    mvt = "frontal elevation"
+    mvt = "frontal plane elevation"
     df = import_data(correction=True)
     sub_df = df[df["humeral_motion"] == mvt]
     sub_df = manual_corrections(sub_df)
