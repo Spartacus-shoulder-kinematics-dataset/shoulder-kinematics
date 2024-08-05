@@ -197,8 +197,20 @@ def load() -> Spartacus:
     return sp
 
 
-def load_subdataset(name: DataFolder | str) -> Spartacus:
-    """Load the confident dataset"""
+def load_subdataset(name: DataFolder | str, shoulder: list[int] | int = None, mvt: list[str] | str = None) -> Spartacus:
+    """
+    Load the confident subdataset
+
+    Parameters
+    ----------
+    name: DataFolder
+        The name of the DataFolder
+    shoulder: list[int]
+        The id of the shoulders you want to keep, to study specific data
+    mvt: list[str] | str
+        The shoulder motion of interests to keep, to study specific motions, e.g. sagittal plane elevation,
+        if None keeps everything
+    """
     # open the file only_dataset_raw.csv
     df = pd.read_csv(DatasetCSV.DATASETS.value)
     df_joint_data = pd.read_csv(DatasetCSV.JOINT.value)
@@ -206,6 +218,14 @@ def load_subdataset(name: DataFolder | str) -> Spartacus:
     datafolder_string = name if isinstance(name, str) else name.to_dataset_author()
     df = df[df["dataset_authors"] == datafolder_string]
     df_joint_data = df_joint_data[df_joint_data["dataset_authors"] == datafolder_string]
+
+    if shoulder is not None:
+        shoulder = [shoulder] if isinstance(shoulder, int) else shoulder
+        df_joint_data = df_joint_data[df_joint_data["shoulder_id"].isin(shoulder)]
+
+    if mvt is not None:
+        mvt = [mvt] if isinstance(mvt, str) else mvt
+        df_joint_data = df_joint_data[df_joint_data["humeral_motion"].isin(mvt)]
 
     sp = Spartacus(datasets=df, joint_data=df_joint_data)
     sp.check_dataset_segments(print_warnings=True)
