@@ -18,6 +18,9 @@ from .corrections.angle_conversion_callbacks import (
     set_corrections_on_rotation_matrix,
     rotation_matrix_2_euler_angles,
     to_left_handed_frame,
+    quick_fix_x_rot_in_yxy_if_x_positive,
+    quick_fix_x_rot_in_yxy_from_matrix,
+    from_euler_angles_to_rotation_matrix,
 )
 from .corrections.kolz_matrices import get_kolz_rotation_matrix
 from .corrections.unwrap_utils import unwrap_for_yxy_glenohumeral_joint
@@ -587,6 +590,18 @@ class RowData:
             euler_sequence=self.joint.isb_euler_sequence,
         )
 
+        # enforce negative elevation
+        if self.joint.joint_type == JointType.GLENO_HUMERAL and self.row.humeral_motion in (
+            "scapular plane elevation",
+            "sagittal plane elevation",
+            "frontal plane elevation",
+        ):
+            self.euler_angles_correction_callback = lambda rot1, rot2, rot3: quick_fix_x_rot_in_yxy_if_x_positive(
+                # self.euler_angles_correction_callback = lambda rot1, rot2, rot3: quick_fix_x_rot_in_yxy_from_matrix(
+                np.array([rot1, rot2, rot3]),
+                # from_euler_angles_to_rotation_matrix(self.joint.isb_euler_sequence.value, rot1, rot2, rot3),
+            )
+
     def set_translation_correction_callback(self):
         """
         Work in Progress but here is the idea.
@@ -836,18 +851,26 @@ class RowData:
                 value_dof[i, 1] = corrected_dof_2
                 value_dof[i, 2] = corrected_dof_3
 
-            mvt = data["humeral_motion"].unique()[0]
-            joint = data["joint"].unique()[0]
-            if joint == JointType.GLENO_HUMERAL and mvt in (
-                "scapular plane elevation",
-                "frontal plane elevation",
-                "sagittal plane elevation",
-            ):
-                value_dof = unwrap_for_yxy_glenohumeral_joint(value_dof)
-            # unwrap the angles to avoid discontinuities between -180 and 180 for example
-            else:
-                for i in range(0, 3):
-                    value_dof[:, i] = np.unwrap(value_dof[:, i], period=180)
+            # mvt = data["humeral_motion"].unique()[0]
+            # joint = data["joint"].unique()[0]
+            # if joint == JointType.GLENO_HUMERAL and mvt in (
+            #     "scapular plane elevation",
+            #     "frontal plane elevation",
+            #     "sagittal plane elevation",
+            # ):
+            #     value_dof = unwrap_for_yxy_glenohumeral_joint(value_dof)
+            # # unwrap the angles to avoid discontinuities between -180 and 180 for example
+            # else:
+            # import plotly.express as px
+            #
+            # fig = px.scatter(value_dof)
+            # fig.update_layout(title="")
+            # mvt = data["humeral_motion"].unique()[0]
+            # joint = data["joint"].unique()[0]
+            # fig.update_layout(title=f"{mvt} - {joint}")
+            # fig.show()
+            # for i in range(0, 3):
+            #     value_dof[:, i] = np.unwrap(value_dof[:, i], period=180)
         else:
             value_dof[:, 0] = data["value_dof1"].values
             value_dof[:, 1] = data["value_dof2"].values
