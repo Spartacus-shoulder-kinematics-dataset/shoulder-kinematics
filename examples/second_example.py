@@ -16,7 +16,7 @@ def plot_mvt(df: DataFrame):
 
     for mvt in humeral_motions:
         sub_df = df[df["humeral_motion"] == mvt]
-        dfi = DataFrameInterface(sub_df)
+        dfi = DataFrameInterface(sub_df).rotational_interface()
         plt = DataPlanchePlotting(dfi)
         plt.plot()
         plt.update_style()
