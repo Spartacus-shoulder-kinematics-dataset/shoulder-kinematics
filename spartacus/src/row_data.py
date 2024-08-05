@@ -597,9 +597,10 @@ class RowData:
             "frontal plane elevation",
         ):
             self.euler_angles_correction_callback = lambda rot1, rot2, rot3: quick_fix_x_rot_in_yxy_if_x_positive(
-                # self.euler_angles_correction_callback = lambda rot1, rot2, rot3: quick_fix_x_rot_in_yxy_from_matrix(
-                np.array([rot1, rot2, rot3]),
-                # from_euler_angles_to_rotation_matrix(self.joint.isb_euler_sequence.value, rot1, rot2, rot3),
+                rotation_matrix_2_euler_angles(
+                    rotation_matrix=self.correct_isb_rotation_matrix_callback(rot1, rot2, rot3),
+                    euler_sequence=self.joint.isb_euler_sequence,
+                ),
             )
 
     def set_translation_correction_callback(self):
