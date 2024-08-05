@@ -1,12 +1,14 @@
 from spartacus import import_data, DataFrameInterface, DataPlanchePlotting
-from datetime import time, timedelta, datetime
+from datetime import datetime
 
-date = (datetime.now() + timedelta(hours=6)).strftime("%Y%m%d_%Hh")
+date = datetime.now().strftime("%Y%m%d_%Hh")
 
 
 def main():
     export = False
-    mvt = "scapular plane elevation"
+    # mvt = "scapular plane elevation"
+    # mvt = "frontal plane elevation"
+    mvt = "sagittal plane elevation"
     df = import_data(correction=True)
     sub_df = df[df["humeral_motion"] == mvt]
     # sub_df = sub_df[sub_df["article"] != "Henninger et al."]
