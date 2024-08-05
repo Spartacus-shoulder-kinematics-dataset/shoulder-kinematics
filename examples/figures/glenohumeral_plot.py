@@ -1,12 +1,15 @@
 from spartacus import import_data, DataFrameInterface, DataPlanchePlotting
+from datetime import time, timedelta, datetime
+
+date = (datetime.now() + timedelta(hours=6)).strftime("%Y%m%d_%Hh")
 
 
 def main():
-    export = True
-    mvt = "sagittal plane elevation"
+    export = False
+    mvt = "scapular plane elevation"
     df = import_data(correction=True)
     sub_df = df[df["humeral_motion"] == mvt]
-    sub_df = sub_df[sub_df["article"] != "Henninger et al."]
+    # sub_df = sub_df[sub_df["article"] != "Henninger et al."]
     # sub_df = sub_df[sub_df["article"] == "Begon et al."]
     # sub_df = sub_df[sub_df["shoulder_id"] == 1]
     dfi = DataFrameInterface(sub_df)
@@ -17,9 +20,9 @@ def main():
     plt.show()
 
     if export:
-        plt.fig.write_image(f"../../plots/{mvt}_scapulothoracic.png")
-        plt.fig.write_image(f"../../plots/{mvt}_scapulothoracic.pdf")
-        plt.fig.write_html(f"../../plots/{mvt}_scapulothoracic.html", include_mathjax="cdn")
+        plt.fig.write_image(f"../../plots/{mvt}_glenohumeral_{date}.png")
+        plt.fig.write_image(f"../../plots/{mvt}_glenohumeral_{date}.pdf")
+        plt.fig.write_html(f"../../plots/{mvt}_glenohumeral_{date}.html", include_mathjax="cdn")
 
 
 if __name__ == "__main__":
