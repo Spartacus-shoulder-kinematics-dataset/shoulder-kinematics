@@ -379,3 +379,18 @@ def print_data(data, random_checks):
         print(f"\t\t {idx, data.iloc[idx]['value']},")
     print(f"\t ],")
     print(f"),\n")
+
+
+def test_glenohumeral_elevation():
+    """A test because all corrections are working for these moves and joint"""
+    gh_elevation_confident_values = confident_values[confident_values["joint"] == "glenohumeral"]
+    motions = ["scapular plane elevation", "frontal plane elevation", "sagittal plane elevation"]
+    gh_elevation_confident_values = gh_elevation_confident_values[
+        gh_elevation_confident_values["humeral_motion"].isin(motions)
+    ]
+
+    articles = list(gh_elevation_confident_values["article"].unique())
+    expected_articles = ["Begon et al.", "Henninger et al.", "Ludewig et al.", "Moissenet et al.", "Yoshida et al."]
+
+    assert articles == expected_articles
+    assert gh_elevation_confident_values["value"].sum() == -1838194.01817409
