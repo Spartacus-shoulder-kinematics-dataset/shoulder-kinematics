@@ -4,11 +4,8 @@ from datetime import datetime
 date = datetime.now().strftime("%Y%m%d_%Hh")
 
 
-def main():
+def main(mvt):
     export = False
-    # mvt = "scapular plane elevation"
-    # mvt = "frontal plane elevation"
-    mvt = "sagittal plane elevation"
     df = import_data(correction=True)
     sub_df = df[df["humeral_motion"] == mvt]
     # sub_df = sub_df[sub_df["article"] != "Henninger et al."]
@@ -28,4 +25,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main("frontal plane elevation")
+    main("scapular plane elevation")
+    main("sagittal plane elevation")
