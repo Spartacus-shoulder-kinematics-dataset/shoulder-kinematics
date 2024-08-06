@@ -38,7 +38,6 @@ class Spartacus:
     def clean_df(self):
         # turn nan into None for the following columns
         # dof_1st_euler, dof_2nd_euler, dof_3rd_euler, dof_translation_x, dof_translation_y, dof_translation_z
-        # self.dataframe = self.dataframe.where(pd.notna(self.dataframe), None)
         self.datasets = self.datasets.where(pd.notna(self.datasets), None)
         self.joint_data = self.joint_data.where(pd.notna(self.joint_data), None)
 
