@@ -102,6 +102,7 @@ AUTHOR_DISPLAYED_STUDY = {
     "Henninger et al.": "#6a Henninger et al.",
     "Henninger et al. 6b AC": "#6b Henninger et al.",
     "Henninger et al. 6c GC": "#6c Henninger et al.",
+    "Karduna et al.": "#7 Karduna et al.",
     "Kijima et al.": "#8 Kijima et al.",
     "Kim et al.": "#9 Kim et al.",
     "Kozono et al.": "#10 Kozono et al.",
