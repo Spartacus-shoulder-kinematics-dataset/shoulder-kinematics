@@ -5,11 +5,11 @@ date = datetime.now().strftime("%Y%m%d_%Hh")
 
 
 def main(mvt):
-    export = True
+    export = False
     df = import_data(correction=True)
     sub_df = df[df["humeral_motion"] == mvt]
     dfi = DataFrameInterface(sub_df).rotational_interface()
-    plt = DataPlanchePlotting(dfi, restrict_to_joints=["scapulothoracic"])
+    plt = DataPlanchePlotting(dfi, restrict_to_joints=["sternoclavicular"])
     plt.plot()
     plt.update_style()
     plt.show()
