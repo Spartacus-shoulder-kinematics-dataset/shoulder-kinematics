@@ -394,3 +394,33 @@ def test_glenohumeral_elevation():
 
     assert articles == expected_articles
     assert gh_elevation_confident_values["value"].sum() == -1838194.01817409
+
+
+def test_scapulothoracic_elevation():
+    """A test because all corrections are working for these moves and joint"""
+    st_elevation_confident_values = confident_values[confident_values["joint"] == "scapulothoracic"]
+    motions = ["scapular plane elevation", "frontal plane elevation", "sagittal plane elevation"]
+    st_elevation_confident_values = st_elevation_confident_values[
+        st_elevation_confident_values["humeral_motion"].isin(motions)
+    ]
+
+    articles = list(st_elevation_confident_values["article"].unique())
+    expected_articles = [
+        "Begon et al.",
+        "Bourne et al.",
+        "Chu et al.",
+        "Fung et al.",
+        "Henninger et al.",
+        "Karduna et al.",
+        "Kijima et al.",
+        "Kim et al.",
+        "Ludewig et al.",
+        "Matsuki et al.",
+        "Matsumura et al.",
+        "Moissenet et al.",
+        "Oki et al.",
+        "Yoshida et al.",
+    ]
+
+    assert articles == expected_articles
+    assert st_elevation_confident_values["value"].sum() == 323916.15104743687
