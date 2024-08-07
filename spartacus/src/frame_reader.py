@@ -190,12 +190,20 @@ class Frame:
         is_z_axis_crossed_twice = "z^" in y_axis and "^z" in x_axis or "z^" in y_axis and "z^" in x_axis
 
         if is_x_axis_crossed_twice:
-            return cls.from_x_crossed_twice(
-                x_axis=parse_axis(x_axis),
-                z_axis=parse_axis(y_axis, cross_product_side="first", arm_side=side),
-                origin=AnatomicalLandmark.from_string(origin),
-                segment=segment,
-            )
+            if y_axis == "z^x" and "x^" in z_axis and "^x" in y_axis:
+                return cls.from_x_crossed_twice(
+                    x_axis=parse_axis(x_axis),
+                    z_axis=parse_axis(z_axis, cross_product_side="second", arm_side=side),
+                    origin=AnatomicalLandmark.from_string(origin),
+                    segment=segment,
+                )
+            else:
+                return cls.from_x_crossed_twice(
+                    x_axis=parse_axis(x_axis),
+                    z_axis=parse_axis(y_axis, cross_product_side="first", arm_side=side),
+                    origin=AnatomicalLandmark.from_string(origin),
+                    segment=segment,
+                )
 
         if is_y_axis_crossed_twice:
             if z_axis == "x^y" and "y^" in x_axis and "^y" in z_axis:
