@@ -1,8 +1,6 @@
 from spartacus import import_data, DataFrameInterface, DataPlanchePlotting
 from datetime import datetime
 
-date = datetime.now().strftime("%Y%m%d_%Hh")
-
 
 def main(mvt):
     export = False
