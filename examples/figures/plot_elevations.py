@@ -8,7 +8,7 @@ from spartacus import import_data, DataFrameInterface, DataPlanchePlotting
 
 def plot_mvt(df: DataFrame, dataset: str = ".", suffix: str = "", export: bool = False):
 
-    humeral_motions = df["humeral_motion"].unique()
+    humeral_motions = ["frontal plane elevation", "scapular plane elevation", "sagittal plane elevation"]
 
     for mvt in humeral_motions:
         sub_df = df[df["humeral_motion"] == mvt]
@@ -19,15 +19,15 @@ def plot_mvt(df: DataFrame, dataset: str = ".", suffix: str = "", export: bool =
         plt.show()
         if export:
             dataset += "/"
-            plt.fig.write_image(f"../plots/{dataset}{mvt}{suffix}.png")
-            plt.fig.write_image(f"../plots/{dataset}{mvt}{suffix}.pdf")
-            plt.fig.write_html(f"../plots/{dataset}{mvt}{suffix}.html", include_mathjax="cdn")
+            plt.fig.write_image(f"../../plots/{mvt}{suffix}.png")
+            plt.fig.write_image(f"../../plots/{mvt}{suffix}.pdf")
+            plt.fig.write_html(f"../../plots/{mvt}{suffix}.html", include_mathjax="cdn")
 
 
 def main():
     df = import_data(correction=True)
     df = df[df["unit"] == "rad"]
-    plot_mvt(df)
+    plot_mvt(df, export=True)
 
 
 def before_after():
