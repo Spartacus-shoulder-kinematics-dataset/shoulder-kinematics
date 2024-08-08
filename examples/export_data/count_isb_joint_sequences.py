@@ -7,7 +7,7 @@ import pandas as pd
 
 import spartacus as sp
 from spartacus import DatasetCSV, RowData, EulerSequence
-from src.corrections.angle_conversion_callbacks import convert_euler_angles_and_frames_to_isb
+from spartacus.src.corrections.angle_conversion_callbacks import convert_euler_angles_and_frames_to_isb
 
 
 def main():
