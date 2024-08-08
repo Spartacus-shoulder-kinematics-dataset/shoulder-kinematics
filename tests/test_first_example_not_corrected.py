@@ -32,10 +32,10 @@ articles_data = {
             2,
             3,
         ],
-        32987.067259532865,
+        13064.68776778251,
         [
-            (0, -16.366300000000003),
-            (1001, 25.037999894224672),
+            (0, 16.3663),
+            (1001, -25.037999894224672),
             (2000, 41.36033610887097),
             (-1, 17.319848672019763),
         ],
@@ -101,7 +101,7 @@ articles_data = {
             2,
             3,
         ],
-        1149.815953912212,
+        1117.9284372673956,
         [
             (0, np.nan),
             (1, np.nan),
@@ -224,12 +224,12 @@ articles_data = {
             2,
             3,
         ],
-        -558.4569560038939,
+        615.5314639526298,
         [
-            (0, -23.068),
-            (20, -31.07429794520548),
-            (60, 8.572884301488248),
-            (-1, 11.970999999999998),
+            (0, 23.068),
+            (20, 31.07429794520548),
+            (60, -8.572884301488248),
+            (-1, 11.971),
         ],
     ),
     "Matsuki et al.": (
@@ -247,11 +247,11 @@ articles_data = {
             2,
             3,
         ],
-        15809.429547540001,
+        -15.539620890000151,
         [
-            (0, 13.69204545),
-            (1, 17.77429908),
-            (2, 21.54803033),
+            (0, -13.69204545),
+            (1, -17.77429908),
+            (2, -21.54803033),
             (-1, -27.07331661),
         ],
     ),
@@ -274,7 +274,7 @@ articles_data = {
             2,
             3,
         ],
-        1922447.0594910607,
+        520966.64583027613,
         [
             (0, -26.1343382053074),
             (1, -26.1347999073885),
@@ -298,11 +298,11 @@ articles_data = {
             2,
             3,
         ],
-        2343.2226332288533,
+        978.4631094843794,
         [
-            (0, -23.571499999999997),
+            (0, 23.5715),
             (100, -44.2176),
-            (200, 25.290555552753258),
+            (200, -25.290555552753258),
             (-1, 31.7351),
         ],
     ),
@@ -341,7 +341,7 @@ articles_data = {
             2,
             3,
         ],
-        719.1194471700001,
+        -29.895498830000026,
         [
             (0, -2.8862207),
             (40, 52.1803361),
@@ -488,3 +488,26 @@ def test_scapulothoracic_elevation():
 
     assert articles == expected_articles
     assert st_elevation_confident_values["value"].sum() == 310596.58971538005
+
+
+def test_sternoclavicular_elevation():
+    """A test because all corrections are working for these moves and joint"""
+    sc_elevation_confident_values = confident_values[confident_values["joint"] == "sternoclavicular"]
+    motions = ["scapular plane elevation", "frontal plane elevation", "sagittal plane elevation"]
+    sc_elevation_confident_values = sc_elevation_confident_values[
+        sc_elevation_confident_values["humeral_motion"].isin(motions)
+    ]
+
+    articles = list(sc_elevation_confident_values["article"].unique())
+    expected_articles = [
+        "Begon et al.",
+        "Fung et al.",
+        "Ludewig et al.",
+        "Matsuki et al.",
+        "Moissenet et al.",
+        "Oki et al.",
+        "Sahara et al.",
+    ]
+
+    assert articles == expected_articles
+    assert sc_elevation_confident_values["value"].sum() == -1963409.63590945

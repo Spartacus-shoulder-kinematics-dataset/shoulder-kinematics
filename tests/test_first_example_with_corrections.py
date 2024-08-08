@@ -54,10 +54,10 @@ articles_data = {
             2,
             3,
         ],
-        32987.067259532865,
+        13064.68776778251,
         [
-            (0, -16.366300000000003),
-            (1001, 25.037999894224672),
+            (0, 16.366300000000003),
+            (1001, -25.037999894224672),
             (2000, 41.36033610887097),
             (-1, 17.319848672019763),
         ],
@@ -122,12 +122,12 @@ articles_data = {
             2,
             3,
         ],
-        306.06436262040665,
+        324.36143025699005,
         [
-            (0, -5.259839861608079),
-            (1, -0.7364922144008017),
-            (2, 4.471509771399723),
-            (-1, 7.421436415016586),
+            (0, -5.266452549003898),
+            (1, -0.7366853328766143),
+            (2, 4.463491519322243),
+            (-1, 12.183944798334949),
         ],
     ),
     "Henninger et al.": (
@@ -167,11 +167,29 @@ articles_data = {
     # ),
     "Ludewig et al.": (
         684,
-        ["frontal plane elevation", "scapular plane elevation", "sagittal plane elevation"],
-        ["glenohumeral", "scapulothoracic", "acromioclavicular", "sternoclavicular"],
-        [1, 2, 3],
-        -4175.255742861286,
-        [(0, -42.66781099811504), (1, -41.373669548197405), (2, -40.171439291048856), (-1, 25.0)],
+        [
+            "frontal plane elevation",
+            "scapular plane elevation",
+            "sagittal plane elevation",
+        ],
+        [
+            "glenohumeral",
+            "scapulothoracic",
+            "acromioclavicular",
+            "sternoclavicular",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        -4261.335638555229,
+        [
+            (0, -111.67445727166417),
+            (1, -95.19328367574825),
+            (2, -83.48602756759354),
+            (-1, 25.0),
+        ],
     ),
     "Matsumura et al.": (
         99,
@@ -188,11 +206,11 @@ articles_data = {
             2,
             3,
         ],
-        -558.4569560038939,
+        615.5314639526298,
         [
-            (0, -23.068),
-            (20, -31.07429794520548),
-            (60, 8.572884301488248),
+            (0, 23.068),
+            (20, 31.07429794520548),
+            (60, -8.572884301488248),
             (-1, 11.970999999999998),
         ],
     ),
@@ -210,12 +228,12 @@ articles_data = {
             2,
             3,
         ],
-        -18922.510132213352,
+        -25932.262277420363,
         [
             (0, 0.7331976380416924),
             (1, 1.3163822061108446),
             (2, 2.009989683892475),
-            (-1, 27.07331661),
+            (-1, -62.92668339),
         ],
     ),
     "Moissenet et al.": (
@@ -237,7 +255,7 @@ articles_data = {
             2,
             3,
         ],
-        3830009.3038871787,
+        2428528.8902263944,
         [
             (0, 5.512546219515222),
             (1, 5.512549776544782),
@@ -261,22 +279,34 @@ articles_data = {
             2,
             3,
         ],
-        2343.2226332288533,
+        978.4631094843792,
         [
-            (0, -23.571499999999997),
+            (0, 23.571499999999997),
             (100, -44.2176),
-            (200, 25.290555552753258),
+            (200, -25.290555552753258),
             (-1, 31.7351),
         ],
     ),
     "Teece et al.": (
         39,
-        ["scapular plane elevation"],
-        ["acromioclavicular"],
-        [1, 2, 3],
-        1070.5063803329367,  # Repeating total value here as a placeholder
-        [(0, 53.208998323357854), (10, 55.34423815737802), (22, 12.65697336292887), (-1, 21.697663050779525)],
-        # Random checks
+        [
+            "scapular plane elevation",
+        ],
+        [
+            "acromioclavicular",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        1097.2068551414447,
+        [
+            (0, 82.24065375507112),
+            (10, 81.77476016412206),
+            (22, -6.769648103841728),
+            (-1, 15.647227481285565),
+        ],
     ),
     "Yoshida et al.": (
         84,
@@ -292,7 +322,7 @@ articles_data = {
             2,
             3,
         ],
-        551.3161398751674,
+        -197.69880612483263,
         [
             (0, 44.304576869953884),
             (40, -86.8033893128552),
@@ -393,7 +423,7 @@ def test_glenohumeral_elevation():
     expected_articles = ["Begon et al.", "Henninger et al.", "Ludewig et al.", "Moissenet et al.", "Yoshida et al."]
 
     assert articles == expected_articles
-    assert gh_elevation_confident_values["value"].sum() == -1838194.01817409
+    assert gh_elevation_confident_values["value"].sum() == -1838764.362187335
 
 
 def test_scapulothoracic_elevation():
@@ -423,4 +453,27 @@ def test_scapulothoracic_elevation():
     ]
 
     assert articles == expected_articles
-    assert st_elevation_confident_values["value"].sum() == 323916.15104743687
+    assert st_elevation_confident_values["value"].sum() == 324279.4799691248
+
+
+def test_sternoclavicular_elevation():
+    """A test because all corrections are working for these moves and joint"""
+    sc_elevation_confident_values = confident_values[confident_values["joint"] == "sternoclavicular"]
+    motions = ["scapular plane elevation", "frontal plane elevation", "sagittal plane elevation"]
+    sc_elevation_confident_values = sc_elevation_confident_values[
+        sc_elevation_confident_values["humeral_motion"].isin(motions)
+    ]
+
+    articles = list(sc_elevation_confident_values["article"].unique())
+    expected_articles = [
+        "Begon et al.",
+        "Fung et al.",
+        "Ludewig et al.",
+        "Matsuki et al.",
+        "Moissenet et al.",
+        "Oki et al.",
+        "Sahara et al.",
+    ]
+
+    assert articles == expected_articles
+    assert sc_elevation_confident_values["value"].sum() == -2075535.1607143842

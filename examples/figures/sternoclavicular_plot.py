@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 def main(mvt):
-    export = False
+    export = True
     df = import_data(correction=True)
     sub_df = df[df["humeral_motion"] == mvt]
     dfi = DataFrameInterface(sub_df).rotational_interface()
