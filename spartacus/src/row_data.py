@@ -37,7 +37,6 @@ from .load_data import load_euler_csv
 from .utils import (
     get_segment_columns_direction,
     get_correction_column,
-    # get_is_correctable_column,
     get_is_isb_column,
 )
 from .utils_setters import set_parent_segment_from_row, set_child_segment_from_row, set_thoracohumeral_angle_from_row
