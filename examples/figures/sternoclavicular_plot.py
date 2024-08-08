@@ -13,9 +13,9 @@ def main(mvt):
     plt.show()
 
     if export:
-        plt.fig.write_image(f"../../plots/{mvt}_ST.png")
-        plt.fig.write_image(f"../../plots/{mvt}_ST.pdf")
-        plt.fig.write_html(f"../../plots/{mvt}_ST.html", include_mathjax="cdn")
+        plt.fig.write_image(f"../../plots/{mvt}_SC.png")
+        plt.fig.write_image(f"../../plots/{mvt}_SC.pdf")
+        plt.fig.write_html(f"../../plots/{mvt}_SC.html", include_mathjax="cdn")
 
 
 if __name__ == "__main__":
