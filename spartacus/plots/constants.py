@@ -1,5 +1,5 @@
 import seaborn as sns
-
+import numpy as np
 
 BIOMECHANICAL_DOF_LEGEND = {
     "glenohumeral": ("Plane of elevation", "Elevation(-)/Depression(+)", "Internal(+)/external(-) rotation"),
@@ -48,21 +48,47 @@ def rgb_to_hex(rgb):
 
 
 def author_colors_constant():
-    # palette = sns.color_palette(cc.glasbey, n_colors=20)
-    # palette = cc.linear_bmw_5_95_c86
-    # convert [0, 1] to hexa
-    # palette = [rgb_to_hex(color) for color in palette]
-    # palette = sns.color_palette(palette, n_colors=20)
-    palette = sns.color_palette("icefire", n_colors=21)
-    # palette = sns.diverging_palette(220, 0, l=50, s=80, n=20, center="light")
-    # print(palette)
-    # display the palette
+    # Create the main "icefire" palette as a NumPy array
+    # main_palette = np.array(sns.color_palette("icefire", n_colors=21))
+    main_palette = np.array(sns.color_palette("icefire", n_colors=18))
+    main_palette = np.concatenate(
+        (
+            np.array([[170 / 255, 255 / 255, 127 / 255]]),
+            np.array([[127 / 255, 255 / 255, 148 / 255]]),
+            np.array([[127 / 255, 255 / 255, 212 / 255]]),
+            main_palette,
+        )
+    )
+    # Create the first half of the new palette by linearly interpolating colors
+    start_index = 0
+    end_index = 10
+    new_x = np.linspace(start_index, end_index, num=15)
+    interpolated_colors_ice = np.empty((len(new_x), 3))
+    for i in range(3):
+        interpolated_colors_ice[:, i] = np.interp(new_x, np.arange(21), main_palette[:, i])
+
+    # # Add a green sine
+    # period = 2 * np.pi / 21 * 4
+    # interpolated_colors_ice[::2, 0] += np.abs(0.15 * np.sin(period * new_x[0::2] + np.pi / 4))
+    # interpolated_colors_ice[::2, 1] += 0.12 * np.sin(period * new_x[0::2] + np.pi / 4)
+
+    # Create the second half of the new palette by linearly interpolating colors
+    start_index = 15
+    end_index = 20
+    new_x = np.linspace(start_index, end_index, num=6)
+    interpolated_colors_fire = np.empty((len(new_x), 3))
+    for i in range(3):
+        interpolated_colors_fire[:, i] = np.interp(new_x, np.arange(21), main_palette[:, i])
+
+    # Concatenate the two halves of the new palette
+    palette = np.concatenate((interpolated_colors_ice, interpolated_colors_fire), axis=0)
 
     # import matplotlib.pyplot as plt
-    #
     # sns.palplot(palette)
     # plt.show()
-    # palette_c = sns.color_palette(cc.glasbey_cool, n_colors=20)
+
+    # Convert the palette back to a list of tuples
+    palette = [tuple(color) for color in palette]
 
     return {
         # In vivo
