@@ -551,7 +551,6 @@ class RowData:
         - 5th : rot1, rot2, rot3 = euler_angles(R_proximal_distal, euler_sequence)
 
         """
-
         self.isb_rotation_matrix_callback = lambda rot1, rot2, rot3: isb_framed_rotation_matrix_from_euler_angles(
             rot1=rot1,
             rot2=rot2,
@@ -595,6 +594,9 @@ class RowData:
             "scapular plane elevation",
             "sagittal plane elevation",
             "frontal plane elevation",
+            "internal-external rotation 0 degree-abducted",
+            "internal-external rotation 90 degree-abducted",
+            "horizontal flexion",
         ):
             self.euler_angles_correction_callback = lambda rot1, rot2, rot3: quick_fix_x_rot_in_yxy_if_x_positive(
                 rotation_matrix_2_euler_angles(
@@ -870,8 +872,11 @@ class RowData:
             # joint = data["joint"].unique()[0]
             # fig.update_layout(title=f"{mvt} - {joint}")
             # fig.show()
-            # for i in range(0, 3):
-            #     value_dof[:, i] = np.unwrap(value_dof[:, i], period=180)
+            mvt = data["humeral_motion"].unique()[0]
+            joint = data["joint"].unique()[0]
+            if joint == JointType.GLENO_HUMERAL and mvt in ("internal-external rotation 0 degree-abducted",):
+                for i in range(0, 3):
+                    value_dof[:, i] = np.unwrap(value_dof[:, i], period=180)
         else:
             value_dof[:, 0] = data["value_dof1"].values
             value_dof[:, 1] = data["value_dof2"].values
