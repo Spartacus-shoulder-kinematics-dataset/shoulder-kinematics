@@ -192,14 +192,14 @@ class Frame:
         if is_x_axis_crossed_twice:
             if y_axis == "z^x" and "x^" in z_axis and "^x" in y_axis:
                 return cls.from_x_crossed_twice(
-                    x_axis=parse_axis(x_axis),
+                    x_axis=parse_axis(x_axis, arm_side=side),
                     z_axis=parse_axis(z_axis, cross_product_side="second", arm_side=side),
                     origin=AnatomicalLandmark.from_string(origin),
                     segment=segment,
                 )
             else:
                 return cls.from_x_crossed_twice(
-                    x_axis=parse_axis(x_axis),
+                    x_axis=parse_axis(x_axis, arm_side=side),
                     z_axis=parse_axis(y_axis, cross_product_side="first", arm_side=side),
                     origin=AnatomicalLandmark.from_string(origin),
                     segment=segment,
@@ -420,14 +420,11 @@ class Frame:
 
     @property
     def is_left_side(self) -> bool:
-        pass
-        # TODO: Implement this property
+        return self.side == "left"
 
     @property
     def is_direct(self) -> bool:
-        # todo
-        pass
-        # return np.linalg.det(self.get_rotation_matrix()) > 0
+        return self.get_default_rotation_matrix == 1.0
 
     def __print__(self):
         return f"Frame: {self.x_axis}, {self.y_axis}, {self.z_axis}, {self.origin}, {self.segment}"
