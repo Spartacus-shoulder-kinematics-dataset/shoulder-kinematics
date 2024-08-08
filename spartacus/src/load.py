@@ -18,6 +18,7 @@ class Spartacus:
         self,
         datasets: pd.DataFrame | None = None,
         joint_data: pd.DataFrame | None = None,
+        check_and_import: bool = False,
     ):
         self.datasets = datasets
         self.joint_data = joint_data
@@ -34,6 +35,10 @@ class Spartacus:
         self.corrected_confident = None
         self.corrected_confident_data_values = None
         self.confident_data_values = None
+
+        if check_and_import:
+            self.check_dataset_segments(print_warnings=True)
+            self.import_confident_data()
 
     def clean_df(self):
         # turn nan into None for the following columns
@@ -159,6 +164,56 @@ class Spartacus:
         confident_path = Path.joinpath(path_next_to_clean, "confident_data.csv")
         self.confident_data_values.to_csv(confident_path, index=False)
 
+    @classmethod
+    def load(
+        cls,
+        datasets: DataFolder | str | list[DataFolder | str] = None,
+        shoulder: list[int] = None,
+        mvt: list[str] | str = None,
+        joints: list[str] | str = None,
+    ):
+        """
+        Load the confident subdataset
+
+        Parameters
+        ----------
+        datasets: DataFolder
+            The name of the DataFolder, if None keeps everything
+        shoulder: list[int]
+            The id of the shoulders you want to keep, to study specific data, if None keeps everything
+        mvt: list[str] | str
+            The shoulder motion of interests to keep, to study specific motions, e.g. sagittal plane elevation,
+            if None keeps everything
+        joints: list[str] | str
+            The joint of interests to keep, to study specific joints, e.g. scapulothoracic
+            if None keeps everything
+        """
+        # open the file only_dataset_raw.csv
+        df = pd.read_csv(DatasetCSV.DATASETS.value)
+        df_joint_data = pd.read_csv(DatasetCSV.JOINT.value)
+
+        if datasets is not None:
+            datasets = [datasets] if not isinstance(datasets, list) else datasets
+            datafolder_string = [name if isinstance(name, str) else name.to_dataset_author() for name in datasets]
+            df = df[df["dataset_authors"].isin(datafolder_string)]
+            df_joint_data = df_joint_data[df_joint_data["dataset_authors"].isin(datafolder_string)]
+
+        if shoulder is not None:
+            shoulder = [shoulder] if isinstance(shoulder, int) else shoulder
+            df_joint_data = df_joint_data[df_joint_data["shoulder_id"].isin(shoulder)]
+
+        if mvt is not None:
+            mvt = [mvt] if isinstance(mvt, str) else mvt
+            df_joint_data = df_joint_data[df_joint_data["humeral_motion"].isin(mvt)]
+
+        if joints is not None:
+            joints = [joints] if isinstance(joints, str) else joints
+            df_joint_data = df_joint_data[df_joint_data["joint"].isin(joints)]
+
+        df = df[df["dataset_authors"] != "Gutierrez Delgado et al."]
+
+        return cls(datasets=df, joint_data=df_joint_data, check_and_import=True)
+
 
 def load() -> Spartacus:
     """Load the confident datasets"""
@@ -187,12 +242,9 @@ def load() -> Spartacus:
 
     df = df[df["dataset_authors"] != "Gutierrez Delgado et al."]
 
-    print(df.shape)
     sp = Spartacus(datasets=df, joint_data=df_joint_data)
     sp.check_dataset_segments(print_warnings=True)
     sp.import_confident_data()
-    # df = load_confident_data(df, print_warnings=True)
-    print(df.shape)
     return sp
 
 
