@@ -31,6 +31,10 @@ def get_color(article):
     return color
 
 
+def get_rank(name: str) -> int:
+    return int(name.split(" ")[0][1]) if name.split(" ")[0][-1] == "a" else int(name.split(" ")[0][1:])
+
+
 class DataPlanchePlotting:
     def __init__(self, dfi: DataFrameInterface, restrict_to_joints: list[str | JointType] = None, options: dict = None):
 
@@ -153,6 +157,7 @@ class DataPlanchePlotting:
                 x=df["humerothoracic_angle"],
                 y=df["value"],
                 name=name,
+                legendrank=get_rank(name),
                 # name=article,
                 legendgroup=(
                     "_in_vivo" if df[self.options["marker_symbol"][0]].unique().all() else "_ex_vivo"
