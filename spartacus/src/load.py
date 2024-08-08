@@ -196,7 +196,12 @@ def load() -> Spartacus:
     return sp
 
 
-def load_subdataset(name: DataFolder | str, shoulder: list[int] | int = None, mvt: list[str] | str = None) -> Spartacus:
+def load_subdataset(
+    name: DataFolder | str = None,
+    shoulder: list[int] | int = None,
+    mvt: list[str] | str = None,
+    joints: list[str] | str = None,
+) -> Spartacus:
     """
     Load the confident subdataset
 
@@ -209,14 +214,19 @@ def load_subdataset(name: DataFolder | str, shoulder: list[int] | int = None, mv
     mvt: list[str] | str
         The shoulder motion of interests to keep, to study specific motions, e.g. sagittal plane elevation,
         if None keeps everything
+    joints: list[str] | str
+        The joint of interests to keep, to study specific joints, e.g. scapulothoracic
+        if None keeps everything
     """
     # open the file only_dataset_raw.csv
     df = pd.read_csv(DatasetCSV.DATASETS.value)
     df_joint_data = pd.read_csv(DatasetCSV.JOINT.value)
 
-    datafolder_string = name if isinstance(name, str) else name.to_dataset_author()
-    df = df[df["dataset_authors"] == datafolder_string]
-    df_joint_data = df_joint_data[df_joint_data["dataset_authors"] == datafolder_string]
+    if name is not None:
+        names = [name] if not isinstance(name, list) else name
+        datafolder_string = [name if isinstance(name, str) else name.to_dataset_author() for name in names]
+        df = df[df["dataset_authors"].isin(datafolder_string)]
+        df_joint_data = df_joint_data[df_joint_data["dataset_authors"].isin(datafolder_string)]
 
     if shoulder is not None:
         shoulder = [shoulder] if isinstance(shoulder, int) else shoulder
@@ -225,6 +235,10 @@ def load_subdataset(name: DataFolder | str, shoulder: list[int] | int = None, mv
     if mvt is not None:
         mvt = [mvt] if isinstance(mvt, str) else mvt
         df_joint_data = df_joint_data[df_joint_data["humeral_motion"].isin(mvt)]
+
+    if joints is not None:
+        joints = [joints] if isinstance(joints, str) else joints
+        df_joint_data = df_joint_data[df_joint_data["joint"].isin(joints)]
 
     sp = Spartacus(datasets=df, joint_data=df_joint_data)
     sp.check_dataset_segments(print_warnings=True)
