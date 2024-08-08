@@ -64,8 +64,7 @@ def isb_framed_rotation_matrix_from_euler_angles(
         The joint rotation matrix in an ISB-like manner (we may add an extra correction later)
     """
     rotation_matrix = from_euler_angles_to_rotation_matrix(previous_sequence_str, rot1, rot2, rot3)
-    converted_rotation_matrix = bsys_child.get_rotation_matrix() @ rotation_matrix @ bsys_parent.get_rotation_matrix().T
-    # return converted_rotation_matrix
+
     return set_corrections_on_rotation_matrix(
         child_matrix_correction=bsys_child.get_rotation_matrix(),
         matrix=rotation_matrix,
