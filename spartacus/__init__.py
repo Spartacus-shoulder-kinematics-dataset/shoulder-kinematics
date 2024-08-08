@@ -6,7 +6,7 @@ from .src.enums_biomech import (
     AnatomicalLandmark,
     Segment,
 )
-from src.enums import (
+from .src.enums import (
     DatasetCSV,
     DataFolder,
 )

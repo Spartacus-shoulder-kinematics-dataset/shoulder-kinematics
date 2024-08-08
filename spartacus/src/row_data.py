@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from src.enums import (
+from .enums import (
     DataFolder,
 )
 from .checks import (
