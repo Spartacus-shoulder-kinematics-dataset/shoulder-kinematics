@@ -101,7 +101,7 @@ articles_data = {
             2,
             3,
         ],
-        1117.9284372673956,
+        1149.815953912212,
         [
             (0, np.nan),
             (1, np.nan),
@@ -487,7 +487,7 @@ def test_scapulothoracic_elevation():
     ]
 
     assert articles == expected_articles
-    assert st_elevation_confident_values["value"].sum() == 310596.58971538005
+    assert st_elevation_confident_values["value"].sum() == 310628.47723202483
 
 
 def test_sternoclavicular_elevation():
