@@ -61,12 +61,16 @@ def isb_framed_rotation_matrix_from_euler_angles(
     Returns
     -------
     np.ndarray
-        The joint rotation matrix in a ISB-like manner (we may add an extra correction later)
+        The joint rotation matrix in an ISB-like manner (we may add an extra correction later)
     """
     rotation_matrix = from_euler_angles_to_rotation_matrix(previous_sequence_str, rot1, rot2, rot3)
     converted_rotation_matrix = bsys_child.get_rotation_matrix() @ rotation_matrix @ bsys_parent.get_rotation_matrix().T
-
-    return converted_rotation_matrix
+    # return converted_rotation_matrix
+    return set_corrections_on_rotation_matrix(
+        child_matrix_correction=bsys_child.get_rotation_matrix(),
+        matrix=rotation_matrix,
+        parent_matrix_correction=bsys_parent.get_rotation_matrix(),
+    )
 
 
 def to_left_handed_frame(
@@ -92,7 +96,8 @@ def set_corrections_on_rotation_matrix(
     parent_matrix_correction: np.ndarray,
 ):
     """Returns the rotation matrix with the child and parent correction applied"""
-    return child_matrix_correction @ matrix @ parent_matrix_correction.T
+    # return child_matrix_correction @ matrix @ parent_matrix_correction.T
+    return parent_matrix_correction @ matrix @ child_matrix_correction.T
 
 
 def convert_euler_angles_and_frames_to_isb(
