@@ -171,6 +171,7 @@ class Spartacus:
         shoulder: list[int] = None,
         mvt: list[str] | str = None,
         joints: list[str] | str = None,
+        check_and_import: bool = True,
     ):
         """
         Load the confident subdataset
@@ -187,6 +188,8 @@ class Spartacus:
         joints: list[str] | str
             The joint of interests to keep, to study specific joints, e.g. scapulothoracic
             if None keeps everything
+        check_and_import: bool
+            Check and import all the data
         """
         # open the file only_dataset_raw.csv
         df = pd.read_csv(DatasetCSV.DATASETS.value)
@@ -212,7 +215,7 @@ class Spartacus:
 
         df = df[df["dataset_authors"] != "Gutierrez Delgado et al."]
 
-        return cls(datasets=df, joint_data=df_joint_data, check_and_import=True)
+        return cls(datasets=df, joint_data=df_joint_data, check_and_import=check_and_import)
 
 
 def load() -> Spartacus:

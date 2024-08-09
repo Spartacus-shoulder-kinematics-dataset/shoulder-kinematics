@@ -1,5 +1,4 @@
 from spartacus import Spartacus
-import os
 
 
 def main():
