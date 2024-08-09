@@ -249,12 +249,6 @@ class RowData:
         self.parent_biomech_sys = set_parent_segment_from_row(self.row, self.parent_segment)
         self.child_biomech_sys = set_child_segment_from_row(self.row, self.child_segment)
 
-        check_correction_methods(self, self.parent_biomech_sys)
-        check_correction_methods(self, self.child_biomech_sys)
-
-        # self.parent_corrections = self.extract_corrections(self.parent_segment)
-        # self.child_corrections = self.extract_corrections(self.child_segment)
-
     def extract_corrections(self, segment: Segment) -> str:
         """
         Extract the correction cell of the correction column.
@@ -297,34 +291,9 @@ class RowData:
             output = True
         return output
 
-    def _check_segment_has_kolz_correction(self, correction, print_warnings: bool = False) -> bool:
-        correction = [] if correction is None else correction
-        condition_scapula = (
-            Correction.SCAPULA_KOLZ_AC_TO_PA_ROTATION in correction
-            or Correction.SCAPULA_KOLZ_GLENOID_TO_PA_ROTATION in correction
-        )
-        if not condition_scapula:
-            output = False
-            if print_warnings:
-                print(
-                    f"Joint {self.row.joint} has no correction value in the segment Scapula, "
-                    f"it should be filled with a {Correction.SCAPULA_KOLZ_AC_TO_PA_ROTATION} or a "
-                    f"{Correction.SCAPULA_KOLZ_GLENOID_TO_PA_ROTATION} correction, because the segment "
-                    f"origin is not on an isb axis. "
-                    f"Current value: {correction}"
-                )
-        else:
-            output = True
-        return output
-
     def check_segments_correction_validity(self, print_warnings: bool = False) -> tuple[bool, bool]:
         """
-        We expect the correction columns to be filled with valid values.
-        ex: if both segment are not isb, we expect the correction to_isb to be filled
-        ex: if both segment are isb, we expect no correction to be filled
-        ex: if both segment are isb, and euler sequence is isb, we expect no correction to be filled
-        ex: if both segment are isb, and euler sequence is not isb, we expect the correction to_isb to be filled
-        etc...
+        We expect the correction columns to be filled with valid values. Legacy code.
 
         Return
         ------
@@ -334,32 +303,18 @@ class RowData:
         parent_output = True
         child_output = True
 
-        parent_correction = self.extract_corrections(self.parent_segment)
-        self.parent_corrections = self.extract_corrections(self.parent_segment)
-        # parent_is_correctable = self.extract_is_correctable(self.parent_segment)
-        parent_is_thorax_global = False
+        check_correction_methods(self, self.parent_biomech_sys)
+        check_correction_methods(self, self.child_biomech_sys)
 
-        child_correction = self.extract_corrections(self.child_segment)
         self.child_corrections = self.extract_corrections(self.child_segment)
-        # child_is_correctable = self.extract_is_correctable(self.child_segment)
+        self.parent_corrections = self.extract_corrections(self.parent_segment)
+
+        parent_is_thorax_global = False
 
         # Thorax is global check
         if self.parent_segment == Segment.THORAX:
             if self.extract_is_thorax_global(self.parent_segment):
                 parent_is_thorax_global = True
-                # if parent_is_correctable is True:
-                #     parent_output = self._check_segment_has_to_isb_like_correction(
-                #         parent_correction, print_warnings=print_warnings
-                #     )
-                # elif parent_is_correctable is False:
-                #     parent_output = self._check_segment_has_no_correction(
-                #         parent_correction, print_warnings=print_warnings
-                #     )
-                # else:
-                #     print(
-                #         "The correction of thorax should be filled with a boolean value, "
-                #         "as it is a global coordinate system."
-                #     )
 
                 self.parent_segment_usable_for_rotation_data = parent_output
                 self.parent_segment_usable_for_translation_data = False
@@ -374,12 +329,14 @@ class RowData:
             and self.parent_biomech_sys.is_origin_on_an_isb_axis()
             and not parent_is_thorax_global
         ):
-            parent_output = self._check_segment_has_no_correction(parent_correction, print_warnings=print_warnings)
+            parent_output = self._check_segment_has_no_correction(
+                self.parent_corrections, print_warnings=print_warnings
+            )
             self.parent_segment_usable_for_rotation_data = parent_output
             self.parent_segment_usable_for_translation_data = False
 
         if self.child_biomech_sys.is_isb_oriented and self.child_biomech_sys.is_origin_on_an_isb_axis():
-            child_output = self._check_segment_has_no_correction(child_correction, print_warnings=print_warnings)
+            child_output = self._check_segment_has_no_correction(self.child_corrections, print_warnings=print_warnings)
             self.child_segment_usable_for_rotation_data = child_output
             self.child_segment_usable_for_translation_data = False
 
