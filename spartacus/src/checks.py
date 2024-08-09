@@ -6,7 +6,6 @@ from .enums_biomech import JointType, Segment, AnatomicalLandmark, Correction
 from .joint import Joint
 from .utils import (
     get_is_isb_column,
-    # get_is_correctable_column,
     get_segment_columns_direction,
 )
 from .utils_setters import set_parent_segment_from_row
@@ -91,52 +90,6 @@ def check_segment_filled_with_nan(row: pd.Series, segment: list, print_warnings:
                 print(segment, " is filled with nan")
             return True
     return False
-
-
-# def check_is_isb_segment(row: pd.Series, bsys: BiomechCoordinateSystem, print_warnings: bool = False) -> bool:
-#     """
-#     This function checks if the segment is ISB oriented and if it is well specified in the dataset.
-#
-#     Parameters
-#     ----------
-#     bsys : BiomechCoordinateSystem
-#         The biomechanical coordinate system to check.
-#     row : pandas.Series
-#         The row of the dataset to check.
-#     print_warnings : bool, optional
-#         If True, print warnings when inconsistencies are found. The default is False.
-#
-#     Returns
-#     -------
-#     bool
-#         True if the segment is ISB oriented and if it is well specified in the dataset, False otherwise.
-#
-#     Notes
-#     -----
-#     This function does not check if the segment is ISB oriented, it only checks if the dataset is well specified.
-#     Ex: a segment can be entirely ISB in the dataset, but if the correctable column is filled with True or False, then
-#     it means it is an ISB like segment, but not exactly ISB. Because it can either be corrected or not.
-#     if nan/None is given in the correctable column, then it means we don't have to apply any correction, so the segment
-#     is a well-defined ISB segment.
-#
-#     """
-#     is_isb = get_is_isb_column(bsys.segment)
-#     is_correctable_col = get_is_correctable_column(bsys.segment)
-#
-#     if not bsys.is_isb() == row[is_isb] and np.isnan(row[is_correctable_col]):
-#         # if expected and detected are different for isb, and the correctable is set to nan, then there is an inconsistency
-#         # False means we know we cannot correct it, True means we know we can correct it
-#         if print_warnings:
-#             print("WARNING : inconsistency in the dataset")
-#             print("-- ", row.article_author_year, " --")
-#             print(bsys.segment)
-#             print("detected ISB oriented:", bsys.is_isb_oriented())
-#             print("detected ISB origin:", bsys.is_isb_origin(), bsys.origin)
-#             print("detected ISB oriented + origin:", bsys.is_isb())
-#             print("expected ISB:", row[is_isb])
-#         return False
-#
-#     return True
 
 
 def check_correction_methods(row: "RowData", bsys: BiomechCoordinateSystem, print_warnings: bool = False) -> bool:

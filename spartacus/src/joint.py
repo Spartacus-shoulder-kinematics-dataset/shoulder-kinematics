@@ -71,51 +71,6 @@ class Joint:
 
         return frame_type_dict.get(self.translation_frame)
 
-    def is_sequence_convertible_through_factors(self, print_warning: bool = False) -> bool:
-        """
-        Check if the euler sequence of the joint can be converted to the ISB sequence with factors 1 or -1
-
-        We expect the euler sequence to have three different letters, if the ISB sequence is YXZ (steroclavicular, acromioclavicular, scapulothoracic)
-        We expect the euler sequence to have two different letters, if the ISB sequence is YXY (glenohumeral, thoracohumeral)
-
-        Return
-        ------
-        bool
-            True if the sequence can be converted with factors 1 or -1, False otherwise
-        """
-        if self.joint_type in (JointType.STERNO_CLAVICULAR, JointType.ACROMIO_CLAVICULAR, JointType.SCAPULO_THORACIC):
-            sequence_wanted = EulerSequence.YXZ
-            # check that we have three different letters in the sequence
-            if len(set(self.euler_sequence.value)) != 3:
-                if print_warning:
-                    print(
-                        "The euler sequence of the joint must have three different letters to be able to convert with factors 1"
-                        f"or -1 to the ISB sequence {sequence_wanted.value}, but the sequence of the joint is"
-                        f" {self.euler_sequence.value}"
-                    )
-                return False
-
-        elif self.joint_type in (JointType.GLENO_HUMERAL, JointType.THORACO_HUMERAL):
-            sequence_wanted = EulerSequence.YXY
-            # check that the sequence in joint.euler_sequence as the same two letters for the first and third rotations
-            if self.euler_sequence.value[0] != self.euler_sequence.value[2]:
-                if print_warning:
-                    print(
-                        "The euler sequence of the joint must have the same two letters for the first and third rotations"
-                        f"to be able to convert with factors 1 or -1 to the ISB sequence {sequence_wanted.value},"
-                        f" but the sequence of the joint is {self.euler_sequence.value}"
-                    )
-                return False
-        else:
-            if print_warning:
-                print(
-                    "The joint type must be JointType.STERNO_CLAVICULAR, JointType.ACROMIO_CLAVICULAR,"
-                    "JointType.SCAPULO_THORACIC, JointType.GLENO_HUMERAL, JointType.THORACO_HUMERAL"
-                )
-            return False
-
-        return True
-
     @property
     def isb_rotation_biomechanical_dof(self) -> (str, str, str):
         return isb_rotation_biomechanical_dof(self.joint_type)
