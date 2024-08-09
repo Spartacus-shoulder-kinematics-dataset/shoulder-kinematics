@@ -20,14 +20,6 @@ def test_kolz():
     assert R[2, 2] == 0.949534887979275
 
     R = get_kolz_rotation_matrix(Correction.SCAPULA_KOLZ_GLENOID_TO_PA_ROTATION, orthonormalize=False)
-    # R_gc_pa = np.array(
-    #     [
-    #         [0.949221220989932, 0.00968382059265423, -0.314460326974823],
-    #         [0.0563324947886947, 0.978141286964525, 0.200165613346213],
-    #         [0.309524996814902, -0.207715782631251, 0.927926952940059],
-    #     ]
-    # )
-    # R_pa_gc = R_gc_pa.T
 
     assert R.shape == (3, 3)
     assert R[0, 0] == 0.949221220989932
@@ -42,9 +34,7 @@ def test_kolz():
 
     R = get_kolz_rotation_matrix(Correction.SCAPULA_KOLZ_AC_TO_PA_ROTATION, orthonormalize=True)
     assert R.shape == (3, 3)
-    # array([[0.96473248, 0.01005574, -0.26304015],
-    #        [-0.05683917, 0.98365438, -0.1708607],
-    #        [0.25702246, 0.17978585, 0.94953489]])
+
     np.testing.assert_almost_equal(R[0, 0], 0.96473248)
     np.testing.assert_almost_equal(R[0, 1], 0.01005574)
     np.testing.assert_almost_equal(R[0, 2], -0.26304015)
