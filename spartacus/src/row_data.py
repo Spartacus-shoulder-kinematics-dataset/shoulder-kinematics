@@ -13,7 +13,8 @@ from .checks import (
     check_parent_child_joint,
     check_correction_methods,
 )
-from .compliance import SegmentCompliance, JointCompliance
+from .compliance import SegmentCompliance, JointCompliance, TotalCompliance
+from .constants import REPEATED_DATAFRAME_KEYS
 from .corrections.angle_conversion_callbacks import (
     isb_framed_rotation_matrix_from_euler_angles,
     set_corrections_on_rotation_matrix,
@@ -63,7 +64,6 @@ class RowData:
         self.child_segment = Segment.from_string(self.row.child)
         self.child_columns = get_segment_columns_direction(self.child_segment)
 
-        self.joint = None
         self.right_side = row.side_as_right
         self.thoracohumeral_angle = None
 
@@ -72,6 +72,13 @@ class RowData:
 
         self.child_biomech_sys = None
         self.child_corrections = None
+
+        self.joint = None
+
+        self.parent_compliance = None
+        self.child_compliance = None
+        self.joint_compliance = None
+        self.total_compliance = None
 
         # indirect attributes
         self._has_rotation_data = None  # has euler sequence
@@ -249,6 +256,18 @@ class RowData:
         """
         self.parent_biomech_sys = set_parent_segment_from_row(self.row, self.parent_segment)
         self.child_biomech_sys = set_child_segment_from_row(self.row, self.child_segment)
+
+    def set_compliance(self):
+        self.parent_compliance = SegmentCompliance(bsys=self.parent_biomech_sys)
+        self.child_compliance = SegmentCompliance(bsys=self.child_biomech_sys)
+
+        thoracohumeral_angle = set_thoracohumeral_angle_from_row(self.row)
+        self.joint_compliance = JointCompliance(joint=self.joint, thoracohumeral_angle=thoracohumeral_angle)
+        self.total_compliance = TotalCompliance(
+            parent_compliance=self.parent_compliance,
+            child_compliance=self.child_compliance,
+            joint_compliance=self.joint_compliance,
+        )
 
     def extract_corrections(self, segment: Segment) -> str:
         """
@@ -517,17 +536,11 @@ class RowData:
     @property
     def enough_compliant_for_translation(self) -> bool:
         """Check if the segment is compliant enough for merging translation data"""
-        parent_deviation = SegmentCompliance(bsys=self.parent_biomech_sys)
-        child_deviation = SegmentCompliance(bsys=self.child_biomech_sys)
-
-        thoracohumeral_angle = set_thoracohumeral_angle_from_row(self.row)
-        joint_deviation = JointCompliance(joint=self.joint, thoracohumeral_angle=thoracohumeral_angle)
-
-        pc1 = parent_deviation.is_c1
-        pc2 = parent_deviation.is_c2
-        pc3 = parent_deviation.is_c3
-        cc3 = child_deviation.is_c3
-        c5 = joint_deviation.is_c5
+        pc1 = self.parent_compliance.is_c1
+        pc2 = self.parent_compliance.is_c2
+        pc3 = self.parent_compliance.is_c3
+        cc3 = self.child_compliance.is_c3
+        c5 = self.joint_compliance.is_c5
 
         isb_origins = pc3 and cc3
         any_origin_is_wrong = not pc3 or not cc3
@@ -578,7 +591,7 @@ class RowData:
         self.rotation_data["joint"] = JointType.from_string(self.row.joint)
         self.rotation_data["humeral_motion"] = self.row.humeral_motion
 
-        self.translation_data["article"] = self.row.shoulder_id
+        self.translation_data["article"] = self.row.dataset_authors
         self.translation_data["joint"] = JointType.from_string(self.row.joint)
         self.translation_data["humeral_motion"] = self.row.humeral_motion
 
@@ -683,7 +696,23 @@ class RowData:
 
         series_dataframe["shoulder_id"] = self.row.shoulder_id
 
-        # remove row where value_dof1, value_dof2 or value_dof3 is NaN
+        # todo : find another way to paths thoses info because it slows down :/
+        series_dataframe["parent_compliance_1"] = self.total_compliance.parent.is_c1
+        series_dataframe["parent_compliance_2"] = self.total_compliance.parent.is_c2
+        series_dataframe["parent_compliance_3"] = self.total_compliance.parent.is_c3
+        series_dataframe["child_compliance_1"] = self.total_compliance.child.is_c1
+        series_dataframe["child_compliance_2"] = self.total_compliance.child.is_c2
+        series_dataframe["child_compliance_3"] = self.total_compliance.child.is_c3
+        series_dataframe["joint_compliance_4"] = self.total_compliance.joint.is_c4
+        series_dataframe["joint_compliance_5"] = self.total_compliance.joint.is_c5
+        series_dataframe["joint_compliance_6"] = self.total_compliance.joint.is_c6
+        series_dataframe["total_compliance"] = (
+            self.total_compliance.rotation if rotation else self.total_compliance.translation
+        )
+        series_dataframe["fully_isb"] = (
+            self.total_compliance.is_rotation_isb if rotation else self.total_compliance.is_translation_isb
+        )
+        # remove row where value_dof1, value_dof2 and value_dof3 are NaN
         series_dataframe = series_dataframe.dropna(subset=["value_dof1", "value_dof2", "value_dof3"], how="all")
         setattr(self, f"{prefix}_3dof_per_line", series_dataframe)
 
@@ -827,10 +856,8 @@ class RowData:
 
 def get_empty_series_dataframe():
     return pd.DataFrame(
-        columns=[
-            "article",  # string
-            "joint",  # string
-            "humeral_motion",  # string
+        columns=REPEATED_DATAFRAME_KEYS
+        + [
             "humerothoracic_angle",  # float
             "value_dof1",  # float
             "value_dof2",  # float
@@ -838,7 +865,5 @@ def get_empty_series_dataframe():
             "legend_dof1",  # string
             "legend_dof2",  # string
             "legend_dof3",  # string
-            "unit",  # string "rad" or "mm"
-            "shoulder_id",  # int
         ],
     )

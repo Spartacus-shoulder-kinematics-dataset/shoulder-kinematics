@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 
 from .enums_biomech import Segment
+from .constants import REPEATED_DATAFRAME_KEYS
 
 
 def mat_2_rotation(R: np.ndarray) -> biorbd.Rotation:
@@ -166,21 +167,32 @@ def compute_rotation_matrix_from_axes(
 
 
 def convert_df_to_1dof_per_line(df: pd.DataFrame) -> pd.DataFrame:
-    """Convert a dataframe with 3 degrees of freedom per line to a dataframe with 1 degree of freedom per line"""
+    """
+    Convert a dataframe with 3 degrees of freedom per line to a dataframe with 1 degree of freedom per line
+    stacking dof 1 then dof2 and then dof 3 under each others
+    """
 
+    first_dict = {key: df[key].values[:, np.newaxis].repeat(3, axis=1).T.flatten() for key in REPEATED_DATAFRAME_KEYS}
+    second_dict = {
+        "humerothoracic_angle": df["humerothoracic_angle"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
+        "value": df[["value_dof1", "value_dof2", "value_dof3"]].values.T.flatten(),
+        "legend": df[["legend_dof1", "legend_dof2", "legend_dof3"]].values.T.flatten(),
+        "degree_of_freedom": np.array([[1, 2, 3]]).repeat(repeats=df.shape[0], axis=0).T.flatten(),
+    }
     df_transformed = pd.DataFrame(
-        {
-            "article": df["article"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
-            "unit": df["unit"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
-            "joint": df["joint"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
-            "humeral_motion": df["humeral_motion"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
-            "shoulder_id": df["shoulder_id"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
-            # The reorganized values
-            "humerothoracic_angle": df["humerothoracic_angle"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
-            "value": df[["value_dof1", "value_dof2", "value_dof3"]].values.T.flatten(),
-            "legend": df[["legend_dof1", "legend_dof2", "legend_dof3"]].values.T.flatten(),
-            "degree_of_freedom": np.array([[1, 2, 3]]).repeat(repeats=df.shape[0], axis=0).T.flatten(),
-        }
+        {**first_dict, **second_dict}
+        # {
+        #     "article": df["article"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
+        #     "unit": df["unit"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
+        #     "joint": df["joint"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
+        #     "humeral_motion": df["humeral_motion"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
+        #     "shoulder_id": df["shoulder_id"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
+        #     # The reorganized values
+        #     "humerothoracic_angle": df["humerothoracic_angle"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
+        #     "value": df[["value_dof1", "value_dof2", "value_dof3"]].values.T.flatten(),
+        #     "legend": df[["legend_dof1", "legend_dof2", "legend_dof3"]].values.T.flatten(),
+        #     "degree_of_freedom": np.array([[1, 2, 3]]).repeat(repeats=df.shape[0], axis=0).T.flatten(),
+        # }
     )
 
     return df_transformed

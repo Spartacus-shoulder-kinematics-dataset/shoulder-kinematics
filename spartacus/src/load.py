@@ -137,6 +137,7 @@ class Spartacus:
             row_data.check_joint_validity(print_warnings=False)
             row_data.check_segments_correction_validity(print_warnings=False)
             row_data.check_thoracohumeral_angle(print_warnings=False)
+            row_data.set_compliance()
 
             if not (process_translation and row_data.enough_compliant_for_translation):
                 process_translation = False
@@ -182,12 +183,12 @@ class Spartacus:
         self.confident_data_values = pd.merge(
             self.confident_data_values, meta_data, how="left", left_on="article", right_on="dataset_authors"
         )
-        self.confident_data_values.drop(columns="dataset_authors")
+        self.confident_data_values = self.confident_data_values.drop(columns="dataset_authors")
 
         self.corrected_confident_data_values = pd.merge(
             self.corrected_confident_data_values, meta_data, how="left", left_on="article", right_on="dataset_authors"
         )
-        self.corrected_confident_data_values.drop(columns="dataset_authors")
+        self.corrected_confident_data_values = self.corrected_confident_data_values.drop(columns="dataset_authors")
 
     def export(self):
         path_next_to_clean = Path(DatasetCSV.CLEAN.value).parent
