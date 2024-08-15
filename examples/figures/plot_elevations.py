@@ -13,7 +13,7 @@ def plot_mvt(df: DataFrame, dataset: str = ".", suffix: str = "", export: bool =
     for mvt in humeral_motions:
         sub_df = df[df["humeral_motion"] == mvt]
         dfi = DataFrameInterface(sub_df)
-        plt = DataPlanchePlotting(dfi)
+        plt = DataPlanchePlotting(dfi, options="in_vivo")
         plt.plot()
         plt.update_style()
         plt.show()

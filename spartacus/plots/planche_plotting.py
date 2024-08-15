@@ -36,7 +36,7 @@ def get_rank(name: str) -> int:
 
 
 class DataPlanchePlotting:
-    def __init__(self, dfi: DataFrameInterface, restrict_to_joints: list[str | JointType] = None, options: dict = None):
+    def __init__(self, dfi: DataFrameInterface, restrict_to_joints: list[str | JointType] = None, options: str = None):
 
         if dfi.has_translations_and_rotations:
             raise ValueError("The DataFrameInterface must contain only rotational data or translation data, not both.")
@@ -49,7 +49,29 @@ class DataPlanchePlotting:
 
         self.dfi = dfi
         self.opacity = 0.85 if self.dfi.nb_articles > 1 else 1
-        self.options = {"marker_symbol": ("in_vivo", ("circle", "diamond"))} if options is None else options
+
+        if options == "in_vivo":
+            self.options = (
+                {"in_vivo": {True: ("In Vivo", "circle"), False: ("Ex Vivo", "diamond")}} if options is None else options
+            )
+        if options == "posture":
+            self.options = (
+                {"posture": {"standing": ("Standing", "circle"), "sitting": ("Sitting", "diamond")}}
+                if options is None
+                else options
+            )
+        if options == "experimental_mean":
+            self.options = {
+                "experimental_mean": {
+                    "intra cortical pins": ("Pins", "circle"),
+                    "biplane x-ray fluoroscopy": ("Biplane X-ray fluoroscopy", "x"),
+                    "single-plane x-ray fluoroscopy": ("Single-plane X-ray fluoroscopy", "square"),
+                    "MRI": ("MRI", "hexagon2"),
+                    "4DCT": ("4DCT", "pentagon"),
+                }
+            }
+        if not options in ("in_vivo", "experimental_mean", "posture"):
+            self.options = None
 
         self.showlegend = True
 
@@ -147,10 +169,20 @@ class DataPlanchePlotting:
         row, col_left = self.joint_row_col_index(joint)[0]
         self.fig.update_yaxes(title_text=f"{joint[0].upper()}{joint[1:].lower()} (°)", row=row + 1, col=col_left + 1)
 
+    def get_legend_options(self, df) -> tuple[str, str] | tuple[None, None]:
+        if self.options is not None:
+            group = list(self.options.keys())[0]
+            which_group = df[group].unique()[0]
+            return self.options[group][which_group]
+        else:
+            return None, None
+
     def plot_timeserie(self, df, article, row, col, color, opacity):
         name = AUTHOR_DISPLAYED_STUDY.get(article)
         if name is None:
             name = article
+
+        grouptitle, marker_symbol = self.get_legend_options(df)
 
         self.fig.add_trace(
             go.Scatter(
@@ -159,13 +191,9 @@ class DataPlanchePlotting:
                 name=name,
                 legendrank=get_rank(name),
                 # name=article,
-                legendgroup=(
-                    "_in_vivo" if df[self.options["marker_symbol"][0]].unique().all() else "_ex_vivo"
-                ),  # todo: need a better implementation, okay for now
+                legendgroup="_" + grouptitle if self.options is not None else name,
                 legendgrouptitle=dict(
-                    text=(
-                        "In vivo" if df[self.options["marker_symbol"][0]].unique().all() == True else "Ex vivo"
-                    ),  # todo: need a better implementation, okay for now
+                    text=grouptitle,
                     font=dict(size=14),
                 ),
                 showlegend=self.showlegend,
@@ -176,11 +204,7 @@ class DataPlanchePlotting:
                 marker=dict(
                     size=3,
                     color=color,
-                    symbol=(
-                        self.options["marker_symbol"][1][0]
-                        if df[self.options["marker_symbol"][0]].unique().all() == True
-                        else self.options["marker_symbol"][1][1]
-                    ),
+                    symbol=marker_symbol,
                 ),
                 line=dict(
                     width=1.5,
