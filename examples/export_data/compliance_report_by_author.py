@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 
-from spartacus import DatasetCSV, Segment
-from spartacus import JointType
+from spartacus import JointType, Segment
+from spartacus import Spartacus
 from spartacus.src.checks import check_segment_filled_with_nan
 from spartacus.src.compliance import JointCompliance, SegmentCompliance
 from spartacus.src.utils import get_segment_columns_direction
@@ -17,11 +17,9 @@ from spartacus.src.utils_setters import (
 def main():
     print_warnings = True
 
-    datasets = pd.read_csv(DatasetCSV.DATASETS.value)
-    joint_data = pd.read_csv(DatasetCSV.JOINT.value)
-    df = pd.merge(datasets, joint_data, left_on="dataset_id", right_on="dataset_id", suffixes=("", "useless_string"))
+    sp = Spartacus.load(check_and_import=False, exclude_dataset_without_series=False)
+    df = sp.dataframe
 
-    df = df.where(pd.notna(df), None)
     authors = df["dataset_authors"].unique().tolist()
 
     df_deviation = pd.DataFrame(
@@ -53,7 +51,6 @@ def main():
     )
 
     # collect joint for which I have data
-    joint_data = {author: [] for author in authors}
     df_grouped = df.groupby("dataset_authors")["joint"].agg(lambda x: list(set(x))).reset_index()
     joints_per_author = df_grouped.set_index("dataset_authors")["joint"].to_dict()
 
@@ -72,18 +69,18 @@ def main():
             segment_cols = get_segment_columns_direction(segment)
             if not check_segment_filled_with_nan(first_row, segment_cols, print_warnings=print_warnings):
                 bsys_segment = set_parent_segment_from_row(first_row, segment)
-                compliance = SegmentCompliance(mode="rotation", bsys=bsys_segment)
-                dico_d[f"{segment.to_string}_c1"] = 0 if compliance.is_c1 else 1
-                dico_d[f"{segment.to_string}_c2"] = 0 if compliance.is_c2 else 1
-                dico_d[f"{segment.to_string}_c3"] = 0 if compliance.is_c3 else 1
+                compliance = SegmentCompliance(bsys=bsys_segment)
+                dico_d[f"{segment.to_string}_c1"] = compliance.is_c1
+                dico_d[f"{segment.to_string}_c2"] = compliance.is_c2
+                dico_d[f"{segment.to_string}_c3"] = compliance.is_c3
             if (
                 check_segment_filled_with_nan(first_row, segment_cols, print_warnings=print_warnings)
                 and first_row[segment_cols[3]] is not None
             ):
                 #  for nishinaka for example that only has translational information
                 bsys_segment = set_child_segment_from_row(first_row, segment)
-                deviation = SegmentCompliance(mode="rotation", bsys=bsys_segment)
-                dico_d[f"{segment.to_string}_c3"] = 0 if deviation.is_c3 else 1
+                deviation = SegmentCompliance(bsys=bsys_segment)
+                dico_d[f"{segment.to_string}_c3"] = deviation.is_c3
 
         for joint_type_str in joints_per_author[author]:
             joint_type = JointType.from_string(joint_type_str)
@@ -92,15 +89,13 @@ def main():
             joint = set_joint_from_row(first_row, joint_type)
 
             thoracohumeral_angle = set_thoracohumeral_angle_from_row(first_row)
-            rotation_joint_deviation = JointCompliance(
-                mode="rotation", joint=joint, thoracohumeral_angle=thoracohumeral_angle
-            )
+            joint_deviation = JointCompliance(joint=joint, thoracohumeral_angle=thoracohumeral_angle)
 
             if joint.euler_sequence is not None:
-                dico_d[f"{joint_type.to_string}_c4"] = 0 if rotation_joint_deviation.is_c4 else 1
+                dico_d[f"{joint_type.to_string}_c4"] = joint_deviation.is_c4
             if joint.translation_origin is not None:
-                dico_d[f"{joint_type.to_string}_c5"] = 0 if rotation_joint_deviation.is_c5 else 1
-            dico_d[f"thoracohumeral_c6"] = 0 if rotation_joint_deviation.is_c6 else 1
+                dico_d[f"{joint_type.to_string}_c5"] = joint_deviation.is_c5
+            dico_d[f"thoracohumeral_c6"] = joint_deviation.is_c6
 
         df_deviation = pd.concat([df_deviation, pd.DataFrame([dico_d])], ignore_index=True)
 

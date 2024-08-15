@@ -45,6 +45,7 @@ class Spartacus:
         # dof_1st_euler, dof_2nd_euler, dof_3rd_euler, dof_translation_x, dof_translation_y, dof_translation_z
         self.datasets = self.datasets.where(pd.notna(self.datasets), None)
         self.joint_data = self.joint_data.where(pd.notna(self.joint_data), None)
+        self.dataframe = self.dataframe.where(pd.notna(self.dataframe), None)
 
     def check_dataset_segments(self, print_warnings: bool = False) -> pd.DataFrame:
         """
@@ -172,6 +173,7 @@ class Spartacus:
         mvt: list[str] | str = None,
         joints: list[str] | str = None,
         check_and_import: bool = True,
+        exclude_dataset_without_series: bool = True,
     ):
         """
         Load the confident subdataset
@@ -190,6 +192,8 @@ class Spartacus:
             if None keeps everything
         check_and_import: bool
             Check and import all the data
+        exclude_dataset_without_series: bool
+
         """
         # open the file only_dataset_raw.csv
         df = pd.read_csv(DatasetCSV.DATASETS.value)
@@ -213,7 +217,8 @@ class Spartacus:
             joints = [joints] if isinstance(joints, str) else joints
             df_joint_data = df_joint_data[df_joint_data["joint"].isin(joints)]
 
-        df = df[df["dataset_authors"] != "Gutierrez Delgado et al."]
+        if exclude_dataset_without_series:
+            df = df[df["dataset_authors"] != "Gutierrez Delgado et al."]
 
         return cls(datasets=df, joint_data=df_joint_data, check_and_import=check_and_import)
 
