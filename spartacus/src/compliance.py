@@ -1,5 +1,4 @@
 from .biomech_system import BiomechCoordinateSystem
-from .deviation_constant import DEVIATION_COEFF
 from .enums_biomech import CartesianAxis
 from .joint import Joint
 from .thoracohumeral_angle import ThoracohumeralAngle
@@ -7,8 +6,8 @@ from .thoracohumeral_angle import ThoracohumeralAngle
 
 class Compliance:
 
-    def __init__(self, mode: str):
-        self.mode = mode
+    def __init__(self):
+        self.standards = "ISB"  # todo: we could some day modify to get different standards requirements.
 
     @staticmethod
     def are_axes_isb_labeled(bsys: BiomechCoordinateSystem) -> bool:
@@ -110,12 +109,6 @@ class Compliance:
         """
         return joint.is_euler_sequence_equivalent_to_isb
 
-    def isb_euler_sequence(self, joint: Joint) -> float:
-        if Compliance.is_euler_sequence_equivalent_to_isb(joint):
-            return 1
-
-        return DEVIATION_COEFF[self.mode]["euler_sequence"]
-
     @staticmethod
     def is_translation_frame_proximal_isb(joint: Joint) -> bool:
         """
@@ -128,12 +121,6 @@ class Compliance:
         """
         return joint.is_translation_frame_proximal_isb
 
-    def translation_frame_proximal_isb(self, joint: Joint) -> float:
-        if Compliance.is_translation_frame_proximal_isb(joint):
-            return 1
-
-        return DEVIATION_COEFF[self.mode]["translation_frame"]
-
     @staticmethod
     def is_thoraco_humeral_angle_isb(thoraco_humeral_angle: ThoracohumeralAngle) -> bool:
         """
@@ -145,45 +132,39 @@ class Compliance:
         """
         return thoraco_humeral_angle.is_elevation_angle_isb
 
-    def thoraco_humeral_angle_isb(self, thoraco_humeral_angle: ThoracohumeralAngle) -> float:
-        if Compliance.is_thoraco_humeral_angle_isb(thoraco_humeral_angle):
-            return 1
-
-        return DEVIATION_COEFF[self.mode]["translation_frame"]
-
 
 class SegmentCompliance(Compliance):
-    def __init__(self, mode: str, bsys: BiomechCoordinateSystem):
-        super().__init__(mode)
+    def __init__(self, bsys: BiomechCoordinateSystem):
+        super().__init__()
         self.bsys = bsys
 
     @property
     def is_c1(self) -> bool:
-        return not self.is_isb_oriented(self.bsys)
+        return self.is_isb_oriented(self.bsys)
 
     @property
     def is_c2(self) -> bool:
-        return not self.are_axes_built_with_isb_landmarks(self.bsys)
+        return self.are_axes_built_with_isb_landmarks(self.bsys)
 
     @property
     def is_c3(self) -> bool:
-        return not self.is_origin_isb(self.bsys)
+        return self.is_origin_isb(self.bsys)
 
 
 class JointCompliance(Compliance):
-    def __init__(self, mode: str, joint: Joint, thoracohumeral_angle: ThoracohumeralAngle):
-        super().__init__(mode)
+    def __init__(self, joint: Joint, thoracohumeral_angle: ThoracohumeralAngle):
+        super().__init__()
         self.joint = joint
         self.thoracohumeral_angle = thoracohumeral_angle
 
     @property
     def is_c4(self) -> bool:
-        return not self.is_euler_sequence_equivalent_to_isb(self.joint)
+        return self.is_euler_sequence_equivalent_to_isb(self.joint)
 
     @property
     def is_c5(self) -> bool:
-        return not self.is_translation_frame_proximal_isb(self.joint)
+        return self.is_translation_frame_proximal_isb(self.joint)
 
     @property
     def is_c6(self) -> bool:
-        return not self.is_thoraco_humeral_angle_isb(self.thoracohumeral_angle)
+        return self.is_thoraco_humeral_angle_isb(self.thoracohumeral_angle)
