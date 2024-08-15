@@ -128,7 +128,7 @@ articles_data = {
             2,
             3,
         ],
-        101987.59525468624,
+        11186.46262507524,
         [
             (0, 22.415784339761892),
             (1001, -21.990621211541065),
@@ -431,7 +431,7 @@ def print_data(data, random_checks):
 def test_number_of_articles_translation():
     # Check number of unique articles after processing all
     articles = list(confident_values_trans["article"].unique())
-    experted_articles = ["Henninger et al.", "Kozono et al."]
+    experted_articles = ["Henninger et al.", "Kozono et al.", "Moissenet et al."]
     assert articles == experted_articles
 
 
