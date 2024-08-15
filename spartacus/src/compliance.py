@@ -168,3 +168,45 @@ class JointCompliance(Compliance):
     @property
     def is_c6(self) -> bool:
         return self.is_thoraco_humeral_angle_isb(self.thoracohumeral_angle)
+
+
+class TotalCompliance:
+    def __init__(
+        self,
+        parent_compliance: SegmentCompliance,
+        child_compliance: SegmentCompliance,
+        joint_compliance: JointCompliance,
+    ):
+        self.parent = parent_compliance
+        self.child = child_compliance
+        self.joint = joint_compliance
+
+    @property
+    def rotation(self):
+        return (
+            self.parent.is_c1
+            + self.parent.is_c2
+            + self.child.is_c1
+            + self.child.is_c2
+            + self.joint.is_c4
+            + self.joint.is_c6
+        )
+
+    @property
+    def translation(self):
+        return (
+            self.parent.is_c1
+            + self.parent.is_c2
+            + self.parent.is_c3
+            + self.child.is_c3
+            + self.joint.is_c5
+            + self.joint.is_c6
+        )
+
+    @property
+    def is_rotation_isb(self):
+        return self.rotation == 6
+
+    @property
+    def is_translation_isb(self):
+        return self.rotation == 6
