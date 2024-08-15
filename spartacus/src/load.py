@@ -122,8 +122,6 @@ class Spartacus:
                 "legend_dof3",  # string
                 "unit",  # string "angle" or "translation"
                 "shoulder_id",  # int
-                "in_vivo",  # bool
-                "xp_mean",  # string
             ],
         )
         corrected_output_dataframe = output_dataframe.copy()
@@ -165,7 +163,31 @@ class Spartacus:
         self.confident_data_values = convert_df_to_1dof_per_line(output_dataframe)
         self.corrected_confident_data_values = convert_df_to_1dof_per_line(corrected_output_dataframe)
 
+        self._add_metadata_to_dataframes()
+
         return self.corrected_confident_data_values
+
+    def _add_metadata_to_dataframes(self):
+        meta_data = self.datasets[
+            [
+                "dataset_authors",
+                "in_vivo",
+                "experimental_mean",
+                "type_of_movement",
+                "active",
+                "posture",
+                "thorax_is_global",
+            ]
+        ]
+        self.confident_data_values = pd.merge(
+            self.confident_data_values, meta_data, how="left", left_on="article", right_on="dataset_authors"
+        )
+        self.confident_data_values.drop(columns="dataset_authors")
+
+        self.corrected_confident_data_values = pd.merge(
+            self.corrected_confident_data_values, meta_data, how="left", left_on="article", right_on="dataset_authors"
+        )
+        self.corrected_confident_data_values.drop(columns="dataset_authors")
 
     def export(self):
         path_next_to_clean = Path(DatasetCSV.CLEAN.value).parent
@@ -321,13 +343,14 @@ class Spartacus:
 
     def add_compliances(self):
         df_compliance = self.compliance()
-        df_compliance.drop(columns="dataset_authors")
+        df_compliance = df_compliance.drop(columns="dataset_authors")
         self.datasets = pd.merge(
             self.datasets,
             df_compliance,
             left_on="dataset_id",
             right_on="id",
         )
+        self.datasets = self.datasets.drop(columns="id")
         self.dataframe = pd.merge(
             self.datasets, self.joint_data, left_on="dataset_id", right_on="dataset_id", suffixes=("", "useless_string")
         )

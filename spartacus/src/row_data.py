@@ -682,8 +682,6 @@ class RowData:
         series_dataframe["humeral_motion"] = self.row.humeral_motion
 
         series_dataframe["shoulder_id"] = self.row.shoulder_id
-        series_dataframe["in_vivo"] = self.row.in_vivo
-        series_dataframe["xp_mean"] = self.row.experimental_mean
 
         # remove row where value_dof1, value_dof2 or value_dof3 is NaN
         series_dataframe = series_dataframe.dropna(subset=["value_dof1", "value_dof2", "value_dof3"], how="all")
@@ -840,10 +838,7 @@ def get_empty_series_dataframe():
             "legend_dof1",  # string
             "legend_dof2",  # string
             "legend_dof3",  # string
-            "unit",  # string "angle" or "translation"
-            # "confidence",  # float
+            "unit",  # string "rad" or "mm"
             "shoulder_id",  # int
-            "in_vivo",  # bool
-            "xp_mean",  # string
         ],
     )
