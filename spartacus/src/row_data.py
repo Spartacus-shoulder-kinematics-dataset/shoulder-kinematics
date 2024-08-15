@@ -100,6 +100,7 @@ class RowData:
         self.translation_isb_matrix_callback = None
 
         self.csv_filenames = None
+        self.csv_translation_filenames = None
         self.data = None
         self.df_3dof_per_line = None
         self.df_1dof_per_line = None
@@ -512,30 +513,6 @@ class RowData:
             )
         else:
             self.translation_mediolateral_matrix = self.translation_isb_matrix_callback
-
-    def compute_deviations(self):
-        """
-        Compute the deviation of the joint from the ISB recommendation.
-        """
-        if self.has_rotation_data:
-            rotation_parent_deviation = SegmentCompliance(bsys=self.parent_biomech_sys)
-            rotation_child_deviation = SegmentCompliance(bsys=self.child_biomech_sys)
-            rotation_joint_deviation = JointCompliance(joint=self.joint, thoracohumeral_angle=self.thoracohumeral_angle)
-
-            self.rotation_deviation = [rotation_parent_deviation, rotation_child_deviation, rotation_joint_deviation]
-
-        if self.has_translation_data:
-            translation_parent_deviation = SegmentCompliance(bsys=self.parent_biomech_sys)
-            translation_child_deviation = SegmentCompliance(bsys=self.child_biomech_sys)
-            translation_joint_deviation = JointCompliance(
-                joint=self.joint, thoracohumeral_angle=self.thoracohumeral_angle
-            )
-
-            self.translation_deviation = [
-                translation_parent_deviation,
-                translation_child_deviation,
-                translation_joint_deviation,
-            ]
 
     @property
     def enough_compliant_for_translation(self) -> bool:
