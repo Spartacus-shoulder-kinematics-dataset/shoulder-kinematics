@@ -5,7 +5,6 @@ st.set_page_config(
     page_title="Spartacus",
     page_icon="💪",
     layout="wide",  # Use 'wide' layout
-    # layout="centered",
     initial_sidebar_state="expanded",
 )
 
@@ -28,8 +27,15 @@ dfi = DataFrameInterface(df)
 # Dropdown to select humeral motion
 selected_humeral_motion = st.sidebar.selectbox(
     "Select Humeral Motion:",
-    options=sorted(list(dfi.df["humeral_motion"].unique())),
-    index=0,  # Default to the first option
+    options=[
+        "frontal plane elevation",
+        "scapular plane elevation",
+        "sagittal plane elevation",
+        "internal-external rotation 0 degree-abducted",
+        "internal-external rotation 90 degree-abducted",
+        "horizontal flexion",
+    ],
+    index=1,  # Default to the first option
 )
 
 # Checklist to select joints
