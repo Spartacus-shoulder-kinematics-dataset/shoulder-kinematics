@@ -2,8 +2,7 @@ import os
 import pandas as pd
 from pathlib import Path
 
-from spartacus.src.enums import DatasetCSV
-from ..src.load import load
+from .enums import DatasetCSV
 
 
 def import_data(correction: bool = True):

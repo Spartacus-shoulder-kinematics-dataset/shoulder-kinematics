@@ -1,11 +1,9 @@
 from pandas import DataFrame
 
-from .quick_load import import_data
-
 
 class DataFrameInterface:
     def __init__(self, dataframe: DataFrame):
-        self.df = dataframe if dataframe is not None else import_data()
+        self.df = dataframe
 
     @property
     def has_rotational_data(self) -> bool:
@@ -36,7 +34,10 @@ class DataFrameInterface:
     @property
     def motions(self) -> list[str]:
         motions = self.df["humeral_motion"].unique()
-        return motions if len(motions) > 1 else motions[0]
+        if len(motions) > 0:
+            return motions if len(motions) > 1 else motions[0]
+        else:
+            return None
 
     @property
     def nb_mvt(self) -> int:
@@ -66,11 +67,11 @@ class DataFrameInterface:
     def nb_dof(self) -> int:
         return self.df["degree_of_freedom"].nunique()
 
-    def select_motion(self, motion: str) -> DataFrame:
-        return self.df[self.df["humeral_motion"] == motion]
+    def select_motion(self, motion: str):
+        return DataFrameInterface(self.df[self.df["humeral_motion"] == motion])
 
-    def select_article(self, article: str) -> DataFrame:
-        return self.df[self.df["article"] == article]
+    def select_article(self, article: str):
+        return DataFrameInterface(self.df[self.df["article"] == article])
 
-    def select_joint(self, joint: str) -> DataFrame:
-        return self.df[self.df["joint"] == joint]
+    def select_joint(self, joint: str):
+        return DataFrameInterface(self.df[self.df["joint"] == joint])

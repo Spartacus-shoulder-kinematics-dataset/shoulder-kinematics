@@ -2,15 +2,39 @@ import numpy as np
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 
-from .constants import (
+from plots.constants_plot import (
     BIOMECHANICAL_DOF_LEGEND,
     TRANSLATIONAL_BIOMECHANICAL_DOF_LEGEND,
     JOINT_ROW_COL_INDEX,
     AUTHORS_COLORS,
     AUTHOR_DISPLAYED_STUDY,
 )
-from .dataframe_interface import DataFrameInterface
-from ..src.enums_biomech import JointType
+from plots.dataframe_interface import DataFrameInterface
+
+
+SPLIT_DISPLAY_OPTIONS = {
+    "in_vivo": {"in_vivo": {True: ("In Vivo", "circle"), False: ("Ex Vivo", "diamond")}},
+    "posture": {"posture": {"standing": ("Standing", "circle"), "sitting": ("Sitting", "diamond")}},
+    "experimental_mean": {
+        "experimental_mean": {
+            "intra cortical pins": ("Pins", "circle"),
+            "biplane x-ray fluoroscopy": ("Biplane X-ray fluoroscopy", "x"),
+            "single-plane x-ray fluoroscopy": ("Single-plane X-ray fluoroscopy", "square"),
+            "MRI": ("MRI", "hexagon2"),
+            "4DCT": ("4DCT", "pentagon"),
+        }
+    },
+    "type_of_movement": {
+        "type_of_movement": {"dynamic": ("Dynamic", "circle"), "quasi-static": ("Quasi-static", "diamond")}
+    },
+    "active": {"active": {True: ("Active", "circle"), False: ("Passive", "diamond")}},
+    "thorax_is_global": {
+        "thorax_is_global": {
+            True: ("Thorax Global Coordinate System", "circle"),
+            False: ("Thorax Local Coordinate System", "diamond"),
+        }
+    },
+}
 
 
 def get_color(article):
@@ -36,7 +60,7 @@ def get_rank(name: str) -> int:
 
 
 class DataPlanchePlotting:
-    def __init__(self, dfi: DataFrameInterface, restrict_to_joints: list[str | JointType] = None, options: str = None):
+    def __init__(self, dfi: DataFrameInterface, restrict_to_joints: list[str] = None, options: str = None):
 
         if dfi.has_translations_and_rotations:
             raise ValueError("The DataFrameInterface must contain only rotational data or translation data, not both.")
@@ -50,28 +74,7 @@ class DataPlanchePlotting:
         self.dfi = dfi
         self.opacity = 0.85 if self.dfi.nb_articles > 1 else 1
 
-        if options == "in_vivo":
-            self.options = (
-                {"in_vivo": {True: ("In Vivo", "circle"), False: ("Ex Vivo", "diamond")}} if options is None else options
-            )
-        if options == "posture":
-            self.options = (
-                {"posture": {"standing": ("Standing", "circle"), "sitting": ("Sitting", "diamond")}}
-                if options is None
-                else options
-            )
-        if options == "experimental_mean":
-            self.options = {
-                "experimental_mean": {
-                    "intra cortical pins": ("Pins", "circle"),
-                    "biplane x-ray fluoroscopy": ("Biplane X-ray fluoroscopy", "x"),
-                    "single-plane x-ray fluoroscopy": ("Single-plane X-ray fluoroscopy", "square"),
-                    "MRI": ("MRI", "hexagon2"),
-                    "4DCT": ("4DCT", "pentagon"),
-                }
-            }
-        if not options in ("in_vivo", "experimental_mean", "posture"):
-            self.options = None
+        self.options = SPLIT_DISPLAY_OPTIONS.get(options, None)
 
         self.showlegend = True
 
@@ -97,7 +100,7 @@ class DataPlanchePlotting:
 
     def make_fig(self, rotation: bool = True):
         return make_subplots(
-            shared_xaxes=False,
+            shared_xaxes=True,
             shared_yaxes=True,
             rows=self.nb_joints if self.nb_joints > 1 else 2,  # 2 rows for 1 joint because legends need space, hacky...
             cols=3,
@@ -123,10 +126,10 @@ class DataPlanchePlotting:
             self.plot_article(name=article)
 
     def plot_article(self, name):
-        sub_dfi = DataFrameInterface(self.dfi.select_article(article=name))
+        sub_dfi = self.dfi.select_article(article=name)
         color = get_color(name)
         for j, joint in enumerate(self.joints):
-            sub_df_j = sub_dfi.select_joint(joint)
+            sub_df_j = sub_dfi.select_joint(joint).df
 
             if sub_df_j.empty:
                 continue
@@ -134,8 +137,8 @@ class DataPlanchePlotting:
             self.plot_dofs(article=name, joint=joint, color=color)
 
     def plot_dofs(self, article, joint, color):
-        sub_dfi = DataFrameInterface(self.dfi.select_article(article=article))
-        sub_df_j = sub_dfi.select_joint(joint)
+        sub_dfi = self.dfi.select_article(article=article)
+        sub_df_j = sub_dfi.select_joint(joint).df
 
         dofs = sub_df_j["degree_of_freedom"].unique()
 
@@ -143,8 +146,8 @@ class DataPlanchePlotting:
             self.plot_dof(article, joint, dof, color)
 
     def plot_dof(self, article, joint, dof, color):
-        sub_dfi = DataFrameInterface(self.dfi.select_article(article=article))
-        sub_df_j = sub_dfi.select_joint(joint)
+        sub_dfi = self.dfi.select_article(article=article)
+        sub_df_j = sub_dfi.select_joint(joint).df
         sub_df_ij = sub_df_j[sub_df_j["degree_of_freedom"] == dof]
         row, col = self.joint_row_col_index(joint)[dof - 1]
 
@@ -223,6 +226,65 @@ class DataPlanchePlotting:
         self.showlegend = False
 
     def update_style(self):
+        self.fig.update_layout(
+            # If we fix only the height the width will be adapted to the size of the screen
+            # However not fixing the height AND the width make the graph not readable
+            height=self._fig_height,
+            width=1000,
+            paper_bgcolor="rgba(255,255,255,1)",
+            plot_bgcolor="rgba(255,255,255,1)",
+            legend=dict(
+                title_font_family="Times New Roman",
+                font=dict(family="Times New Roman", color="black", size=12),
+                orientation="v",
+                x=1.03,
+                y=self._y_legend,
+                xanchor="left",
+                groupclick="togglegroup",
+                # groupclick="toggleitem",  # instead of "togglegroup"
+                grouptitlefont=dict(style="italic"),
+                itemsizing="constant",
+                indentation=5,
+                tracegroupgap=1,
+                traceorder="grouped",
+            ),
+            font=dict(
+                size=14,
+                family="Times New Roman",
+            ),
+            yaxis=dict(color="black"),
+            template="simple_white",
+            boxgap=0.1,
+            title="<b>Shoulder kinematics</b> <br>" + f"<i>{self.dfi.motions}</i>",
+            title_x=0.5,
+            title_yanchor="bottom",
+            title_y=self._y_title,
+            title_font=dict(
+                size=16,
+            ),
+        )
+
+        self.fig.update_xaxes(title_text="Humerothoracic angle (°)", row=self.nb_joints, col=1)
+        self.fig.update_xaxes(title_text="Humerothoracic angle (°)", row=self.nb_joints, col=2)
+        self.fig.update_xaxes(title_text="Humerothoracic angle (°)", row=self.nb_joints, col=3)
+
+        for row in range(1, self.nb_joints + 1):
+            for col in range(1, 4):
+                self.fig.update_xaxes(
+                    showline=True, row=row, col=col, linecolor="black", linewidth=0.5, mirror=True, tickwidth=1.5
+                )
+                self.fig.update_yaxes(
+                    showline=True,
+                    row=row,
+                    col=col,
+                    linecolor="black",
+                    linewidth=0.5,
+                    mirror=True,
+                    showticklabels=True,
+                    tickwidth=1.5,
+                )
+
+    def update_style_streamlit(self):
         self.fig.update_layout(
             # If we fix only the height the width will be adapted to the size of the screen
             # However not fixing the height AND the width make the graph not readable

@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 
 from .checks import check_all_segments_validity
-from .enums import DatasetCSV, DataFolder
+from ..enums import DatasetCSV, DataFolder
 from .enums_biomech import Segment, JointType
 from .row_data import RowData
 from .utils import convert_df_to_1dof_per_line

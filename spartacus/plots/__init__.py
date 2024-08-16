@@ -1,2 +1,3 @@
-from .constants import BIOMECHANICAL_DOF_LEGEND, TRANSLATIONAL_BIOMECHANICAL_DOF_LEGEND
-from .quick_load import import_data
+from .constants_plot import BIOMECHANICAL_DOF_LEGEND, TRANSLATIONAL_BIOMECHANICAL_DOF_LEGEND
+from .planche_plotting import DataPlanchePlotting
+from .dataframe_interface import DataFrameInterface
