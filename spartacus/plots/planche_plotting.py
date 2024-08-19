@@ -56,7 +56,10 @@ def get_color(article):
 
 
 def get_rank(name: str) -> int:
-    return int(name.split(" ")[0][1]) if name.split(" ")[0][-1] == "a" else int(name.split(" ")[0][1:])
+    try:
+        return int(name.split(" ")[0][1]) if name.split(" ")[0][-1] == "a" else int(name.split(" ")[0][1:])
+    except:
+        return 22
 
 
 class DataPlanchePlotting:
