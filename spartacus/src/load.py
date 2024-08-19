@@ -191,7 +191,7 @@ class Spartacus:
         self.corrected_confident_data_values = self.corrected_confident_data_values.drop(columns="dataset_authors")
 
     def export(self):
-        path_next_to_clean = Path(DatasetCSV.CLEAN.value).parent
+        path_next_to_clean = Path(DatasetCSV.DATASETS.value).parent
 
         confident_path = Path.joinpath(path_next_to_clean, "corrected_confident_data.csv")
         self.corrected_confident_data_values.to_csv(confident_path, index=False)
@@ -343,6 +343,7 @@ class Spartacus:
         return df_compliance
 
     def add_compliances(self):
+        """It adds the compliances to the main dataframe - self.dataframe"""
         df_compliance = self.compliance()
         df_compliance = df_compliance.drop(columns="dataset_authors")
         self.datasets = pd.merge(
