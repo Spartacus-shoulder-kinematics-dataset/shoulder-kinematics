@@ -7,7 +7,7 @@ for is isb and postero_anterior_local_axis, medio_lateral_local_axis, infero_sup
 import pandas as pd
 import pytest
 
-from spartacus import DatasetCSV, Segment, BiomechDirection, BiomechCoordinateSystem, AnatomicalLandmark
+from spartacus import DatasetCSV, Segment, BiomechDirection, BiomechCoordinateSystem, AnatomicalLandmark, Spartacus
 from spartacus.src.checks import (
     check_segment_filled_with_nan,
 )
@@ -19,9 +19,8 @@ from spartacus.src.utils import (
 )
 
 print_warnings = True
-
-df = pd.read_csv(DatasetCSV.CLEAN.value)
-df = df.where(pd.notna(df), None)
+sp = Spartacus.load(check_and_import=False, exclude_dataset_without_series=False)
+df = sp.dataframe
 authors = df["dataset_authors"].unique().tolist()
 
 df_expected_directions = pd.read_csv(DatasetCSV.BIOMECH_DIRECTIONS.value)
