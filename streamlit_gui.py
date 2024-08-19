@@ -199,6 +199,12 @@ def plot(df, selected_joints):
     return plt
 
 
+@st.cache_data
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode("utf-8")
+
+
 # Starting Here !
 set_page_config()
 
@@ -209,6 +215,7 @@ if "df_perso" not in st.session_state:
 col1, col2, col3 = st.columns([0.2, 6, 1])
 # load the dataframe
 df = load_data()
+csv = convert_df(df)
 
 (
     selected_humeral_motion,
@@ -240,6 +247,7 @@ df_filtered = filter_dataframe(
     total_compliance,
 )
 
+csv_filtered = convert_df(df_filtered)
 plt = plot(df_filtered, selected_joints)
 
 # Display the plot using Streamlit
@@ -252,6 +260,19 @@ with col3:
         "docs/logo_only.png",
         caption="Spartacus Dataset. \n Moissenet, F., Puchaud, P., Naaïm, A., Holzer, N., & Begon, M. (2024)",
     )
+    st.download_button(
+        label="Download Spartacus \n as CSV",
+        data=csv,
+        file_name="spartacus.csv",
+        mime="text/csv",
+    )
+    st.download_button(
+        label="Download my selection \n as CSV",
+        data=csv_filtered,
+        file_name="spartacus_selection.csv",
+        mime="text/csv",
+    )
+
 
 # File uploader widget
 st.header("Upload Your Data")
@@ -281,7 +302,9 @@ with st.expander("See the expected .csv format"):
         ```
         article,unit,joint,humeral_motion,total_compliance,humerothoracic_angle,value,degree_of_freedom,in_vivo,experimental_mean,type_of_movement,active,posture,thorax_is_global
         Ours,rad,glenohumeral,frontal plane elevation,6.0,45.0,45.3,1,True,intra cortical pins,dynamic,True,standing,False
-        Ours,rad,scapulothoracic,rotation,3.0,30.5,30.7,2,False,biplane x-ray fluoroscopy,quasi-static,False,sitting,True
+        Ours,rad,glenohumeral,frontal plane elevation,6.0,120,50,1,True,intra cortical pins,dynamic,True,standing,False
+        Ours,rad,scapulothoracic,sagittal plane elevation,3.0,30.5,30.7,2,False,biplane x-ray fluoroscopy,quasi-static,False,sitting,True
+        Ours,rad,scapulothoracic,sagittal plane elevation,3.0,120,30.7,2,False,biplane x-ray fluoroscopy,quasi-static,False,sitting,True
         ```
         """
     )
