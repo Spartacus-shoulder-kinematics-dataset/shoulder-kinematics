@@ -251,6 +251,31 @@ diag(1,1,-1) \cdot \;
 {^{P}\mathbf{R}^{left}_{D}} \;
 \cdot {diag(1,1,-1)}^T
 ```
-
 This adjustment maintains consistency when comparing all data as if they were collected on the right shoulder.
- 
+
+## Translations
+
+In addition to rotational alignment, translations must also be handled correctly to maintain the ISB standard.
+
+The translation correction process involves the following steps:
+
+```math
+{}^{P_{ISB}}\mathbf{t}_{D_{ISB}} = 
+{}^{P_{ISB}}\mathbf{R}_{P_{ISBo}} \cdot \;
+\text{diag}(1,1,-1 \text{ or } 1) \cdot \;
+{}^{P_{ISBo}}\mathbf{R}_{P} \cdot \;
+{}^{P}\mathbf{t}_D
+```
+Where:
+- $`{}^{P_{ISB}}\mathbf{t}_{D_{ISB}} `$ is the translation from proximal to distal segment in ISB standards
+- $`{}^{P}\mathbf{t}_D`$ is the translation from proximal to distal segment in local coordinates systems
+- $`{}^{x_{ISBo}}\mathbf{R}_x`$ represents the transformation needed to align the distal (or proximal) LCS with the intermediate ISB-oriented frame, 
+where \(x\) is postero-anterior, \(y\) is inferosuperior, and \(z\) is mediolateral (for the right side). 
+This transformation is inferred from the landmarks used to construct the frame. For more details, 
+see the section on [Common Anatomical Data Elements](#common-anatomical-data-elements).
+- $` {}^{x_{ISB}}\mathbf{R}_{x_{ISBo}}`$ represents the transformation from an intermediate frame to the 
+\(x\) LCS (proximal or distal) in the ISB standard. 
+If no specific data is available, this transformation can default to the identity matrix `np.eye(3)`. 
+Otherwise, it can be calculated using a rotation matrix derived from a correction function, such as the Kolz correction, 
+to align the local coordinate systems with the ISB standard. *Kolz, Henninger, H. B. et al.* (2020). 
+Reliable interpretation of scapular kinematics depends on coordinate system definition.
