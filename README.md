@@ -217,25 +217,29 @@ It will duplicate the colums of 2 (Dataset colums) in 3 (Joint data colums).
 The resulting set of transformations applied to compensate or cancel deviations can be synthesized as follows:
 
 ```math
-{^{P_{ISB}}\mathbf{R}_{D_{ISB}}} = 
-{^{P_{ISB}}R_P^{ISBo}} \cdot 
-{^{P_{ISBo}}R_P^{local}} \cdot 
-{^{P}\mathbf{R}_{D}}
-\cdot {^{D_{local}}R_{D_{ISBo}}^T
-\cdot {^{D_{ISB}}R_D^{ISBo}}^T
+{}^{P_{ISB}}\mathbf{R}_{D_{ISB}} = 
+{}^{P_{ISB}}\mathbf{R}_{P_{ISBo}} \cdot \;
+{}^{P_{ISBo}}\mathbf{R}_{P} \cdot \;
+{}^{P}\mathbf{R}_D \cdot \;
+\left({}^{D_{ISBo}}\mathbf{R}_{D}\right)^T \cdot \; 
+\left({}^{D_{ISBo}}\mathbf{R}_{D_{ISB}}\right)^T
 ```
 Where:
-- $${^{P_{ISB}}\mathbf{R}_{D_{ISB}}}$$ is the transformation from the proximal to the distal LCS in ISB standard. It contains the joint angle to extract.
-- $${^{x_{ISB}}R_x^{ISBo}}$$ represents the transformation from an intermediate frame to the 
-\(x\) LCS (proximal or distal) in the ISB standard. 
-If no specific data is available, this transformation can default to the identity matrix (\(np.eye(3)\)). 
-Otherwise, it can be calculated using a rotation matrix derived from a correction function, such as the Kolz correction, 
-to align the local coordinate systems with the ISB standard. *Kolz, Henninger, H. B. et al.* (2020). 
-Reliable interpretation of scapular kinematics depends on coordinate system definition.
-- $${^{x_{ISBo}}R_x^{local}} $$ represents the transformation needed to align the distal (or proximal) LCS with the intermediate ISB-oriented frame, 
+- $`{}^{P}\mathbf{R}_{D}`$ is the original transformation from the proximal to the distal LCS built from the data.
+- $` {}^{P_{ISB}}\mathbf{R}_{D_{ISB}}`$ is the transformation from the proximal to the distal LCS in ISB standard. It contains the joint angle to extract.
+- $`{}^{x_{ISBo}}\mathbf{R}_x`$ represents the transformation needed to align the distal (or proximal) LCS with the intermediate ISB-oriented frame, 
 where \(x\) is postero-anterior, \(y\) is inferosuperior, and \(z\) is mediolateral (for the right side). 
 This transformation is inferred from the landmarks used to construct the frame. For more details, 
 see the section on [Common Anatomical Data Elements](#common-anatomical-data-elements).
+- $` {}^{x_{ISB}}\mathbf{R}_{x_{ISBo}}`$ represents the transformation from an intermediate frame to the 
+\(x\) LCS (proximal or distal) in the ISB standard. 
+If no specific data is available, this transformation can default to the identity matrix `np.eye(3)`. 
+Otherwise, it can be calculated using a rotation matrix derived from a correction function, such as the Kolz correction, 
+to align the local coordinate systems with the ISB standard. *Kolz, Henninger, H. B. et al.* (2020). 
+Reliable interpretation of scapular kinematics depends on coordinate system definition.
+
+
+## Left Shoulders
 
 To handle data collected on the left shoulder, we need to apply an extra correction, 
 which involves converting the rotation matrix from the left side to the right side. 
@@ -243,8 +247,8 @@ This is equivalent to converting to a left-handed rotation matrix by applying:
 
 ```math
 {^{P}\mathbf{R}^{right}_{D}} = 
-diag(1,1,-1) \cdot 
-{^{P}\mathbf{R}^{left}_{D}}
+diag(1,1,-1) \cdot \;
+{^{P}\mathbf{R}^{left}_{D}} \;
 \cdot {diag(1,1,-1)}^T
 ```
 
