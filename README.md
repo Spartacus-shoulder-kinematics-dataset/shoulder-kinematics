@@ -46,7 +46,7 @@ spartacus_dataset.export('your_path/spartacus.csv')
 # Return the corrected data values for further analysis
 dataframe = spartacus_dataset.corrected_confident_data_values
 ```
-## Data Structure final file The CSV file should have the following columns:
+## Final dataframe structure:
 
 There is one line per measured data point in the dataset, where each line represents a specific measurement 
 within a given study or experiment. 
@@ -153,7 +153,8 @@ For each of the anatomical structures — thorax, humerus, scapula, and clavicle
 A parsing method has been developed to automatically compute the biomechanical direction from landmarks. 
 A specific nomenclature and terminology have been chosen where the axis can generally point in the correct direction, 
 though not strictly adhering to ISB recommendations. 
-However, we can infer the rotation matrix to adjust the orientations of the parent and child segments afterward.
+However, we can infer the rotation matrix to adjust the orientations of the parent and child segments afterward, 
+see [Aligning the data](#aligning-the-data).
 
 - +posteroanterior: the axis is pointing anteriorly (from posterior to anterior)
 - -posteroanterior: the axis is pointing posteriorly
@@ -211,3 +212,41 @@ sp.dataframe.to_csv("merged_dataframe.csv")
 ```
 It will duplicate the colums of 2 (Dataset colums) in 3 (Joint data colums).
 
+# Aligning the data
+
+The resulting set of transformations applied to compensate or cancel deviations can be synthesized as follows:
+
+```math
+{^{P_{ISB}}\mathbf{R}_{D_{ISB}}} = 
+{^{P_{ISB}}R_P^{ISBo}} \cdot 
+{^{P_{ISBo}}R_P^{local}} \cdot 
+{^{P}\mathbf{R}_{D}}
+\cdot {^{D_{local}}R_{D_{ISBo}}^T
+\cdot {^{D_{ISB}}R_D^{ISBo}}^T
+```
+Where:
+- $${^{P_{ISB}}\mathbf{R}_{D_{ISB}}}$$ is the transformation from the proximal to the distal LCS in ISB standard. It contains the joint angle to extract.
+- $${^{x_{ISB}}R_x^{ISBo}}$$ represents the transformation from an intermediate frame to the 
+\(x\) LCS (proximal or distal) in the ISB standard. 
+If no specific data is available, this transformation can default to the identity matrix (\(np.eye(3)\)). 
+Otherwise, it can be calculated using a rotation matrix derived from a correction function, such as the Kolz correction, 
+to align the local coordinate systems with the ISB standard. *Kolz, Henninger, H. B. et al.* (2020). 
+Reliable interpretation of scapular kinematics depends on coordinate system definition.
+- $${^{x_{ISBo}}R_x^{local}} $$ represents the transformation needed to align the distal (or proximal) LCS with the intermediate ISB-oriented frame, 
+where \(x\) is postero-anterior, \(y\) is inferosuperior, and \(z\) is mediolateral (for the right side). 
+This transformation is inferred from the landmarks used to construct the frame. For more details, 
+see the section on [Common Anatomical Data Elements](#common-anatomical-data-elements).
+
+To handle data collected on the left shoulder, we need to apply an extra correction, 
+which involves converting the rotation matrix from the left side to the right side. 
+This is equivalent to converting to a left-handed rotation matrix by applying:
+
+```math
+{^{P}\mathbf{R}^{right}_{D}} = 
+diag(1,1,-1) \cdot 
+{^{P}\mathbf{R}^{left}_{D}}
+\cdot {diag(1,1,-1)}^T
+```
+
+This adjustment maintains consistency when comparing all data as if they were collected on the right shoulder.
+ 
