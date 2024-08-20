@@ -2,7 +2,7 @@ import biorbd
 import numpy as np
 import pandas as pd
 
-from .enums_biomech import Segment
+from .enums_biomech import Segment, JointType, EulerSequence
 from .constants import REPEATED_DATAFRAME_KEYS
 
 
@@ -196,3 +196,79 @@ def convert_df_to_1dof_per_line(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     return df_transformed
+
+
+def calculate_dof_values(
+    data: pd.DataFrame,
+    correction_callable: callable = None,
+    rotation: bool = None,
+    rotation_data: pd.DataFrame = None,
+) -> np.ndarray:
+    """
+    Calculate the dof values, assign values of correction if needed
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        The data to calculate the dof values
+    correction_callable : callable, optional
+        The callable to apply the correction, by default None, thus no correction applied
+    rotation : bool, optional
+        If True, apply the correction on rotation data, by default None
+    rotation_data : pd.DataFrame, optional
+        The rotation data to use for correction, by default None
+    """
+    value_dof = np.zeros((data.shape[0], 3))
+
+    if correction_callable is not None and rotation:
+        for i, row in enumerate(data.itertuples()):
+            corrected_dof_1, corrected_dof_2, corrected_dof_3 = correction_callable(
+                row.value_dof1, row.value_dof2, row.value_dof3
+            )
+            value_dof[i, 0] = corrected_dof_1
+            value_dof[i, 1] = corrected_dof_2
+            value_dof[i, 2] = corrected_dof_3
+
+        mvt = data["humeral_motion"].unique()[0]
+        joint = data["joint"].unique()[0]
+        if joint == JointType.GLENO_HUMERAL and mvt in ("internal-external rotation 0 degree-abducted",):
+            for i in range(0, 3):
+                value_dof[:, i] = np.unwrap(value_dof[:, i], period=180)
+
+        return value_dof
+
+    elif correction_callable is not None and not rotation:
+
+        for i, row in enumerate(data.itertuples()):
+            # get the rotation data for the corresponding translation values for further correction if needed (jcs to proximal)
+            translation_th_angle = row.humerothoracic_angle
+            subrotation_data = rotation_data[rotation_data["humerothoracic_angle"] == translation_th_angle]
+            subrotation_data = subrotation_data[subrotation_data["unit"] == "rad"]
+            if rotation_data.empty:
+                rot1, rot2, rot3, seq = None, None, None, None
+            else:
+                rot1 = subrotation_data["value_dof1"].values[0]
+                rot2 = subrotation_data["value_dof2"].values[0]
+                rot3 = subrotation_data["value_dof3"].values[0]
+
+            corrected_dof_1, corrected_dof_2, corrected_dof_3 = correction_callable(
+                row.value_dof1, row.value_dof2, row.value_dof3, rot1, rot2, rot3
+            )
+            value_dof[i, 0] = corrected_dof_1
+            value_dof[i, 1] = corrected_dof_2
+            value_dof[i, 2] = corrected_dof_3
+
+        mvt = data["humeral_motion"].unique()[0]
+        joint = data["joint"].unique()[0]
+        if joint == JointType.GLENO_HUMERAL and mvt in ("internal-external rotation 0 degree-abducted",):
+            for i in range(0, 3):
+                value_dof[:, i] = np.unwrap(value_dof[:, i], period=180)
+
+        return value_dof
+
+    else:
+
+        value_dof[:, 0] = data["value_dof1"].values
+        value_dof[:, 1] = data["value_dof2"].values
+        value_dof[:, 2] = data["value_dof3"].values
+        return value_dof

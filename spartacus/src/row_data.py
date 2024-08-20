@@ -26,6 +26,7 @@ from .corrections.angle_conversion_callbacks import (
 )
 from .corrections.kolz_matrices import get_kolz_rotation_matrix
 from .corrections.unwrap_utils import unwrap_for_yxy_glenohumeral_joint
+from .corrections.euler_basis import from_jcs_to_parent_frame
 from .enums_biomech import (
     Segment,
     FrameType,
@@ -40,6 +41,7 @@ from .utils import (
     get_segment_columns_direction,
     get_correction_column,
     get_is_isb_column,
+    calculate_dof_values,
 )
 from .utils_setters import set_parent_segment_from_row, set_child_segment_from_row, set_thoracohumeral_angle_from_row
 
@@ -519,15 +521,25 @@ class RowData:
         - transport local to distal SCS ?
 
         """
+        if self.joint.translation_frame == FrameType.JCS:
+            self.proximal_translation = lambda trans_x, trans_y, trans_z, rot1, rot2, rot3: from_jcs_to_parent_frame(
+                np.array([trans_x, trans_y, trans_z]), np.array([rot1, rot2, rot3]), self.joint.euler_sequence
+            )
+        else:
+            self.proximal_translation = lambda trans_x, trans_y, trans_z, rot1, rot2, rot3: np.eye(3) @ np.array(
+                [trans_x, trans_y, trans_z]
+            )
 
         self.translation_isb_matrix_callback = (
-            lambda trans_x, trans_y, trans_z: self.child_biomech_sys.get_rotation_matrix()
-            @ np.array([[trans_x, trans_y, trans_z]]).T
+            lambda trans_x, trans_y, trans_z, rot1, rot2, rot3: self.parent_biomech_sys.get_rotation_matrix()
+            @ self.proximal_translation(trans_x, trans_y, trans_z, rot1, rot2, rot3)
         )
 
         if self.left_side:
             self.translation_mediolateral_matrix = (
-                lambda trans_x, trans_y, trans_z: self.translation_isb_matrix_callback(trans_x, trans_y, trans_z)
+                lambda trans_x, trans_y, trans_z, rot1, rot2, rot3: self.translation_isb_matrix_callback(
+                    trans_x, trans_y, trans_z, rot1, rot2, rot3
+                )
                 * np.array([1, 1, -1])
             )
         else:
@@ -590,10 +602,12 @@ class RowData:
         self.rotation_data["article"] = self.row.dataset_authors
         self.rotation_data["joint"] = JointType.from_string(self.row.joint)
         self.rotation_data["humeral_motion"] = self.row.humeral_motion
+        self.rotation_data["unit"] = "rad"
 
         self.translation_data["article"] = self.row.dataset_authors
         self.translation_data["joint"] = JointType.from_string(self.row.joint)
         self.translation_data["humeral_motion"] = self.row.humeral_motion
+        self.translation_data["unit"] = "mm"
 
     def to_dataframe(self, correction: bool = True, rotation: bool = True, translation: bool = True) -> pd.DataFrame:
         """
@@ -669,11 +683,13 @@ class RowData:
         correction_legend = ("x", "y", "z") if not rotation else self.joint.isb_rotation_biomechanical_dof
         three_dof_legend = correction_legend if correction else no_correction_legend
         if correction:
-            value_dof = self.calculate_dof_values(
+            value_dof = calculate_dof_values(
                 data,
                 correction_callable=(
                     self.apply_correction_in_radians if rotation else self.apply_correction_to_translation
                 ),
+                rotation=rotation,
+                rotation_data=None if rotation else self.df_3dof_per_line,
             )
             series_dataframe["value_dof1"] = value_dof[:, 0] if correction else data["value_dof1"]
             series_dataframe["value_dof2"] = value_dof[:, 1] if correction else data["value_dof2"]
@@ -687,8 +703,7 @@ class RowData:
         series_dataframe["legend_dof2"] = three_dof_legend[1]
         series_dataframe["legend_dof3"] = three_dof_legend[2]
         series_dataframe["humerothoracic_angle"] = data["humerothoracic_angle"]
-
-        series_dataframe["unit"] = "rad" if rotation else "mm"
+        series_dataframe["unit"] = data["unit"]
 
         series_dataframe["article"] = self.row.dataset_authors
         series_dataframe["joint"] = self.row.joint
@@ -696,7 +711,6 @@ class RowData:
 
         series_dataframe["shoulder_id"] = self.row.shoulder_id
 
-        # todo : find another way to paths thoses info because it slows down :/
         series_dataframe["parent_compliance_1"] = self.total_compliance.parent.is_c1
         series_dataframe["parent_compliance_2"] = self.total_compliance.parent.is_c2
         series_dataframe["parent_compliance_3"] = self.total_compliance.parent.is_c3
@@ -717,59 +731,6 @@ class RowData:
         setattr(self, f"{prefix}_3dof_per_line", series_dataframe)
 
         return getattr(self, f"{prefix}_3dof_per_line")
-
-    @staticmethod
-    def calculate_dof_values(data: pd.DataFrame, correction_callable: callable = None):
-        """
-        Calculate the dof values, assign values of correction if needed
-
-        Parameters
-        ----------
-        data : pd.DataFrame
-            The data to calculate the dof values
-        correction_callable : callable, optional
-            The callable to apply the correction, by default None, thus no correction applied
-        """
-        value_dof = np.zeros((data.shape[0], 3))
-
-        if correction_callable is not None:
-            for i, row in enumerate(data.itertuples()):
-                corrected_dof_1, corrected_dof_2, corrected_dof_3 = correction_callable(
-                    row.value_dof1, row.value_dof2, row.value_dof3
-                )
-                value_dof[i, 0] = corrected_dof_1
-                value_dof[i, 1] = corrected_dof_2
-                value_dof[i, 2] = corrected_dof_3
-
-            # mvt = data["humeral_motion"].unique()[0]
-            # joint = data["joint"].unique()[0]
-            # if joint == JointType.GLENO_HUMERAL and mvt in (
-            #     "scapular plane elevation",
-            #     "frontal plane elevation",
-            #     "sagittal plane elevation",
-            # ):
-            #     value_dof = unwrap_for_yxy_glenohumeral_joint(value_dof)
-            # # unwrap the angles to avoid discontinuities between -180 and 180 for example
-            # else:
-            # import plotly.express as px
-            #
-            # fig = px.scatter(value_dof)
-            # fig.update_layout(title="")
-            # mvt = data["humeral_motion"].unique()[0]
-            # joint = data["joint"].unique()[0]
-            # fig.update_layout(title=f"{mvt} - {joint}")
-            # fig.show()
-            mvt = data["humeral_motion"].unique()[0]
-            joint = data["joint"].unique()[0]
-            if joint == JointType.GLENO_HUMERAL and mvt in ("internal-external rotation 0 degree-abducted",):
-                for i in range(0, 3):
-                    value_dof[:, i] = np.unwrap(value_dof[:, i], period=180)
-        else:
-            value_dof[:, 0] = data["value_dof1"].values
-            value_dof[:, 1] = data["value_dof2"].values
-            value_dof[:, 2] = data["value_dof3"].values
-
-        return value_dof
 
     def get_euler_csv_filenames(self) -> tuple[str, str, str]:
         """load the csv filenames from the row data"""
@@ -838,14 +799,20 @@ class RowData:
 
         return deg_corrected_dof_1, deg_corrected_dof_2, deg_corrected_dof_3
 
-    def apply_correction_to_translation(self, dof1, dof2, dof3) -> tuple[float, float, float]:
+    def apply_correction_to_translation(self, dof1, dof2, dof3, rot1, rot2, rot3) -> tuple[float, float, float]:
         """Apply the correction to the translation in mm, as we use a matrix product, we need nan to be zeros"""
 
         dof1 = dof1 if not np.isnan(dof1) else 0
         dof2 = dof2 if not np.isnan(dof2) else 0
         dof3 = dof3 if not np.isnan(dof3) else 0
 
-        corrected_dof_1, corrected_dof_2, corrected_dof_3 = self.translation_mediolateral_matrix(dof1, dof2, dof3)
+        rad_value_dof1 = np.deg2rad(rot1)
+        rad_value_dof2 = np.deg2rad(rot2)
+        rad_value_dof3 = np.deg2rad(rot3)
+
+        corrected_dof_1, corrected_dof_2, corrected_dof_3 = self.translation_mediolateral_matrix(
+            dof1, dof2, dof3, rad_value_dof1, rad_value_dof2, rad_value_dof3
+        )
 
         deg_corrected_dof_1 = corrected_dof_1 if corrected_dof_1 != 0 else np.nan
         deg_corrected_dof_2 = corrected_dof_2 if corrected_dof_2 != 0 else np.nan

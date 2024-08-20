@@ -269,13 +269,29 @@ The translation correction process involves the following steps:
 Where:
 - $`{}^{P_{ISB}}\mathbf{t}_{D_{ISB}} `$ is the translation from proximal to distal segment in ISB standards
 - $`{}^{P}\mathbf{t}_D`$ is the translation from proximal to distal segment in local coordinates systems
-- $`{}^{x_{ISBo}}\mathbf{R}_x`$ represents the transformation needed to align the distal (or proximal) LCS with the intermediate ISB-oriented frame, 
+- $`{}^{P_{ISBo}}\mathbf{R}_P`$ represents the transformation needed to align the distal (or proximal) LCS with the intermediate ISB-oriented frame, 
 where \(x\) is postero-anterior, \(y\) is inferosuperior, and \(z\) is mediolateral (for the right side). 
 This transformation is inferred from the landmarks used to construct the frame. For more details, 
 see the section on [Common Anatomical Data Elements](#common-anatomical-data-elements).
-- $` {}^{x_{ISB}}\mathbf{R}_{x_{ISBo}}`$ represents the transformation from an intermediate frame to the 
+- $` {}^{P_{ISB}}\mathbf{R}_{P_{ISBo}}`$ represents the transformation from an intermediate frame to the 
 \(x\) LCS (proximal or distal) in the ISB standard. 
 If no specific data is available, this transformation can default to the identity matrix `np.eye(3)`. 
 Otherwise, it can be calculated using a rotation matrix derived from a correction function, such as the Kolz correction, 
 to align the local coordinate systems with the ISB standard. *Kolz, Henninger, H. B. et al.* (2020). 
 Reliable interpretation of scapular kinematics depends on coordinate system definition.
+
+## Euler Basis and Translation Conversion
+Translations have been expressed in the proximal segment’s coordinate system in most cases, 
+but some authors (Moissenet et al.) sticked to the ISB conventions and expressed them in joint coordinate system (JCS), a non-orthogonal Euler basis. 
+The conversion process adds some more complexity to build the transformation matrix $` {}^{P}\mathbf{R}_{Euler}`$. 
+In this case, the transformation process is as follows: 
+
+```math
+{}^{P_{ISB}}\mathbf{t}_{D_{ISB}} = 
+{}^{P_{ISB}}\mathbf{R}_{P_{ISBo}} \cdot \;
+\text{diag}(1,1,-1 \text{ or } 1) \cdot \;
+{}^{P_{ISBo}}\mathbf{R}_{P} \cdot \;
+{}^{P}\mathbf{R}_{Euler} \cdot \;
+{}^{P}\mathbf{t}_D
+```
+
