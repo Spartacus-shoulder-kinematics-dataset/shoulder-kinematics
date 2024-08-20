@@ -75,14 +75,14 @@ making it easier to manage and analyze the data consistently and avoid to much r
 1. The **Data** folder contains the raw and processed data files. 
 Each subfolder within this directory corresponds to a specific study (e.g., `#1_Begon_et_al`). 
 . These subfolders are named according to the study authors and contain CSV files with detailed biomechanical data from the experiments.
-For example, within the `#3_Chu_et_al` folder, you might find a file named ST_medRotation_elevationFrontal.csv. This file includes two columns:
+For example, within the `#3_Chu_et_al` folder, you might find a file named  `ST_medRotation_elevationFrontal.csv`. 
+This file includes two columns:
 First column: Represents the thoracohumeral angle.
 Second column: Represents an Euler Angle.
 The file naming convention is also indicative of the data it contains:
 'ST' stands for Scapulothoracic.
 'medRotation' stands for Medial Rotation.
-'elevationFrontal' stands for frontal plane elevation.
-Here’s an example snippet from the `ST_medRotation_elevationFrontal.csv` file:
+'elevationFrontal' stands for frontal plane elevation:
 ```
 29.774,-13.416
 39.527,-17.1201
@@ -226,7 +226,8 @@ The resulting set of transformations applied to compensate or cancel deviations 
 ```
 Where:
 - $`{}^{P}\mathbf{R}_{D}`$ is the original transformation from the proximal to the distal LCS built from the data.
-- $` {}^{P_{ISB}}\mathbf{R}_{D_{ISB}}`$ is the transformation from the proximal to the distal LCS in ISB standard. It contains the joint angle to extract.
+- $` {}^{P_{ISB}}\mathbf{R}_{D_{ISB}}`$ is the transformation from the proximal to the distal LCS in ISB standard. 
+It contains the joint angles to extract.
 - $`{}^{x_{ISBo}}\mathbf{R}_x`$ represents the transformation needed to align the distal (or proximal) LCS with the intermediate ISB-oriented frame, 
 where \(x\) is postero-anterior, \(y\) is inferosuperior, and \(z\) is mediolateral (for the right side). 
 This transformation is inferred from the landmarks used to construct the frame. For more details, 
@@ -237,7 +238,6 @@ If no specific data is available, this transformation can default to the identit
 Otherwise, it can be calculated using a rotation matrix derived from a correction function, such as the Kolz correction, 
 to align the local coordinate systems with the ISB standard. *Kolz, Henninger, H. B. et al.* (2020). 
 Reliable interpretation of scapular kinematics depends on coordinate system definition.
-
 
 ## Left Shoulders
 
