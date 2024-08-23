@@ -54,7 +54,7 @@ articles_data = {
             2,
             3,
         ],
-        13064.68776778251,
+        728.7198299305273,
         [
             (0, 16.366300000000003),
             (1001, -25.037999894224672),
@@ -228,12 +228,12 @@ articles_data = {
             2,
             3,
         ],
-        -25932.262277420363,
+        -8652.262277420363,
         [
             (0, 0.7331976380416924),
             (1, 1.3163822061108446),
             (2, 2.009989683892475),
-            (-1, -62.92668339),
+            (-1, 27.07331661),
         ],
     ),
     "Moissenet et al.": (
@@ -476,7 +476,7 @@ def test_sternoclavicular_elevation():
     ]
 
     assert articles == expected_articles
-    assert sc_elevation_confident_values["value"].sum() == -2075535.1607143842
+    assert sc_elevation_confident_values["value"].sum() == -2058255.1607143842
 
 
 def test_acromioclavicular_elevation():

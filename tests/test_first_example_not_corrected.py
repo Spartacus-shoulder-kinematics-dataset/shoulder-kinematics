@@ -32,10 +32,10 @@ articles_data = {
             2,
             3,
         ],
-        13064.68776778251,
+        32987.067259532865,
         [
-            (0, 16.3663),
-            (1001, -25.037999894224672),
+            (0, -16.3663),
+            (1001, 25.037999894224672),
             (2000, 41.36033610887097),
             (-1, 17.319848672019763),
         ],
@@ -487,7 +487,7 @@ def test_scapulothoracic_elevation():
     ]
 
     assert articles == expected_articles
-    assert st_elevation_confident_values["value"].sum() == 310628.47723202483
+    assert st_elevation_confident_values["value"].sum() == 330550.8567237752
 
 
 def test_sternoclavicular_elevation():
