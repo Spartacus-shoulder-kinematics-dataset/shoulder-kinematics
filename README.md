@@ -283,15 +283,20 @@ Reliable interpretation of scapular kinematics depends on coordinate system defi
 ## Euler Basis and Translation Conversion
 Translations have been expressed in the proximal segment’s coordinate system in most cases, 
 but some authors (Moissenet et al.) sticked to the ISB conventions and expressed them in joint coordinate system (JCS), a non-orthogonal Euler basis. 
-The conversion process adds some more complexity to build the transformation matrix $` {}^{P}\mathbf{R}_{Euler}`$. 
+The conversion process adds some more complexity to build the transformation matrix $` {}^{P}\mathbf{T}_{Euler}`$. 
 In this case, the transformation process is as follows: 
+Translations are usually expressed in the proximal segment’s coordinate system, 
+but some authors (e.g., Moissenet et al.) sticked to ISB conventions, 
+using the joint coordinate system (JCS), a non-orthogonal Euler basis. 
+This adds complexity when building the transformation matrix \({^P\mathbf{R}_{Euler}}\). 
+The conversion process in this case is as follows:
 
 ```math
 {}^{P_{ISB}}\mathbf{t}_{D_{ISB}} = 
 {}^{P_{ISB}}\mathbf{R}_{P_{ISBo}} \cdot \;
 \text{diag}(1,1,-1 \text{ or } 1) \cdot \;
 {}^{P_{ISBo}}\mathbf{R}_{P} \cdot \;
-{}^{P}\mathbf{R}_{Euler} \cdot \;
-{}^{P}\mathbf{t}_D
+{}^{P}\mathbf{T}_{Euler} \cdot \;
+{}^{Euler}\mathbf{t}_D
 ```
 
