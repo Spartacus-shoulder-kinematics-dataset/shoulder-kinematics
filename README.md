@@ -150,7 +150,7 @@ For each of the anatomical structures — thorax, humerus, scapula, and clavicle
 
 **NOTE**: If the frame was built on the left side, it should be built properly like done for the left side segment. 
 In the case of the humerus, the **humerus_x_direction** should be `vec(GH>EM)^vec(GH>EL)` to guarantee a postero-anterior direction.
-the other directions should remain the same.
+the other directions should remain the same. If ones wants to ignore that, the **side_as_right** column should be set to True.
 
 ### Computing biomechanical directions from landmarks
 
