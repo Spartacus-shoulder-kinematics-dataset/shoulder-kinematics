@@ -76,10 +76,16 @@ def test_new_parsing(author):
                 )
 
                 print(frame.side)
+
+                print(frame.x_axis.biomech_direction())
                 print(frame.x_axis.principal_direction())
                 print(frame.x_axis.compute_default_vector())
+
+                print(frame.y_axis.biomech_direction())
                 print(frame.y_axis.principal_direction())
                 print(frame.y_axis.compute_default_vector())
+
+                print(frame.z_axis.biomech_direction())
                 print(frame.z_axis.principal_direction())
                 print(frame.z_axis.compute_default_vector())
 

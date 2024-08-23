@@ -11,5 +11,7 @@ def main():
 
 if __name__ == "__main__":
     df = main()
+    df = df.replace(True, 1)
+    df = df.replace(False, 0)
     df.to_csv("deviation_table.csv")
     print(df.values)

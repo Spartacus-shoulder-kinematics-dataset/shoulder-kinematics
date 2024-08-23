@@ -43,10 +43,10 @@ class CartesianAxis(Enum):
 class BiomechDirection(Enum):
     """Enum for the biomechanical direction"""
 
-    PlusPosteroAnterior = "PlusAntero-Posterior"
+    PlusPosteroAnterior = "PlusPostero-Anterior"
     PlusInferoSuperior = "PlusInfero-Superior"
     PlusMedioLateral = "PlusMedio-Lateral"
-    MinusPosteroAnterior = "MinusAntero-Posterior"
+    MinusPosteroAnterior = "MinusPostero-Anterior"
     MinusInferoSuperior = "MinusInfero-Superior"
     MinusMedioLateral = "MinusMedio-Lateral"
 

@@ -10,7 +10,7 @@ dataset_id,dataset_authors,thorax_is_isb,thorax_x_sense,thorax_y_sense,thorax_z_
 #9,Kim et al.,False,-mediolateral,+inferosuperior,+posteroanterior,False,-mediolateral,+inferosuperior,+posteroanterior,,,,,False,-mediolateral,+inferosuperior,+posteroanterior
 #10,Kozono et al.,False,-mediolateral,-inferosuperior,+posteroanterior,False,+mediolateral,+posteroanterior,+inferosuperior,,,,,False,+mediolateral,+posteroanterior,+inferosuperior
 #11,Ludewig et al.,True,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral,False,+posteroanterior,+inferosuperior,+mediolateral
-#12,Matsuki et al.,False,-mediolateral,+inferosuperior,+posteroanterior,False,-mediolateral,+inferosuperior,+posteroanterior,False,+posteroanterior,+inferosuperior,+mediolateral,False,-mediolateral,+inferosuperior,+posteroanterior
+#12,Matsuki et al.,False,-mediolateral,+inferosuperior,+posteroanterior,False,-mediolateral,+inferosuperior,+posteroanterior,False,-mediolateral,+inferosuperior,+posteroanterior,False,-mediolateral,+inferosuperior,+posteroanterior
 #13,Matsumura et al.,True,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral,,,,,True,+posteroanterior,+inferosuperior,+mediolateral
 #14,Moissenet et al.,True,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral,False,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral
 #15,Nishinaka et al.,False,-mediolateral,+inferosuperior,+posteroanterior,False,+posteroanterior,-mediolateral,+inferosuperior,,,,,False,+posteroanterior,-mediolateral,+inferosuperior
