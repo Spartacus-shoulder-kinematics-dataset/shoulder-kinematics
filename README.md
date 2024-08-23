@@ -148,6 +148,10 @@ For each of the anatomical structures — thorax, humerus, scapula, and clavicle
 - EM: Medial Epicondyle, a bony prominence on the inner part of the humerus near the elbow.
 - X^Y: Represents the cross product between vectors X and Y, ensuring the resulting direction is orthogonal to both.
 
+**NOTE**: If the frame was built on the left side, it should be built properly like done for the left side segment. 
+In the case of the humerus, the **humerus_x_direction** should be `vec(GH>EM)^vec(GH>EL)` to guarantee a postero-anterior direction.
+the other directions should remain the same.
+
 ### Computing biomechanical directions from landmarks
 
 A parsing method has been developed to automatically compute the biomechanical direction from landmarks. 
