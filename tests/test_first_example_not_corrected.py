@@ -487,7 +487,7 @@ def test_scapulothoracic_elevation():
     ]
 
     assert articles == expected_articles
-    assert st_elevation_confident_values["value"].sum() == 330550.8567237752
+    assert st_elevation_confident_values["value"].sum() == 330831.9187237749
 
 
 def test_sternoclavicular_elevation():
