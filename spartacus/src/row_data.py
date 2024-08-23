@@ -806,9 +806,9 @@ class RowData:
         dof2 = dof2 if not np.isnan(dof2) else 0
         dof3 = dof3 if not np.isnan(dof3) else 0
 
-        rad_value_dof1 = np.deg2rad(rot1)
-        rad_value_dof2 = np.deg2rad(rot2)
-        rad_value_dof3 = np.deg2rad(rot3)
+        rad_value_dof1 = np.deg2rad(rot1) if rot1 is not None else 0
+        rad_value_dof2 = np.deg2rad(rot2) if rot2 is not None else 0
+        rad_value_dof3 = np.deg2rad(rot3) if rot3 is not None else 0
 
         corrected_dof_1, corrected_dof_2, corrected_dof_3 = self.translation_mediolateral_matrix(
             dof1, dof2, dof3, rad_value_dof1, rad_value_dof2, rad_value_dof3

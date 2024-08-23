@@ -245,11 +245,15 @@ def calculate_dof_values(
             subrotation_data = rotation_data[rotation_data["humerothoracic_angle"] == translation_th_angle]
             subrotation_data = subrotation_data[subrotation_data["unit"] == "rad"]
             if rotation_data.empty:
-                rot1, rot2, rot3, seq = None, None, None, None
+                rot1, rot2, rot3 = None, None, None
             else:
-                rot1 = subrotation_data["value_dof1"].values[0]
-                rot2 = subrotation_data["value_dof2"].values[0]
-                rot3 = subrotation_data["value_dof3"].values[0]
+                # todo: TO REMOVE !!
+                try:
+                    rot1 = subrotation_data["value_dof1"].values[0]
+                    rot2 = subrotation_data["value_dof2"].values[0]
+                    rot3 = subrotation_data["value_dof3"].values[0]
+                except:
+                    rot1, rot2, rot3, seq = None, None, None, None
 
             corrected_dof_1, corrected_dof_2, corrected_dof_3 = correction_callable(
                 row.value_dof1, row.value_dof2, row.value_dof3, rot1, rot2, rot3
