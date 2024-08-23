@@ -251,11 +251,23 @@ This is equivalent to converting to a left-handed rotation matrix by applying:
 
 ```math
 {^{P}\mathbf{R}^{right}_{D}} = 
-diag(1,1,-1) \cdot \;
+\text{diag}(1,1,-1) \cdot \;
 {^{P}\mathbf{R}^{left}_{D}} \;
-\cdot {diag(1,1,-1)}^T
+\cdot {\text{diag}(1,1,-1)}^T
 ```
-This adjustment maintains consistency when comparing all data as if they were collected on the right shoulder.
+This adjustment maintains consistency when comparing all data as if they were collected on the right shoulder. 
+Thus, when all corrections need to be applied we have (e.g. the Karduna et al. dataset):
+    
+```math
+{}^{P_{ISB}}\mathbf{R}_{D_{ISB}} = 
+{}^{P_{ISB}}\mathbf{R}_{P_{ISBo}} \cdot \;
+\text{diag}(1,1,-1) \cdot \;
+{}^{P_{ISBo}}\mathbf{R}_{P} \cdot \;
+{}^{P}\mathbf{R}^{left}_D \cdot \;
+\left({}^{D_{ISBo}}\mathbf{R}_{D}\right)^T \cdot \;
+\text{diag}(1,1,-1) \cdot \;
+\left({}^{D_{ISBo}}\mathbf{R}_{D_{ISB}}\right)^T
+```
 
 ## Translations
 
