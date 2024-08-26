@@ -207,7 +207,6 @@ class Spartacus:
         mvt: list[str] | str = None,
         joints: list[str] | str = None,
         check_and_import: bool = True,
-        exclude_dataset_without_series: bool = True,
     ):
         """
         Load the confident subdataset
@@ -225,8 +224,6 @@ class Spartacus:
             The joint of interests to keep, to study specific joints, e.g. scapulothoracic
             if None keeps everything
         check_and_import: bool
-            Check and import all the data
-        exclude_dataset_without_series: bool
 
         """
         # open the file only_dataset_raw.csv
@@ -250,9 +247,6 @@ class Spartacus:
         if joints is not None:
             joints = [joints] if isinstance(joints, str) else joints
             df_joint_data = df_joint_data[df_joint_data["joint"].isin(joints)]
-
-        if exclude_dataset_without_series:
-            df = df[df["dataset_authors"] != "Gutierrez Delgado et al."]
 
         return cls(datasets=df, joint_data=df_joint_data, check_and_import=check_and_import)
 
@@ -382,8 +376,6 @@ def load() -> Spartacus:
     # df = df[df["dataset_authors"] != "Nishinaka et al."]
     # df = df[df["dataset_authors"] == "Nishinaka et al."]
     # df = df["Kozono et al." == df["dataset_authors"]]
-
-    df = df[df["dataset_authors"] != "Gutierrez Delgado et al."]
 
     sp = Spartacus(datasets=df, joint_data=df_joint_data)
     sp.check_dataset_segments(print_warnings=True)

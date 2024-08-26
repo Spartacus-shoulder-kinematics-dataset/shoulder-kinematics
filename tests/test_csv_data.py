@@ -48,7 +48,7 @@ def test_data_loading():
     # open the file only_dataset_raw.csv
     df = pd.read_csv(DatasetCSV.DATASETS.value)
     df_joint = pd.read_csv(DatasetCSV.JOINT.value)
-    df = df[df["dataset_authors"] == "Guttierrez Delgado et al."]
+
     print(df.shape)
     sp = Spartacus(datasets=df, joint_data=df_joint)
     for i, row in sp.dataframe.iterrows():
