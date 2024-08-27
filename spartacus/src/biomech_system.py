@@ -12,7 +12,7 @@ class BiomechCoordinateSystem:
         antero_posterior_axis: CartesianAxis,
         infero_superior_axis: CartesianAxis,
         medio_lateral_axis: CartesianAxis,
-        origin=None,
+        origin: AnatomicalLandmark = None,
         frame: Frame = None,
     ):
         # verify isinstance
@@ -36,7 +36,7 @@ class BiomechCoordinateSystem:
         self.infero_superior_axis = infero_superior_axis
         self.medio_lateral_axis = medio_lateral_axis
 
-        self.origin = origin
+        self.origin = AnatomicalLandmark.from_string(origin) if isinstance(origin, str) else origin
         self.segment = segment
         self.frame = frame
 
@@ -97,7 +97,7 @@ class BiomechCoordinateSystem:
             antero_posterior_axis=frame.postero_anterior_local_axis,
             infero_superior_axis=frame.infero_superior_local_axis,
             medio_lateral_axis=frame.medio_lateral_local_axis,
-            origin=frame.origin,
+            origin=AnatomicalLandmark.from_string(frame.origin) if isinstance(frame.origin, str) else frame.origin,
             frame=frame,
         )
 

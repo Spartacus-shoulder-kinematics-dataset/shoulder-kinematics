@@ -314,8 +314,8 @@ class Spartacus:
                 ):
                     #  for nishinaka for example that only has translational information
                     bsys_segment = set_child_segment_from_row(first_row, segment)
-                    deviation = SegmentCompliance(bsys=bsys_segment)
-                    dico_d[f"{segment.to_string}_c3"] = deviation.is_c3
+                    compliance = SegmentCompliance(bsys=bsys_segment)
+                    dico_d[f"{segment.to_string}_c3"] = compliance.is_c3
 
             for joint_type_str in joints_per_author[author]:
                 joint_type = JointType.from_string(joint_type_str)
