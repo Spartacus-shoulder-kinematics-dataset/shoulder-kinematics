@@ -63,6 +63,28 @@ articles_data = {
             (-1, -4.961429503563281),
         ],
     ),
+    "Gutierrez Delgado et al.": (
+        597,
+        [
+            "frontal plane elevation",
+            "sagittal plane elevation",
+        ],
+        [
+            "sternoclavicular",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        -1292.21443,
+        [
+            (0, -31.969178000000003),
+            (30, -39.584772),
+            (60, -49.48644399999999),
+            (-1, 33.247162),
+        ],
+    ),
     "Fung et al.": (
         1242,
         [
@@ -392,6 +414,7 @@ def test_number_of_articles():
         "Bourne et al.",
         "Chu et al.",
         "Fung et al.",
+        "Gutierrez Delgado et al.",
         "Henninger et al.",
         "Karduna et al.",
         "Kijima et al.",
@@ -409,7 +432,7 @@ def test_number_of_articles():
     ]
     assert articles == experted_articles
 
-    assert confident_values.shape[0] == 809352
+    assert confident_values.shape[0] == 809949
 
 
 def print_data(data, random_checks):
@@ -502,6 +525,7 @@ def test_sternoclavicular_elevation():
     expected_articles = [
         "Begon et al.",
         "Fung et al.",
+        "Gutierrez Delgado et al.",
         "Ludewig et al.",
         "Matsuki et al.",
         "Moissenet et al.",
@@ -510,7 +534,7 @@ def test_sternoclavicular_elevation():
     ]
 
     assert articles == expected_articles
-    assert sc_elevation_confident_values["value"].sum() == -1963409.63590945
+    assert sc_elevation_confident_values["value"].sum() == -1964701.8503394504
 
 
 def test_acromioclavicular_elevation():
