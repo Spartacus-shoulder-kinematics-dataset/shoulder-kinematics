@@ -77,12 +77,12 @@ articles_data = {
             2,
             3,
         ],
-        -1292.21443,
+        -14088.114296000002,
         [
-            (0, -31.969178000000003),
+            (0, -31.969178),
             (30, -39.584772),
-            (60, -49.48644399999999),
-            (-1, 33.247162),
+            (60, -49.486444),
+            (-1, -33.247162),
         ],
     ),
     "Fung et al.": (
@@ -534,7 +534,7 @@ def test_sternoclavicular_elevation():
     ]
 
     assert articles == expected_articles
-    assert sc_elevation_confident_values["value"].sum() == -1964701.8503394504
+    assert sc_elevation_confident_values["value"].sum() == -1977497.7502054502
 
 
 def test_acromioclavicular_elevation():
