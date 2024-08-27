@@ -19,7 +19,7 @@ from spartacus.src.utils import (
 )
 
 print_warnings = True
-sp = Spartacus.load(check_and_import=False)
+sp = Spartacus.load(unify=False)
 df = sp.dataframe
 authors = df["dataset_authors"].unique().tolist()
 

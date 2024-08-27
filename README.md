@@ -208,10 +208,11 @@ When it is `angle(yt, yh)`, we thought it was an angle between two vectors. When
 ## Merging Dataset colums and Joint data colums
 
 In this example, we demonstrate how to merge columns using the Spartacus library.
+
 ```python3
 from spartacus import Spartacus
 
-sp = Spartacus.load(check_and_import=False)
+sp = Spartacus.load(unify=False)
 sp.dataframe.to_csv("merged_dataframe.csv")
 ```
 It will duplicate the colums of 2 (Dataset colums) in 3 (Joint data colums).

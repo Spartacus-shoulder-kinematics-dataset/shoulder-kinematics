@@ -25,6 +25,7 @@ def plot_mvt(df: DataFrame):
         sub_df = df[df["humeral_motion"] == mvt]
         dfi = DataFrameInterface(sub_df).rotational_interface()
         plt = DataPlanchePlotting(dfi)
+        plt = DataPlanchePlotting(dfi, restrict_to_joints=dfi.df["joint"].unique())
         plt.plot()
         plt.update_style()
         plt.show()

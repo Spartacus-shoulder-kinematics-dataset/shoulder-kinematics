@@ -2,7 +2,7 @@ from spartacus import Spartacus
 
 
 def main():
-    sp = Spartacus.load(check_and_import=False)
+    sp = Spartacus.load(unify=False)
     sp.dataframe.to_csv("merged_dataframe.csv")
 
 

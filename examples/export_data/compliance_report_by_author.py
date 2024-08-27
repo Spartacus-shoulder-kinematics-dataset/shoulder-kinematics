@@ -3,7 +3,7 @@ from spartacus import Spartacus
 
 
 def main():
-    sp = Spartacus.load(check_and_import=False)
+    sp = Spartacus.load(unify=False)
     df = sp.compliance()
 
     return df.replace(np.nan, "-")

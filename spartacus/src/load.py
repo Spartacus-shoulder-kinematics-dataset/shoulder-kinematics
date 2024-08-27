@@ -29,7 +29,7 @@ class Spartacus:
         self,
         datasets: pd.DataFrame | None = None,
         joint_data: pd.DataFrame | None = None,
-        check_and_import: bool = False,
+        unify: bool = False,
     ):
         self.datasets = datasets
         self.joint_data = joint_data
@@ -48,7 +48,7 @@ class Spartacus:
         self.corrected_confident_data_values = None
         self.confident_data_values = None
 
-        if check_and_import:
+        if unify:
             self.check_dataset_segments(print_warnings=True)
             self.import_confident_data()
 
@@ -206,7 +206,7 @@ class Spartacus:
         shoulder: list[int] = None,
         mvt: list[str] | str = None,
         joints: list[str] | str = None,
-        check_and_import: bool = True,
+        unify: bool = True,
     ):
         """
         Load the confident subdataset
@@ -223,7 +223,9 @@ class Spartacus:
         joints: list[str] | str
             The joint of interests to keep, to study specific joints, e.g. scapulothoracic
             if None keeps everything
-        check_and_import: bool
+        unify: bool
+            If True, the dataset will be unified, i.e. the segments will be checked and the confident data will be imported
+            and corrections will be applied.
 
         """
         # open the file only_dataset_raw.csv
@@ -248,7 +250,7 @@ class Spartacus:
             joints = [joints] if isinstance(joints, str) else joints
             df_joint_data = df_joint_data[df_joint_data["joint"].isin(joints)]
 
-        return cls(datasets=df, joint_data=df_joint_data, check_and_import=check_and_import)
+        return cls(datasets=df, joint_data=df_joint_data, unify=unify)
 
     @property
     def authors(self):
