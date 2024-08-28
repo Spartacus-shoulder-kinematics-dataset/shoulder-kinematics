@@ -572,8 +572,6 @@ class RowData:
 
         if segment_conditions and not c5:
             if self.joint.translation_frame == FrameType.JCS:
-                # todo: if enough data, we can recompute the rotation matrices and convert the translations into another coordinate system
-                #   e.g. joint coordinate system (euler basis) to proximal segment coordinate system for Moissenet et al.
                 return True
             else:
                 return False
