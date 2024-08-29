@@ -21,8 +21,51 @@ from .utils_setters import (
 
 class Spartacus:
     """
-    This is a Dataset Class.
-    The class can have methods to load the data, filter it, or perform common operations in a natural language style.
+    A class to represent the Spartacus dataset and its operations.
+
+    Attributes
+    ----------
+    datasets : pd.DataFrame | None
+        DataFrame containing the datasets.
+    joint_data : pd.DataFrame | None
+        DataFrame containing the joint data.
+    unify : bool
+        Flag to unify the dataset by checking segments and importing confident data.
+    process_rotations : bool
+        Flag to process rotations.
+    process_translations : bool
+        Flag to process translations.
+    dataframe : pd.DataFrame
+        Merged DataFrame of datasets and joint data.
+    confident_dataframe : pd.DataFrame | None
+        DataFrame containing confident data.
+    rows : list
+        List to store rows.
+    rows_output : None
+        Placeholder for rows output.
+    corrected_confident : None
+        Placeholder for corrected confident data.
+    corrected_confident_data_values : None
+        Placeholder for corrected confident data values.
+    confident_data_values : None
+        Placeholder for confident data values.
+
+    Methods
+    -------
+    clean_df():
+        Replace NaNs with None in the datasets and joint data.
+    check_dataset_segments(print_warnings: bool = False) -> pd.DataFrame:
+        Check if segments are consistently defined in the dataset.
+    import_confident_data() -> pd.DataFrame:
+        Import data from the DataFrame using callback functions.
+    _add_metadata_to_dataframes():
+        Add metadata to the dataframes for further analysis.
+    export():
+        Export the corrected confident data to the same folder as the clean data.
+    compliance() -> pd.DataFrame:
+        Calculate compliance for each dataset.
+    add_compliances():
+        Add compliances to the main dataframe.
     """
 
     def __init__(
@@ -33,8 +76,25 @@ class Spartacus:
         process_rotations: bool = True,
         process_translations: bool = True,
     ):
+        """
+        Constructs all the necessary attributes for the Spartacus object.
+
+        Parameters
+        ----------
+        datasets : pd.DataFrame | None, optional
+            DataFrame containing the datasets (default is None).
+        joint_data : pd.DataFrame | None, optional
+            DataFrame containing the joint data (default is None).
+        unify : bool, optional
+            Flag to unify the dataset by checking segments and importing confident data (default is False).
+        process_rotations : bool, optional
+            Flag to process rotations (default is True).
+        process_translations : bool, optional
+            Flag to process translations (default is True).
+        """
         self.datasets = datasets
         self.joint_data = joint_data
+
         # merge the datasets and the joint data through the column dataset_id, dataset_id, joint_data is the bigger file
         self.dataframe = pd.merge(
             datasets, joint_data, left_on="dataset_id", right_on="dataset_id", suffixes=("", "useless_string")
@@ -58,8 +118,7 @@ class Spartacus:
             self.import_confident_data()
 
     def clean_df(self):
-        # turn nan into None for the following columns
-        # dof_1st_euler, dof_2nd_euler, dof_3rd_euler, dof_translation_x, dof_translation_y, dof_translation_z
+        """Replace nans with None"""
         self.datasets = self.datasets.where(pd.notna(self.datasets), None)
         self.joint_data = self.joint_data.where(pd.notna(self.joint_data), None)
         self.dataframe = self.dataframe.where(pd.notna(self.dataframe), None)
@@ -174,6 +233,7 @@ class Spartacus:
         return self.corrected_confident_data_values
 
     def _add_metadata_to_dataframes(self):
+        """For further analysis, add metadata to the dataframes"""
         meta_data = self.datasets[
             [
                 "dataset_authors",
@@ -196,6 +256,7 @@ class Spartacus:
         self.corrected_confident_data_values = self.corrected_confident_data_values.drop(columns="dataset_authors")
 
     def export(self):
+        """Export the corrected confident data to the same folder as the clean data"""
         path_next_to_clean = Path(DatasetCSV.DATASETS.value).parent
 
         confident_path = Path.joinpath(path_next_to_clean, "corrected_confident_data.csv")
@@ -270,9 +331,11 @@ class Spartacus:
 
     @property
     def authors(self):
+        """Return the authors of the datasets"""
         return self.dataframe["dataset_authors"].unique().tolist()
 
     def compliance(self) -> pd.DataFrame:
+        """ Calculate compliance for each dataset """
         authors = self.authors
 
         df_compliance = pd.DataFrame(
@@ -368,84 +431,3 @@ class Spartacus:
         self.dataframe = pd.merge(
             self.datasets, self.joint_data, left_on="dataset_id", right_on="dataset_id", suffixes=("", "useless_string")
         )
-
-
-def load() -> Spartacus:
-    """Load the confident datasets"""
-    # open the file only_dataset_raw.csv
-    # df = pd.read_csv(DatasetCSV.CLEAN.value)
-    df = pd.read_csv(DatasetCSV.DATASETS.value)
-    df_joint_data = pd.read_csv(DatasetCSV.JOINT.value)
-    # temporary for debugging
-    # df = df[df["dataset_authors"] == "Fung et al."]
-    # keep Fung and Bourne
-    # df = df[df["dataset_authors"].isin(["Fung et al.", "Bourne"])]
-    # df = df[df["dataset_authors"] == "Bourne"]
-    # df = df[df["dataset_authors"] == "Chu et al."]
-    # df = df[df["dataset_authors"] == "Henninger et al."]
-    # df = df[df["dataset_authors"] == "Fung et al."]  # One flipped angle in ST in the middle, looks ok
-    # df = df[df["dataset_authors"] == "Kijima et al."]  # expected some Nan because only one dof for GH
-    # df = df[df["dataset_authors"] == "Kozono et al."]
-    # df = df[df["dataset_authors"] == "Lawrence et al."]
-    # df = df[df["dataset_authors"] == "Matsumura et al."]
-    # df = df[df["dataset_authors"] == "Oki et al."]
-    # df = df[df["dataset_authors"] == "Teece et al."]
-    # df = df[df["dataset_authors"] == "Yoshida et al."]
-    # df = df[df["dataset_authors"] != "Nishinaka et al."]
-    # df = df[df["dataset_authors"] == "Nishinaka et al."]
-    # df = df["Kozono et al." == df["dataset_authors"]]
-
-    sp = Spartacus(datasets=df, joint_data=df_joint_data)
-    sp.check_dataset_segments(print_warnings=True)
-    sp.import_confident_data()
-    return sp
-
-
-def load_subdataset(
-    name: DataFolder | str = None,
-    shoulder: list[int] | int = None,
-    mvt: list[str] | str = None,
-    joints: list[str] | str = None,
-) -> Spartacus:
-    """
-    Load the confident subdataset
-
-    Parameters
-    ----------
-    name: DataFolder
-        The name of the DataFolder
-    shoulder: list[int]
-        The id of the shoulders you want to keep, to study specific data
-    mvt: list[str] | str
-        The shoulder motion of interests to keep, to study specific motions, e.g. sagittal plane elevation,
-        if None keeps everything
-    joints: list[str] | str
-        The joint of interests to keep, to study specific joints, e.g. scapulothoracic
-        if None keeps everything
-    """
-    # open the file only_dataset_raw.csv
-    df = pd.read_csv(DatasetCSV.DATASETS.value)
-    df_joint_data = pd.read_csv(DatasetCSV.JOINT.value)
-
-    if name is not None:
-        names = [name] if not isinstance(name, list) else name
-        datafolder_string = [name if isinstance(name, str) else name.to_dataset_author() for name in names]
-        df = df[df["dataset_authors"].isin(datafolder_string)]
-        df_joint_data = df_joint_data[df_joint_data["dataset_authors"].isin(datafolder_string)]
-
-    if shoulder is not None:
-        shoulder = [shoulder] if isinstance(shoulder, int) else shoulder
-        df_joint_data = df_joint_data[df_joint_data["shoulder_id"].isin(shoulder)]
-
-    if mvt is not None:
-        mvt = [mvt] if isinstance(mvt, str) else mvt
-        df_joint_data = df_joint_data[df_joint_data["humeral_motion"].isin(mvt)]
-
-    if joints is not None:
-        joints = [joints] if isinstance(joints, str) else joints
-        df_joint_data = df_joint_data[df_joint_data["joint"].isin(joints)]
-
-    sp = Spartacus(datasets=df, joint_data=df_joint_data)
-    sp.check_dataset_segments(print_warnings=True)
-    sp.import_confident_data()
-    return sp

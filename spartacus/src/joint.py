@@ -7,6 +7,25 @@ from .legend_utils import isb_rotation_biomechanical_dof
 
 
 class Joint:
+    """
+    A class to represent a joint in a biomechanical system.
+
+    Attributes
+    ----------
+    joint_type : JointType
+        The type of the joint.
+    euler_sequence : EulerSequence
+        The Euler sequence used for the joint.
+    translation_origin : AnatomicalLandmark
+        The anatomical landmark used as the origin for translation.
+    translation_frame : FrameType
+        The frame type used for translation.
+    parent_segment : BiomechCoordinateSystem
+        The parent biomechanical coordinate system.
+    child_segment : BiomechCoordinateSystem
+        The child biomechanical coordinate system.
+    """
+
     def __init__(
         self,
         joint_type: JointType,
@@ -16,6 +35,24 @@ class Joint:
         parent_segment: BiomechCoordinateSystem,
         child_segment: BiomechCoordinateSystem,
     ):
+        """
+        Constructs all the necessary attributes for the Joint object.
+
+        Parameters
+        ----------
+        joint_type : JointType
+            The type of the joint.
+        euler_sequence : EulerSequence
+            The Euler sequence used for the joint.
+        translation_origin : AnatomicalLandmark
+            The anatomical landmark used as the origin for translation.
+        translation_frame : FrameType
+            The frame type used for translation.
+        parent_segment : BiomechCoordinateSystem
+            The parent biomechanical coordinate system.
+        child_segment : BiomechCoordinateSystem
+            The child biomechanical coordinate system.
+        """
         self.joint_type = joint_type
         self.euler_sequence = euler_sequence
         self.translation_origin = translation_origin

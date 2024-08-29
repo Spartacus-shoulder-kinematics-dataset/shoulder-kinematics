@@ -149,7 +149,7 @@ class Humerus:
 
 
 def get_constant(landmark: Any, side: str) -> np.ndarray:
-
+    """ Get the constant value of a landmark or vector in the ISB global frame """
     landmark_mapping = {
         AnatomicalLandmark.Global.IMAGING_ORIGIN: Global.IMAGING_CENTER,
         AnatomicalVector.Global.INFEROSUPERIOR: Global.INFERO_SUPERIOR,
