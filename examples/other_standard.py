@@ -19,7 +19,7 @@ standard = dict(
         "origin": AnatomicalLandmark.Scapula.GLENOID_CENTER,
     },
 )
-
+# if nothing specified, Spartacus will use the default standard of ISB's recommendations
 
 spartacus_dataset = Spartacus.load(
     standard=standard,
