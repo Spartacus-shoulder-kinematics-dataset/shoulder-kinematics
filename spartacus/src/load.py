@@ -335,7 +335,7 @@ class Spartacus:
         return self.dataframe["dataset_authors"].unique().tolist()
 
     def compliance(self) -> pd.DataFrame:
-        """ Calculate compliance for each dataset """
+        """Calculate compliance for each dataset"""
         authors = self.authors
 
         df_compliance = pd.DataFrame(

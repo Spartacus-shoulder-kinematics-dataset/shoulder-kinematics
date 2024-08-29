@@ -13,6 +13,7 @@ class Compliance:
     standards : str
         The standards to which the compliance is checked. Default is "ISB".
     """
+
     def __init__(self):
         self.standards = "ISB"  # todo: we could some day modify to get different standards requirements.
 
@@ -261,6 +262,7 @@ class JointCompliance(Compliance):
             True if the humerothoracic angle is ISB compliant, False otherwise.
         """
         return self.is_thoraco_humeral_angle_isb(self.thoracohumeral_angle)
+
 
 class TotalCompliance:
     """
