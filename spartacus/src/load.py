@@ -30,6 +30,8 @@ class Spartacus:
         datasets: pd.DataFrame | None = None,
         joint_data: pd.DataFrame | None = None,
         unify: bool = False,
+        process_rotations: bool = True,
+        process_translations: bool = True,
     ):
         self.datasets = datasets
         self.joint_data = joint_data
@@ -48,6 +50,9 @@ class Spartacus:
         self.corrected_confident_data_values = None
         self.confident_data_values = None
 
+        self.process_rotations = process_rotations
+        self.process_translations = process_translations
+
         if unify:
             self.check_dataset_segments(print_warnings=True)
             self.import_confident_data()
@@ -61,7 +66,7 @@ class Spartacus:
 
     def check_dataset_segments(self, print_warnings: bool = False) -> pd.DataFrame:
         """
-        This will chekc if segment are consistently defined in the dataset, with or wihtout nans, direct frames, etc...
+        This will check if segment are consistently defined in the dataset, with or wihtout nans, direct frames, etc...
 
         !!! It skips the rows that are not valid.
 
@@ -130,8 +135,8 @@ class Spartacus:
 
             row_data = RowData(row)
 
-            process_translation = row_data.has_translation_data
-            process_rotation = row_data.has_rotation_data
+            process_translation = row_data.has_translation_data if self.process_translations else False
+            process_rotation = row_data.has_rotation_data if self.process_rotations else False
 
             row_data.set_segments()
             row_data.check_joint_validity(print_warnings=False)
@@ -207,6 +212,8 @@ class Spartacus:
         mvt: list[str] | str = None,
         joints: list[str] | str = None,
         unify: bool = True,
+        process_rotations: bool = True,
+        process_translations: bool = True,
     ):
         """
         Load the confident subdataset
@@ -226,7 +233,10 @@ class Spartacus:
         unify: bool
             If True, the dataset will be unified, i.e. the segments will be checked and the confident data will be imported
             and corrections will be applied.
-
+        process_rotations: bool
+            Choose if the rotations should be processed or not.
+        process_translations: bool
+            Choose if the translations should be processed or not.
         """
         # open the file only_dataset_raw.csv
         df = pd.read_csv(DatasetCSV.DATASETS.value)
@@ -250,7 +260,13 @@ class Spartacus:
             joints = [joints] if isinstance(joints, str) else joints
             df_joint_data = df_joint_data[df_joint_data["joint"].isin(joints)]
 
-        return cls(datasets=df, joint_data=df_joint_data, unify=unify)
+        return cls(
+            datasets=df,
+            joint_data=df_joint_data,
+            unify=unify,
+            process_rotations=process_rotations,
+            process_translations=process_translations,
+        )
 
     @property
     def authors(self):
