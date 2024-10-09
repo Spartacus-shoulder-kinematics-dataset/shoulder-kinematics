@@ -20,7 +20,7 @@ from .src.checks import (
 )
 
 from .src.row_data import RowData
-from .src.load import load, Spartacus, load_subdataset
+from .src.load import Spartacus
 from .src.utils import compute_rotation_matrix_from_axes, flip_rotations
 from .src.joint import Joint
 from .src.biomech_system import BiomechCoordinateSystem

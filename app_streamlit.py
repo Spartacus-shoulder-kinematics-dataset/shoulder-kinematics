@@ -1,3 +1,8 @@
+"""
+How to launch the app, write in the command line:
+$ streamlit run app_streamlit.py
+"""
+
 import streamlit as st
 
 from spartacus import DataPlanchePlotting, DataFrameInterface, import_data
