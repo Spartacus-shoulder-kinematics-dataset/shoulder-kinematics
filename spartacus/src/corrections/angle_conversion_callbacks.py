@@ -3,7 +3,7 @@ import numpy as np
 
 from ..biomech_system import BiomechCoordinateSystem
 from ..enums_biomech import EulerSequence
-from ..utils import mat_2_rotation
+from ..utils import mat_2_rotation, flip_rotations
 
 
 def get_angle_conversion_callback_from_tuple(tuple_factors: tuple[int, int, int]) -> callable:
@@ -201,15 +201,15 @@ def quick_fix_x_rot_in_yxy(angles: np.ndarray) -> np.ndarray:
     Remember: In the realm of 3D rotations, not all paths lead to Rome,
     but they might lead to the same orientation! 🌐
     """
-    new_angles = angles.copy()
-
-    new_angles[1] *= -1
-    new_angles[0] += np.pi
-    new_angles[2] += np.pi
-
-    new_angles[0] = (new_angles[0] + np.pi) % (2 * np.pi) - np.pi  # α in [-π, π]
-    new_angles[1] = (new_angles[1] + np.pi) % (2 * np.pi) - np.pi  # β in [-π, π]
-    new_angles[2] = (new_angles[2] + np.pi) % (2 * np.pi) - np.pi  # γ in [-π, π]
+    # new_angles = angles.copy()
+    new_angles = flip_rotations(angles, "yxy")
+    # new_angles[1] *= -1
+    # new_angles[0] += np.pi
+    # new_angles[2] += np.pi
+    #
+    # new_angles[0] = (new_angles[0] + np.pi) % (2 * np.pi) - np.pi  # α in [-π, π]
+    # new_angles[1] = (new_angles[1] + np.pi) % (2 * np.pi) - np.pi  # β in [-π, π]
+    # new_angles[2] = (new_angles[2] + np.pi) % (2 * np.pi) - np.pi  # γ in [-π, π]
 
     return new_angles
 

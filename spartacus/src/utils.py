@@ -179,9 +179,7 @@ def convert_df_to_1dof_per_line(df: pd.DataFrame) -> pd.DataFrame:
         "legend": df[["legend_dof1", "legend_dof2", "legend_dof3"]].values.T.flatten(),
         "degree_of_freedom": np.array([[1, 2, 3]]).repeat(repeats=df.shape[0], axis=0).T.flatten(),
     }
-    df_transformed = pd.DataFrame(
-        {**first_dict, **second_dict}
-    )
+    df_transformed = pd.DataFrame({**first_dict, **second_dict})
 
     return df_transformed
 
