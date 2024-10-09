@@ -21,12 +21,20 @@ def set_page_config():
 @st.cache_data
 def load_data():
     df = import_data(correction=True)
-    df = df[df["unit"] == "rad"]
     return df
 
 
 def create_side_bar_components():
     st.sidebar.header("Options")
+
+    selected_metric = st.sidebar.selectbox(
+        "Metric:",
+        options=["rotations", "translations"],
+        index=0,  # Default to the first option
+    )
+    selected_metric_map = {"rotations": "rad", "translations": "mm"}
+    selected_metric = selected_metric_map[selected_metric]
+
     selected_humeral_motion = st.sidebar.selectbox(
         "Humeral Motion:",
         options=[
@@ -133,6 +141,7 @@ def create_side_bar_components():
             """
     )
     return (
+        selected_metric,
         selected_humeral_motion,
         selected_joints,
         experimental_mean_option,
@@ -147,6 +156,7 @@ def create_side_bar_components():
 
 def filter_dataframe(
     df,
+    selected_metric,
     selected_humeral_motion,
     selected_joints,
     experimental_mean_option,
@@ -157,8 +167,11 @@ def filter_dataframe(
     active_option,
     total_compliance,
 ):
+    # Filter if translation or rotation data only
+    sub_df = df[df["unit"] == selected_metric]
+
     # Filter the DataFrame based on the selected humeral motion and joints
-    subdf = df[df["humeral_motion"] == selected_humeral_motion]
+    subdf = sub_df[sub_df["humeral_motion"] == selected_humeral_motion]
     subdf = subdf[subdf["joint"].isin(selected_joints)]
 
     # Apply the filter for in vivo, ex vivo, or both
@@ -223,6 +236,7 @@ df = load_data()
 csv = convert_df(df)
 
 (
+    selected_metric,
     selected_humeral_motion,
     selected_joints,
     experimental_mean_option,
@@ -241,6 +255,7 @@ dfi = DataFrameInterface(df)
 
 df_filtered = filter_dataframe(
     df,
+    selected_metric,
     selected_humeral_motion,
     selected_joints,
     experimental_mean_option,
