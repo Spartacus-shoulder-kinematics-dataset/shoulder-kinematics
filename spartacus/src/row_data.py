@@ -560,12 +560,13 @@ class RowData:
         if any_origin_is_wrong:
             return False
 
-        all_good = pc1 and pc2 and isb_origins
+        all_criteria_good = pc1 and pc2 and isb_origins
+
         orientation_correction = pc2 and isb_origins  # flipping axis or changing the sign of the axis
         accepted_orientation_offset = pc1 and isb_origins
 
         # NOTE: Relaxing constraints could accept without pc1 and pc2
-        segment_conditions = all_good or orientation_correction or accepted_orientation_offset
+        segment_conditions = all_criteria_good or orientation_correction or accepted_orientation_offset
 
         if segment_conditions and c5:
             return True
@@ -575,6 +576,13 @@ class RowData:
                 return True
             else:
                 return False
+
+        no_cancellation_possible = isb_origins
+        # we can't cancel the misorientation of the segment
+        if no_cancellation_possible:
+            return True
+
+        return False
 
     def import_data(self):
         """this function import the data of the following row"""
