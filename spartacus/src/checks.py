@@ -6,8 +6,9 @@ from .enums_biomech import JointType, Segment, AnatomicalLandmark, Correction
 from .joint import Joint
 from .utils import (
     get_is_isb_column,
-    get_is_correctable_column,
+    get_segment_columns_direction,
 )
+from .utils_setters import set_parent_segment_from_row
 
 
 def check_parent_child_joint(bjoint: Joint, row: pd.Series, print_warnings: bool = False):
@@ -58,7 +59,7 @@ def _check_parent_child_joint(joint_type: JointType, parent_name: str, child_nam
         # Thorax is the parent segment of the scapula
         return parent_segment == Segment.THORAX and child_segment == Segment.SCAPULA
     else:
-        raise ValueError(f"{joint_type} is not a valid joint type.")
+        raise ValueError(f"{joint_type} is not a valid joint type. Got {joint_type}, {parent_name}, {child_name}")
 
 
 def check_segment_filled_with_nan(row: pd.Series, segment: list, print_warnings: bool = False):
@@ -89,94 +90,6 @@ def check_segment_filled_with_nan(row: pd.Series, segment: list, print_warnings:
                 print(segment, " is filled with nan")
             return True
     return False
-
-
-def check_is_isb_segment(row: pd.Series, bsys: BiomechCoordinateSystem, print_warnings: bool = False) -> bool:
-    """
-    This function checks if the segment is ISB oriented and if it is well specified in the dataset.
-
-    Parameters
-    ----------
-    bsys : BiomechCoordinateSystem
-        The biomechanical coordinate system to check.
-    row : pandas.Series
-        The row of the dataset to check.
-    print_warnings : bool, optional
-        If True, print warnings when inconsistencies are found. The default is False.
-
-    Returns
-    -------
-    bool
-        True if the segment is ISB oriented and if it is well specified in the dataset, False otherwise.
-
-    Notes
-    -----
-    This function does not check if the segment is ISB oriented, it only checks if the dataset is well specified.
-    Ex: a segment can be entirely ISB in the dataset, but if the correctable column is filled with True or False, then
-    it means it is an ISB like segment, but not exactly ISB. Because it can either be corrected or not.
-    if nan/None is given in the correctable column, then it means we don't have to apply any correction, so the segment
-    is a well-defined ISB segment.
-
-    """
-    is_isb = get_is_isb_column(bsys.segment)
-    is_correctable_col = get_is_correctable_column(bsys.segment)
-
-    if not bsys.is_isb() == row[is_isb] and np.isnan(row[is_correctable_col]):
-        # if expected and detected are different for isb, and the correctable is set to nan, then there is an inconsistency
-        # False means we know we cannot correct it, True means we know we can correct it
-        if print_warnings:
-            print("WARNING : inconsistency in the dataset")
-            print("-- ", row.article_author_year, " --")
-            print(bsys.segment)
-            print("detected ISB oriented:", bsys.is_isb_oriented())
-            print("detected ISB origin:", bsys.is_isb_origin(), bsys.origin)
-            print("detected ISB oriented + origin:", bsys.is_isb())
-            print("expected ISB:", row[is_isb])
-        return False
-
-    return True
-
-
-def check_is_isb_correctable(row: pd.Series, bsys: BiomechCoordinateSystem, print_warnings: bool = False) -> bool:
-    """
-    This function checks if the segment is said to be isb correctable
-    if True then isb should be false
-    if none then isb should be true
-
-    Parameters
-    ----------
-    bsys : BiomechCoordinateSystem
-        The biomechanical coordinate system to check.
-    row : pandas.Series
-        The row of the dataset to check.
-    print_warnings : bool, optional
-        If True, print warnings when inconsistencies are found. The default is False.
-
-    Returns
-    -------
-    bool
-        True if is_correctable is consistent with is_isb, False otherwise.
-
-    Notes
-    -----
-
-    """
-    is_isb = row[get_is_isb_column(bsys.segment)]
-    is_correctable_col = row[get_is_correctable_column(bsys.segment)]
-    if is_isb:
-        output = is_correctable_col is None
-    if not is_isb:
-        output = is_correctable_col is not None
-
-    if not output and print_warnings:
-        print("WARNING : inconsistency in the dataset")
-        print("-- ", row.article_author_year, " --")
-        print(bsys.segment)
-        print("expected ISB:", is_isb)
-        print("expected ISB correctable:", is_correctable_col)
-        return False
-
-    return True
 
 
 def check_correction_methods(row: "RowData", bsys: BiomechCoordinateSystem, print_warnings: bool = False) -> bool:
@@ -261,27 +174,47 @@ def check_is_euler_sequence_provided(row: pd.Series, print_warnings: bool = Fals
     """This function checks if the euler sequence is provided in the dataset."""
     if row.euler_sequence is None:
         if print_warnings:
-            print("WARNING : euler sequence is not provided, for joint", row.joint, row.dataset_authors)
+            print(
+                "WARNING : euler sequence is not provided, for joint",
+                row.joint,
+                row.dataset_authors,
+                f". Got {row.euler_sequence}",
+            )
         return False
     # todo: check nan should disappear
     if not isinstance(row.euler_sequence, str) and (row.euler_sequence == "nan" or np.isnan(row.euler_sequence)):
         if print_warnings:
-            print("WARNING : euler sequence is nan, for joint", row.joint, row.dataset_authors)
+            print(
+                "WARNING : euler sequence is nan, for joint",
+                row.joint,
+                row.dataset_authors,
+                f". Got {row.euler_sequence}",
+            )
         return False
-    # check the three letters
-    if not len(row.euler_sequence) == 3:
+    # check the three letters and remove "'" if present
+    if not len(row.euler_sequence.replace("'", "")) == 3:
         if print_warnings:
-            print("WARNING : euler sequence is not 3 letters long, for joint", row.joint, row.dataset_authors)
+            print(
+                "WARNING : euler sequence is not 3 letters long, for joint",
+                row.joint,
+                row.dataset_authors,
+                f". Got {row.euler_sequence}",
+            )
         return False
     # check if the letters are x, y, or z
     authorized_letters = ["x", "y", "z"]
     if (
         not row.euler_sequence[0] in authorized_letters
         or not row.euler_sequence[1] in authorized_letters
-        or not row.euler_sequence[2] in authorized_letters
+        or not row.euler_sequence[3] in authorized_letters
     ):
         if print_warnings:
-            print("WARNING : euler sequence is not x, y, or z, for joint", row.joint, row.dataset_authors)
+            print(
+                "WARNING : euler sequence is not x, y, or z, for joint",
+                row.joint,
+                row.dataset_authors,
+                f". Got {row.euler_sequence}",
+            )
         return False
 
     return True
@@ -336,3 +269,39 @@ def check_is_translation_provided(row: pd.Series, print_warnings: bool = False) 
             print(f"displacement_cs_provided : {displacement_cs_provided}")
         return False
     return True
+
+
+def check_all_segments_validity(row, print_warnings: bool = False) -> bool:
+    """
+    Check all the segments of the row are valid.
+    First, we check if the segment is provided, i.e., no NaN values.
+    Second, we check if the segment defined as is_isb = True or False in the dataset
+    and if the orientations of axis defined in the dataset fits with isb definition.
+
+    (we don't mind if it's not a isb segment, we just don't want to have a segment
+    that matches the is_isb given)
+
+    Third, we check the frame are direct, det(R) = 1. We want to have a direct frame.
+
+    Returns
+    -------
+    bool
+        True if all the segments are valid, False otherwise.
+    """
+    output = True
+    for segment_enum in Segment:
+        # segment_cols = get_segment_columns(segment_enum)
+        segment_cols_direction = get_segment_columns_direction(segment_enum)
+        # first check
+        if check_segment_filled_with_nan(row, segment_cols_direction, print_warnings=print_warnings):
+            continue
+
+        bsys = set_parent_segment_from_row(row, segment_enum)
+
+        # third check if the segment is direct or not
+        if not bsys.is_direct():
+            if print_warnings:
+                print(f"{row.dataset_authors}, " f"Segment {segment_enum.value} is not direct, " f"it should be !!!")
+            output = False
+
+    return output

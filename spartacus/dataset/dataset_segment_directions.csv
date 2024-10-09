@@ -1,21 +1,21 @@
-dataset_id,dataset_authors,thorax_x_sense,thorax_y_sense,thorax_z_sense,humerus_x_sense,humerus_y_sense,humerus_z_sense,clavicle_x_sense,clavicle_y_sense,clavicle_z_sense,scapula_x_sense,scapula_y_sense,scapula_z_sense
-#1,Begon et al.,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior
-#2,Bourne et al.,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,,,,+mediolateral,+posteroanterior,+inferosuperior
-#3,Chu et al.,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,,,,+posteroanterior,+inferosuperior,+mediolateral
-#4,Fung et al.,-posteroanterior,+mediolateral,+inferosuperior,-posteroanterior,+mediolateral,+inferosuperior,-posteroanterior,+mediolateral,+inferosuperior,-posteroanterior,+mediolateral,+inferosuperior
-#5,Gutierrez Delgado et al.,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral
-#6,Henninger et al.,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,,,,+posteroanterior,+inferosuperior,+mediolateral
-#7,Karduna et al.,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,,,,+mediolateral,+posteroanterior,+inferosuperior
-#8,Kijima et al.,-mediolateral,+inferosuperior,+posteroanterior,-mediolateral,+inferosuperior,+posteroanterior,,,,-mediolateral,+inferosuperior,+posteroanterior
-#9,Kim et al.,-mediolateral,+inferosuperior,+posteroanterior,-mediolateral,+inferosuperior,+posteroanterior,,,,-mediolateral,+inferosuperior,+posteroanterior
-#10,Kozono et al.,-mediolateral,-inferosuperior,+posteroanterior,+mediolateral,+posteroanterior,+inferosuperior,,,,+mediolateral,+posteroanterior,+inferosuperior
-#11,Ludewig et al.,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral
-#12,Matsuki et al.,-mediolateral,+inferosuperior,+posteroanterior,-mediolateral,+inferosuperior,+posteroanterior,+posteroanterior,+inferosuperior,+mediolateral,-mediolateral,+inferosuperior,+posteroanterior
-#13,Matsumura et al.,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,,,,+posteroanterior,+inferosuperior,+mediolateral
-#14,Moissenet et al.,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral
-#15,Nishinaka et al.,-mediolateral,+inferosuperior,+posteroanterior,,,,,,,+posteroanterior,-mediolateral,+inferosuperior
-#16,Oki et al.,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral
-#17,Sahara et al.,-inferosuperior,+posteroanterior,+mediolateral,,,,-inferosuperior,+posteroanterior,+mediolateral,-inferosuperior,+posteroanterior,+mediolateral
-#18,Sugi et al.,-mediolateral,+inferosuperior,+posteroanterior,-mediolateral,+inferosuperior,+posteroanterior,,,,-mediolateral,+inferosuperior,+posteroanterior
-#19,Teece et al.,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior
-#20,Yoshida et al.,+posteroanterior,+inferosuperior,+mediolateral,+posteroanterior,+inferosuperior,+mediolateral,,,,+posteroanterior,+inferosuperior,+mediolateral
+dataset_id,dataset_authors,thorax_is_isb,thorax_x_sense,thorax_y_sense,thorax_z_sense,humerus_is_isb,humerus_x_sense,humerus_y_sense,humerus_z_sense,clavicle_is_isb,clavicle_x_sense,clavicle_y_sense,clavicle_z_sense,scapula_is_isb,scapula_x_sense,scapula_y_sense,scapula_z_sense
+#1,Begon et al.,False,+mediolateral,+posteroanterior,+inferosuperior,False,+mediolateral,+posteroanterior,+inferosuperior,False,+mediolateral,+posteroanterior,+inferosuperior,False,+mediolateral,+posteroanterior,+inferosuperior
+#2,Bourne et al.,False,+mediolateral,+posteroanterior,+inferosuperior,False,+mediolateral,+posteroanterior,+inferosuperior,,,,,False,+mediolateral,+posteroanterior,+inferosuperior
+#3,Chu et al.,False,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral,,,,,True,+posteroanterior,+inferosuperior,+mediolateral
+#4,Fung et al.,False,-posteroanterior,+mediolateral,+inferosuperior,False,-posteroanterior,+mediolateral,+inferosuperior,False,-posteroanterior,+mediolateral,+inferosuperior,False,-posteroanterior,+mediolateral,+inferosuperior
+#5,Gutierrez Delgado et al.,True,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral,False,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral
+#6,Henninger et al.,True,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral,,,,,True,+posteroanterior,+inferosuperior,+mediolateral
+#7,Karduna et al.,False,+mediolateral,+posteroanterior,+inferosuperior,False,+mediolateral,+posteroanterior,+inferosuperior,,,,,False,+mediolateral,+posteroanterior,+inferosuperior
+#8,Kijima et al.,False,-mediolateral,+inferosuperior,+posteroanterior,False,-mediolateral,+inferosuperior,+posteroanterior,,,,,False,-mediolateral,+inferosuperior,+posteroanterior
+#9,Kim et al.,False,-mediolateral,+inferosuperior,+posteroanterior,False,-mediolateral,+inferosuperior,+posteroanterior,,,,,False,-mediolateral,+inferosuperior,+posteroanterior
+#10,Kozono et al.,False,-mediolateral,-inferosuperior,+posteroanterior,False,+mediolateral,+posteroanterior,+inferosuperior,,,,,False,+mediolateral,+posteroanterior,+inferosuperior
+#11,Ludewig et al.,True,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral,False,+posteroanterior,+inferosuperior,+mediolateral
+#12,Matsuki et al.,False,-mediolateral,+inferosuperior,+posteroanterior,False,-mediolateral,+inferosuperior,+posteroanterior,False,-mediolateral,+inferosuperior,+posteroanterior,False,-mediolateral,+inferosuperior,+posteroanterior
+#13,Matsumura et al.,True,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral,,,,,True,+posteroanterior,+inferosuperior,+mediolateral
+#14,Moissenet et al.,True,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral,False,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral
+#15,Nishinaka et al.,False,-mediolateral,+inferosuperior,+posteroanterior,False,+posteroanterior,-mediolateral,+inferosuperior,,,,,False,+posteroanterior,-mediolateral,+inferosuperior
+#16,Oki et al.,True,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral
+#17,Sahara et al.,False,-inferosuperior,+posteroanterior,+mediolateral,,,,,False,-inferosuperior,+posteroanterior,+mediolateral,False,-inferosuperior,+posteroanterior,+mediolateral
+#18,Sugi et al.,False,-mediolateral,+inferosuperior,+posteroanterior,False,-mediolateral,+inferosuperior,+posteroanterior,,,,,False,-mediolateral,+inferosuperior,+posteroanterior
+#19,Teece et al.,False,+mediolateral,+posteroanterior,+inferosuperior,False,+mediolateral,+posteroanterior,+inferosuperior,False,+mediolateral,+posteroanterior,+inferosuperior,False,+mediolateral,+posteroanterior,+inferosuperior
+#20,Yoshida et al.,True,+posteroanterior,+inferosuperior,+mediolateral,True,+posteroanterior,+inferosuperior,+mediolateral,,,,,True,+posteroanterior,+inferosuperior,+mediolateral

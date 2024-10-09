@@ -14,9 +14,6 @@ def test_risk_routine():
     )
 
     assert all_good.is_isb_oriented == True
-    # assert all_good.is_mislabeled == False
-    # assert all_good.is_any_axis_wrong_sens == False
-    # assert all_good.get_segment_risk_quantification("proximal", "rotation") == 1
 
     mislabeled = BiomechCoordinateSystem(
         segment=Segment.THORAX,
@@ -27,9 +24,6 @@ def test_risk_routine():
     )
 
     assert mislabeled.is_isb_oriented == False
-    # assert mislabeled.is_mislabeled == True
-    # assert mislabeled.is_any_axis_wrong_sens == False
-    # assert mislabeled.get_segment_risk_quantification("proximal", "rotation") == 0.9
 
     wrong_sens = BiomechCoordinateSystem(
         segment=Segment.THORAX,
@@ -39,9 +33,6 @@ def test_risk_routine():
         origin=AnatomicalLandmark.Thorax.IJ,
     )
     assert wrong_sens.is_isb_oriented == False
-    # assert wrong_sens.is_mislabeled() == False
-    # assert wrong_sens.is_any_axis_wrong_sens() == True
-    # assert wrong_sens.get_segment_risk_quantification("proximal", "rotation") == 0.9
 
     mislabeled_and_wrong_sens = BiomechCoordinateSystem(
         segment=Segment.THORAX,
@@ -52,6 +43,3 @@ def test_risk_routine():
     )
 
     assert mislabeled_and_wrong_sens.is_isb_oriented == False
-    # assert mislabeled_and_wrong_sens.is_mislabeled() == True
-    # assert mislabeled_and_wrong_sens.is_any_axis_wrong_sens() == True
-    # assert mislabeled_and_wrong_sens.get_segment_risk_quantification("proximal", "rotation") == 0.9 * 0.9

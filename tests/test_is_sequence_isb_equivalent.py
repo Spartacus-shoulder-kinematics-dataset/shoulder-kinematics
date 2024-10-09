@@ -15,7 +15,7 @@ rot3 = 0.4
 
 def test_isb_sterno_clav():
 
-    isb_seq = EulerSequence.isb_from_joint_type(JointType.STERNO_CLAVICULAR).value
+    isb_seq = EulerSequence.isb_from_joint_type(JointType.STERNO_CLAVICULAR).to_string
     seq = EulerSequence.YXZ
 
     thorax_sys = BiomechCoordinateSystem.from_biomech_directions(
@@ -103,7 +103,7 @@ def test_isb_sterno_clav():
 
 def test_isb_scapulothoracic():
     joint = JointType.SCAPULO_THORACIC
-    isb_seq = EulerSequence.isb_from_joint_type(joint).value
+    isb_seq = EulerSequence.isb_from_joint_type(joint).to_string
     seq = EulerSequence.YXZ
 
     thorax_sys = BiomechCoordinateSystem.from_biomech_directions(
@@ -201,7 +201,7 @@ def test_isb_scapulothoracic():
 
 def test_isb_gh():
     joint = JointType.GLENO_HUMERAL
-    isb_seq = EulerSequence.isb_from_joint_type(joint).value
+    isb_seq = EulerSequence.isb_from_joint_type(joint).to_string
     seq = EulerSequence.YXY
 
     scapula_sys = BiomechCoordinateSystem.from_biomech_directions(

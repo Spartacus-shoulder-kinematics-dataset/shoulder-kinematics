@@ -1,3 +1,10 @@
+"""
+This script is made to store constant values for biomechanical landmarks and vectors, this is meant to compute APPROXIMATELY
+the resulting orientation of the vector frame in an ISB global frame X-posteroanterior, Y-superoinferior, Z-mediolateral.
+There is no physical meaning to the values stored in this script, they are just made up to make sure, we compute  the good orientation.
+IT woud
+"""
+
 from typing import Any
 
 import numpy as np
@@ -142,7 +149,7 @@ class Humerus:
 
 
 def get_constant(landmark: Any, side: str) -> np.ndarray:
-
+    """Get the constant value of a landmark or vector in the ISB global frame"""
     landmark_mapping = {
         AnatomicalLandmark.Global.IMAGING_ORIGIN: Global.IMAGING_CENTER,
         AnatomicalVector.Global.INFEROSUPERIOR: Global.INFERO_SUPERIOR,

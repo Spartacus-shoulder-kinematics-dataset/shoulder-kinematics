@@ -2,3 +2,5 @@ numpy>=1.24.2
 pandas>=2.0.0
 setuptools>=67.6.1
 biorbd>=1.9.9
+seaborn>=0.13.2
+dash>=2.15.0

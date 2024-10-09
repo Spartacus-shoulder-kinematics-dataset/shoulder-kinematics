@@ -24,7 +24,14 @@ keywords =["database",
     "clavicle",
     "scapula"]
 dependencies = [
-    "numpy", "pandas", "matplotlib", "plotly", "biorbd>=1.9.9", "dash>=2.15.0", "colorcet", "seaborn"
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "plotly",
+#    "biorbd>=1.9.9",
+    "dash>=2.15.0",
+    "colorcet",
+    "seaborn"
 ]
 classifiers = [
     "Programming Language :: Python :: 3",

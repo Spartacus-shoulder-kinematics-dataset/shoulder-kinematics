@@ -15,7 +15,7 @@ from spartacus import DataFolder, Spartacus, DatasetCSV, RowData
 def test_data_format(data_folder):
 
     for subfile in os.listdir(data_folder.value):
-        if subfile.endswith(".csv"):
+        if subfile.endswith(".csv") and not subfile.startswith("corrections"):
             print("Loading file:", subfile)
             df = pd.read_csv(os.path.join(data_folder.value, subfile), header=None)
             print("Shape:", df.shape)
@@ -46,10 +46,11 @@ def test_data_format(data_folder):
 
 def test_data_loading():
     # open the file only_dataset_raw.csv
-    df = pd.read_csv(DatasetCSV.CLEAN.value)
+    df = pd.read_csv(DatasetCSV.DATASETS.value)
+    df_joint = pd.read_csv(DatasetCSV.JOINT.value)
+
     print(df.shape)
-    sp = Spartacus(dataframe=df)
-    sp.remove_rows_not_ready_for_analysis()
+    sp = Spartacus(datasets=df, joint_data=df_joint)
     for i, row in sp.dataframe.iterrows():
         row_data = RowData(row)
         row_data.import_data()

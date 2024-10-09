@@ -7,6 +7,25 @@ from .legend_utils import isb_rotation_biomechanical_dof
 
 
 class Joint:
+    """
+    A class to represent a joint in a biomechanical system.
+
+    Attributes
+    ----------
+    joint_type : JointType
+        The type of the joint.
+    euler_sequence : EulerSequence
+        The Euler sequence used for the joint.
+    translation_origin : AnatomicalLandmark
+        The anatomical landmark used as the origin for translation.
+    translation_frame : FrameType
+        The frame type used for translation.
+    parent_segment : BiomechCoordinateSystem
+        The parent biomechanical coordinate system.
+    child_segment : BiomechCoordinateSystem
+        The child biomechanical coordinate system.
+    """
+
     def __init__(
         self,
         joint_type: JointType,
@@ -16,6 +35,24 @@ class Joint:
         parent_segment: BiomechCoordinateSystem,
         child_segment: BiomechCoordinateSystem,
     ):
+        """
+        Constructs all the necessary attributes for the Joint object.
+
+        Parameters
+        ----------
+        joint_type : JointType
+            The type of the joint.
+        euler_sequence : EulerSequence
+            The Euler sequence used for the joint.
+        translation_origin : AnatomicalLandmark
+            The anatomical landmark used as the origin for translation.
+        translation_frame : FrameType
+            The frame type used for translation.
+        parent_segment : BiomechCoordinateSystem
+            The parent biomechanical coordinate system.
+        child_segment : BiomechCoordinateSystem
+            The child biomechanical coordinate system.
+        """
         self.joint_type = joint_type
         self.euler_sequence = euler_sequence
         self.translation_origin = translation_origin
@@ -44,7 +81,7 @@ class Joint:
 
         new_angles = convert_euler_angles_and_frames_to_isb(
             previous_sequence_str=self.euler_sequence.value,
-            new_sequence_str=EulerSequence.isb_from_joint_type(self.joint_type).value,
+            new_sequence_str=EulerSequence.isb_from_joint_type(self.joint_type).to_string,
             rot1=value_rot1,
             rot2=value_rot2,
             rot3=value_rot3,
@@ -69,52 +106,7 @@ class Joint:
             FrameType.PARENT: True,
         }
 
-        return frame_type_dict.get(self.translation_frame, False)
-
-    def is_sequence_convertible_through_factors(self, print_warning: bool = False) -> bool:
-        """
-        Check if the euler sequence of the joint can be converted to the ISB sequence with factors 1 or -1
-
-        We expect the euler sequence to have three different letters, if the ISB sequence is YXZ (steroclavicular, acromioclavicular, scapulothoracic)
-        We expect the euler sequence to have two different letters, if the ISB sequence is YXY (glenohumeral, thoracohumeral)
-
-        Return
-        ------
-        bool
-            True if the sequence can be converted with factors 1 or -1, False otherwise
-        """
-        if self.joint_type in (JointType.STERNO_CLAVICULAR, JointType.ACROMIO_CLAVICULAR, JointType.SCAPULO_THORACIC):
-            sequence_wanted = EulerSequence.YXZ
-            # check that we have three different letters in the sequence
-            if len(set(self.euler_sequence.value)) != 3:
-                if print_warning:
-                    print(
-                        "The euler sequence of the joint must have three different letters to be able to convert with factors 1"
-                        f"or -1 to the ISB sequence {sequence_wanted.value}, but the sequence of the joint is"
-                        f" {self.euler_sequence.value}"
-                    )
-                return False
-
-        elif self.joint_type in (JointType.GLENO_HUMERAL, JointType.THORACO_HUMERAL):
-            sequence_wanted = EulerSequence.YXY
-            # check that the sequence in joint.euler_sequence as the same two letters for the first and third rotations
-            if self.euler_sequence.value[0] != self.euler_sequence.value[2]:
-                if print_warning:
-                    print(
-                        "The euler sequence of the joint must have the same two letters for the first and third rotations"
-                        f"to be able to convert with factors 1 or -1 to the ISB sequence {sequence_wanted.value},"
-                        f" but the sequence of the joint is {self.euler_sequence.value}"
-                    )
-                return False
-        else:
-            if print_warning:
-                print(
-                    "The joint type must be JointType.STERNO_CLAVICULAR, JointType.ACROMIO_CLAVICULAR,"
-                    "JointType.SCAPULO_THORACIC, JointType.GLENO_HUMERAL, JointType.THORACO_HUMERAL"
-                )
-            return False
-
-        return True
+        return frame_type_dict.get(self.translation_frame)
 
     @property
     def isb_rotation_biomechanical_dof(self) -> (str, str, str):

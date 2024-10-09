@@ -13,43 +13,11 @@ articles_data = {
     # total_value i.e. sum of all values
     # random_checks i.e. list of tuples (index, value) to check
     # ),
-    "Bourne et al.": (
-        2550,
-        ["frontal elevation", "horizontal flexion"],
-        ["scapulothoracic"],
-        [1, 2, 3],
-        32987.06725953286,
-        [(0, -16.366300000000003), (1001, 21.925651818083278), (2000, -38.92291527743668), (-1, 17.319848672019763)],
-    ),
-    "Chu et al.": (
-        96,
-        ["frontal elevation", "scapular elevation", "internal-external rotation 90 degree-abducted"],
-        ["scapulothoracic"],
-        [1, 2, 3],
-        -554.7492646716876,
-        [(0, 20.832700000000003), (30, -2.4029921148049445), (60, -8.436784721537704), (-1, -4.961429503563281)],
-    ),
-    "Fung et al.": (
-        621,
-        ["frontal elevation", "scapular elevation", "sagittal elevation"],
-        ["scapulothoracic"],
-        [1, 2, 3],
-        3676.4321999999997,
-        [(0, 36.84060000000001), (30, 29.6062), (60, 18.136000000000003), (-1, 9.294200000000002)],
-    ),
-    "Kijima et al.": (
-        48,
-        ["scapular elevation"],
-        ["glenohumeral", "scapulothoracic"],
-        [1, 2, 3],
-        306.06436262040665,
-        [(0, np.nan), (1, np.nan), (2, np.nan), (-1, 7.421436415016586)],
-    ),
     "Begon et al.": (
         19296,
         [
-            "frontal elevation",
-            "sagittal elevation",
+            "frontal plane elevation",
+            "sagittal plane elevation",
             "internal-external rotation 0 degree-abducted",
             "internal-external rotation 90 degree-abducted",
         ],
@@ -59,93 +27,330 @@ articles_data = {
             "acromioclavicular",
             "sternoclavicular",
         ],
-        [1, 2, 3],
-        -12714.85146291502,
-        [(0, 162.73707354679948), (1001, -47.33668895380996), (2000, -42.92927676074317), (-1, 12.282290646030903)],
+        [
+            1,
+            2,
+            3,
+        ],
+        12559.349289904014,
+        [
+            (0, -22.415784339761863),
+            (1001, 21.99062121154105),
+            (2000, 24.65832131430533),
+            (-1, 9.08143991261139),
+        ],
+    ),
+    "Bourne et al.": (
+        2550,
+        [
+            "frontal plane elevation",
+            "horizontal flexion",
+        ],
+        [
+            "scapulothoracic",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        728.7198299305273,
+        [
+            (0, 16.366300000000003),
+            (1001, -25.037999894224672),
+            (2000, 41.36033610887097),
+            (-1, 17.319848672019763),
+        ],
+    ),
+    "Chu et al.": (
+        96,
+        [
+            "frontal plane elevation",
+            "scapular plane elevation",
+            "internal-external rotation 90 degree-abducted",
+        ],
+        [
+            "scapulothoracic",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        -554.7492646716876,
+        [
+            (0, 20.832700000000003),
+            (30, 32.982835336421985),
+            (60, -30.84605712625064),
+            (-1, -4.961429503563281),
+        ],
+    ),
+    "Gutierrez Delgado et al.": (
+        597,
+        [
+            "frontal plane elevation",
+            "sagittal plane elevation",
+        ],
+        [
+            "sternoclavicular",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        -14088.114296000002,
+        [
+            (0, -31.969178000000003),
+            (30, -39.584772),
+            (60, -49.48644399999999),
+            (-1, -33.247162),
+        ],
+    ),
+    "Fung et al.": (
+        1242,
+        [
+            "frontal plane elevation",
+            "scapular plane elevation",
+            "sagittal plane elevation",
+        ],
+        [
+            "scapulothoracic",
+            "sternoclavicular",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        -1650.2696000000005,
+        [
+            (0, 36.84060000000001),
+            (30, 29.6062),
+            (60, 18.136000000000003),
+            (-1, 26.8936),
+        ],
+    ),
+    "Kijima et al.": (
+        24,
+        [
+            "scapular plane elevation",
+        ],
+        [
+            "scapulothoracic",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        306.06436262040665,
+        [
+            (0, -5.259839861608079),
+            (1, -0.7364922144008017),
+            (2, 4.471509771399723),
+            (-1, 7.421436415016586),
+        ],
     ),
     "Henninger et al.": (
-        80862,
+        77472,
         [
-            "frontal elevation",
-            "scapular elevation",
-            "sagittal elevation",
+            "frontal plane elevation",
+            "scapular plane elevation",
+            "sagittal plane elevation",
             "internal-external rotation 0 degree-abducted",
             "internal-external rotation 90 degree-abducted",
         ],
-        ["glenohumeral", "scapulothoracic"],
-        [1, 2, 3],
-        1753489.2980004128,
-        [(0, 45.9866459013967), (1001, 76.9873557465161), (40001, -8.61904452693329), (-1, 18.710579311164597)],
+        [
+            "glenohumeral",
+            "scapulothoracic",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        140612.18902336064,
+        [
+            (0, 45.986645901396685),
+            (1001, -6.497411942193646),
+            (40001, -15.425452598164),
+            (-1, 18.710579311164597),
+        ],
     ),
-    "Kozono et al.": (
-        30,
-        ["internal-external rotation 0 degree-abducted"],
-        ["glenohumeral"],
-        [1, 2, 3],
-        0,
-        [(0, np.nan), (1, np.nan), (2, np.nan), (-1, np.nan)],
-    ),
+    # Not in the corrected data
+    # "Kozono et al.": (
+    #     30,
+    #     ["internal-external rotation 0 degree-abducted"],
+    #     ["glenohumeral"],
+    #     [1, 2, 3],
+    #     0,
+    #     [(0, np.nan), (1, np.nan), (2, np.nan), (-1, np.nan)],
+    # ),
     "Ludewig et al.": (
         684,
-        ["frontal elevation", "scapular elevation", "sagittal elevation"],
-        ["glenohumeral", "scapulothoracic", "acromioclavicular", "sternoclavicular"],
-        [1, 2, 3],
-        9001.038459374906,
-        [(0, 137.332189001885), (1, 138.62633045180257), (2, 139.82856070895113), (-1, 25.0)],
+        [
+            "frontal plane elevation",
+            "scapular plane elevation",
+            "sagittal plane elevation",
+        ],
+        [
+            "glenohumeral",
+            "scapulothoracic",
+            "acromioclavicular",
+            "sternoclavicular",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        -4261.335638555229,
+        [
+            (0, -111.67445727166417),
+            (1, -95.19328367574825),
+            (2, -83.48602756759354),
+            (-1, 25.0),
+        ],
     ),
     "Matsumura et al.": (
         99,
-        ["frontal elevation", "scapular elevation", "sagittal elevation"],
-        ["scapulothoracic"],
-        [1, 2, 3],
-        -558.4569560038939,
-        [(0, -23.068), (20, 32.595395315826835), (60, -0.8599417044686809), (-1, 11.970999999999998)],
+        [
+            "frontal plane elevation",
+            "scapular plane elevation",
+            "sagittal plane elevation",
+        ],
+        [
+            "scapulothoracic",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        615.5314639526298,
+        [
+            (0, 23.068),
+            (20, 31.07429794520548),
+            (60, -8.572884301488248),
+            (-1, 11.970999999999998),
+        ],
     ),
     "Matsuki et al.": (
-        1836,  #     288
-        ["scapular elevation"],
-        ["scapulothoracic", "glenohumeral", "sternoclavicular"],
-        [1, 2, 3],
-        -18922.510132213356,
-        [(0, 0.7331976380416924), (1, 1.3163822061108446), (2, 2.009989683892475), (-1, np.nan)],
+        1152,
+        [
+            "scapular plane elevation",
+        ],
+        [
+            "scapulothoracic",
+            "sternoclavicular",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        -8652.262277420363,
+        [
+            (0, 0.7331976380416924),
+            (1, 1.3163822061108446),
+            (2, 2.009989683892475),
+            (-1, 27.07331661),
+        ],
     ),
     "Moissenet et al.": (
         705264,
         [
-            "frontal elevation",
-            "sagittal elevation",
+            "frontal plane elevation",
+            "sagittal plane elevation",
             "horizontal flexion",
             "internal-external rotation 0 degree-abducted",
         ],
-        ["glenohumeral", "scapulothoracic", "acromioclavicular", "sternoclavicular"],
-        [1, 2, 3],
-        8884019.476285355,
-        [(0, -174.48745378048477), (1, -174.48745022345523), (2, -174.48739377357717), (-1, -0.447039217459609)],
+        [
+            "glenohumeral",
+            "scapulothoracic",
+            "acromioclavicular",
+            "sternoclavicular",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        263654.19258251064,
+        [
+            (0, 5.512546219515222),
+            (1, 5.512549776544782),
+            (2, 5.512606226422835),
+            (-1, -0.44703921745960906),
+        ],
     ),
     "Oki et al.": (
         354,
-        ["frontal elevation", "sagittal elevation", "horizontal flexion"],
-        ["scapulothoracic", "sternoclavicular"],
-        [1, 2, 3],
-        2343.2226332288533,
-        [(0, -23.571499999999997), (100, 23.698003331400965), (200, 15.424283835508106), (-1, 31.7351)],
+        [
+            "frontal plane elevation",
+            "sagittal plane elevation",
+            "horizontal flexion",
+        ],
+        [
+            "scapulothoracic",
+            "sternoclavicular",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        978.4631094843792,
+        [
+            (0, 23.571499999999997),
+            (100, -44.2176),
+            (200, -25.290555552753258),
+            (-1, 31.7351),
+        ],
     ),
     "Teece et al.": (
         39,
-        ["scapular elevation"],
-        ["acromioclavicular"],
-        [1, 2, 3],
-        1070.5063803329367,  # Repeating total value here as a placeholder
-        [(0, 53.208998323357854), (10, 55.34423815737802), (22, 12.65697336292887), (-1, 21.697663050779525)],
-        # Random checks
+        [
+            "scapular plane elevation",
+        ],
+        [
+            "acromioclavicular",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        1097.2068551414447,
+        [
+            (0, 82.24065375507112),
+            (10, 81.77476016412206),
+            (22, -6.769648103841728),
+            (-1, 15.647227481285565),
+        ],
     ),
     "Yoshida et al.": (
         84,
-        ["sagittal elevation"],
-        ["glenohumeral", "scapulothoracic"],
-        [1, 2, 3],
-        1445.1089898448326,
-        [(0, -44.304576869953905), (40, -16.641814272341282), (65, 34.51266), (-1, 19.2415854)],
+        [
+            "sagittal plane elevation",
+        ],
+        [
+            "glenohumeral",
+            "scapulothoracic",
+        ],
+        [
+            1,
+            2,
+            3,
+        ],
+        -197.69880612483263,
+        [
+            (0, 44.304576869953884),
+            (40, -86.8033893128552),
+            (65, -7.024499957334007),
+            (-1, 19.2415854),
+        ],
     ),
     # Add other articles here in the same format
 }
@@ -155,6 +360,7 @@ transformed_data_article = [[name] + list(values) for name, values in articles_d
 spartacus = TestUtils.spartacus_folder()
 module = TestUtils.load_module(spartacus + "/examples/first_example.py")
 confident_values = module.main()
+confident_values = confident_values[confident_values["unit"] == "rad"]
 
 
 # This line parameterizes the test function below
@@ -163,13 +369,7 @@ confident_values = module.main()
 )
 def test_article_data(article_name, expected_shape, humeral_motions, joints, dofs, total_value, random_checks):
     data = confident_values[confident_values["article"] == article_name]
-
-    if article_name == "Kozono et al.":
-        # Skip this test because the thorax is indirect but once we decide which one to use we can remove this line
-        return
-
     print_data(data, random_checks)
-    assert data.shape[0] == expected_shape
 
     for motion in humeral_motions:
         assert motion in data["humeral_motion"].unique()
@@ -186,13 +386,79 @@ def test_article_data(article_name, expected_shape, humeral_motions, joints, dof
     for idx, value in random_checks:
         np.testing.assert_almost_equal(data["value"].iloc[idx], value)
 
+    assert data.shape[0] == expected_shape
+
     np.testing.assert_almost_equal(data["value"].sum(), total_value, decimal=10)
 
 
 def test_number_of_articles():
     # Check number of unique articles after processing all
     articles = list(confident_values["article"].unique())
-    experted_articles = [
+    expected_articles = [
+        "Begon et al.",
+        "Bourne et al.",
+        "Chu et al.",
+        "Fung et al.",
+        "Gutierrez Delgado et al.",
+        "Henninger et al.",
+        "Karduna et al.",
+        "Kijima et al.",
+        "Kim et al.",
+        "Ludewig et al.",
+        "Matsuki et al.",
+        "Matsumura et al.",
+        "Moissenet et al.",
+        "Oki et al.",
+        "Sahara et al.",
+        "Teece et al.",
+        "Yoshida et al.",
+    ]
+    assert articles == expected_articles
+
+    assert confident_values.shape[0] == 809241
+
+
+def print_data(data, random_checks):
+    print("")
+    print("FORMATTED DATA:")
+    print(f'"{data["article"].unique()[0]}": (')
+    print(f"\t {data.shape[0]},")
+    print(f'\t [{"".join(f"\'{motion}\', " for motion in data["humeral_motion"].unique())}],')
+    print(f'\t [{"".join(f"\'{joint}\', " for joint in data["joint"].unique())}],')
+    print(f"\t [{"".join(f"{dof}, " for dof in data["degree_of_freedom"].unique())}],")
+    print(f"\t {data["value"].sum()},")
+    print(f"\t [")
+    for idx, value in random_checks:
+        print(f"\t\t {idx, data.iloc[idx]['value']},")
+    print(f"\t ],")
+    print(f"),\n")
+
+
+def test_glenohumeral_elevation():
+    """A test because all corrections are working for these moves and joint"""
+    gh_elevation_confident_values = confident_values[confident_values["joint"] == "glenohumeral"]
+    motions = ["scapular plane elevation", "frontal plane elevation", "sagittal plane elevation"]
+    gh_elevation_confident_values = gh_elevation_confident_values[
+        gh_elevation_confident_values["humeral_motion"].isin(motions)
+    ]
+
+    articles = list(gh_elevation_confident_values["article"].unique())
+    expected_articles = ["Begon et al.", "Henninger et al.", "Ludewig et al.", "Moissenet et al.", "Yoshida et al."]
+
+    assert articles == expected_articles
+    assert gh_elevation_confident_values["value"].sum() == -1838764.362187335
+
+
+def test_scapulothoracic_elevation():
+    """A test because all corrections are working for these moves and joint"""
+    st_elevation_confident_values = confident_values[confident_values["joint"] == "scapulothoracic"]
+    motions = ["scapular plane elevation", "frontal plane elevation", "sagittal plane elevation"]
+    st_elevation_confident_values = st_elevation_confident_values[
+        st_elevation_confident_values["humeral_motion"].isin(motions)
+    ]
+
+    articles = list(st_elevation_confident_values["article"].unique())
+    expected_articles = [
         "Begon et al.",
         "Bourne et al.",
         "Chu et al.",
@@ -200,31 +466,59 @@ def test_number_of_articles():
         "Henninger et al.",
         "Karduna et al.",
         "Kijima et al.",
-        # "Kozono et al.", todo: to be put again when thorax is decided
+        "Kim et al.",
         "Ludewig et al.",
         "Matsuki et al.",
         "Matsumura et al.",
         "Moissenet et al.",
         "Oki et al.",
-        "Teece et al.",
         "Yoshida et al.",
     ]
-    assert articles == experted_articles
 
-    assert len(articles) == 14
-
-    assert confident_values.shape[0] == 812040
+    assert articles == expected_articles
+    assert st_elevation_confident_values["value"].sum() == 324261.1829014884
 
 
-def print_data(data, random_checks):
-    print("\n")
-    print("Shape:", data.shape)
-    print("Humeral motions:", data["humeral_motion"].unique())
-    print("Joints:", data["joint"].unique())
-    print("Degrees of freedom:", data["degree_of_freedom"].unique())
-    print("Total value:", data["value"].sum())
-    print("Random checks:")
-    for idx, value in random_checks:
-        print(f"Data {idx}: {data['value'].iloc[idx]}")
-        print(f"Check {idx}: {value}")
-    print("")
+def test_sternoclavicular_elevation():
+    """A test because all corrections are working for these moves and joint"""
+    sc_elevation_confident_values = confident_values[confident_values["joint"] == "sternoclavicular"]
+    motions = ["scapular plane elevation", "frontal plane elevation", "sagittal plane elevation"]
+    sc_elevation_confident_values = sc_elevation_confident_values[
+        sc_elevation_confident_values["humeral_motion"].isin(motions)
+    ]
+
+    articles = list(sc_elevation_confident_values["article"].unique())
+    expected_articles = [
+        "Begon et al.",
+        "Fung et al.",
+        "Gutierrez Delgado et al.",
+        "Ludewig et al.",
+        "Matsuki et al.",
+        "Moissenet et al.",
+        "Oki et al.",
+        "Sahara et al.",
+    ]
+
+    assert articles == expected_articles
+    assert sc_elevation_confident_values["value"].sum() == -2072343.275010384
+
+
+def test_acromioclavicular_elevation():
+    """A test because all corrections are working for these moves and joint"""
+    sc_elevation_confident_values = confident_values[confident_values["joint"] == "acromioclavicular"]
+    motions = ["scapular plane elevation", "frontal plane elevation", "sagittal plane elevation"]
+    sc_elevation_confident_values = sc_elevation_confident_values[
+        sc_elevation_confident_values["humeral_motion"].isin(motions)
+    ]
+
+    articles = list(sc_elevation_confident_values["article"].unique())
+    expected_articles = [
+        "Begon et al.",
+        "Ludewig et al.",
+        "Moissenet et al.",
+        "Sahara et al.",
+        "Teece et al.",
+    ]
+
+    assert articles == expected_articles
+    assert sc_elevation_confident_values["value"].sum() == 3225402.8074460393

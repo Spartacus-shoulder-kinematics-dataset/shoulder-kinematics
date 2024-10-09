@@ -43,10 +43,10 @@ class CartesianAxis(Enum):
 class BiomechDirection(Enum):
     """Enum for the biomechanical direction"""
 
-    PlusPosteroAnterior = "PlusAntero-Posterior"
+    PlusPosteroAnterior = "PlusPostero-Anterior"
     PlusInferoSuperior = "PlusInfero-Superior"
     PlusMedioLateral = "PlusMedio-Lateral"
-    MinusPosteroAnterior = "MinusAntero-Posterior"
+    MinusPosteroAnterior = "MinusPostero-Anterior"
     MinusInferoSuperior = "MinusInfero-Superior"
     MinusMedioLateral = "MinusMedio-Lateral"
 
@@ -296,7 +296,8 @@ class AnatomicalLandmark:
             "TS": cls.Scapula.TRIGNONUM_SPINAE,
             "clavicle origin": cls.Clavicle.CUSTOM,
             "functional": cls.Other.FUNCTIONAL_CENTER,
-            "imaging inferosuperior axis": AnatomicalVector.Thorax.SPINAL_CANAL_AXIS,
+            # "imaging inferosuperior axis": AnatomicalVector.Thorax.SPINAL_CANAL_AXIS,
+            "imaging inferosuperior axis": AnatomicalVector.Global.INFEROSUPERIOR,
             "imaging superoinferior axis": AnatomicalVector.Global.SUPEROINFERIOR,
             "imaging lateromedial axis": AnatomicalVector.Global.LATEROMEDIAL,
             "imaging mediolateral axis": AnatomicalVector.Global.MEDIOLATERAL,
@@ -420,20 +421,23 @@ class EulerSequence(Enum):
     def from_string(cls, sequence: str):
         if sequence is None:
             return None
+        if not isinstance(sequence, str):
+            if np.isnan(sequence):
+                return None
 
         sequence_name_to_enum = {
-            "xyx": cls.XYX,
-            "xzx": cls.XZX,
-            "xyz": cls.XYZ,
-            "xzy": cls.XZY,
-            "yxy": cls.YXY,
-            "yzx": cls.YZX,
-            "yxz": cls.YXZ,
-            "yzy": cls.YZY,
-            "zxz": cls.ZXZ,
-            "zxy": cls.ZXY,
-            "zyz": cls.ZYZ,
-            "zyx": cls.ZYX,
+            "xy'x''": cls.XYX,
+            "xz'x''": cls.XZX,
+            "xy'z''": cls.XYZ,
+            "xz'y''": cls.XZY,
+            "yx'y''": cls.YXY,
+            "yz'x''": cls.YZX,
+            "yx'z''": cls.YXZ,
+            "yz'y''": cls.YZY,
+            "zx'z''": cls.ZXZ,
+            "zx'y''": cls.ZXY,
+            "zy'z''": cls.ZYZ,
+            "zy'x''": cls.ZYX,
         }
 
         the_enum = sequence_name_to_enum.get(sequence)
@@ -441,6 +445,11 @@ class EulerSequence(Enum):
             raise ValueError(f"{sequence} is not a valid euler sequence.")
 
         return the_enum
+
+    @property
+    def to_string(self) -> str:
+        seq = self.value
+        return f"{seq[0]}{seq[1]}'{seq[2]}''"
 
 
 class FrameType:
