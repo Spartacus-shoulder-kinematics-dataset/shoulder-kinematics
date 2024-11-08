@@ -230,3 +230,7 @@ examples/deviation_table.csv
 examples/figures/Henninger et al./
 
 spartacus/dataset/temp.csv
+
+examples/merged_dataframe.csv
+
+examples/export_data/deviation_table.csv
