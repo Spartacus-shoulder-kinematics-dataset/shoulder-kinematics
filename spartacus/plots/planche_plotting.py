@@ -267,9 +267,10 @@ class DataPlanchePlotting:
             ),
         )
 
-        self.fig.update_xaxes(title_text="Humerothoracic angle (°)", row=self.nb_joints, col=1)
-        self.fig.update_xaxes(title_text="Humerothoracic angle (°)", row=self.nb_joints, col=2)
-        self.fig.update_xaxes(title_text="Humerothoracic angle (°)", row=self.nb_joints, col=3)
+        abscissa_label = "Thoracohumeral angle (°)"
+        self.fig.update_xaxes(title_text=abscissa_label, row=self.nb_joints, col=1)
+        self.fig.update_xaxes(title_text=abscissa_label, row=self.nb_joints, col=2)
+        self.fig.update_xaxes(title_text=abscissa_label, row=self.nb_joints, col=3)
 
         for row in range(1, self.nb_joints + 1):
             for col in range(1, 4):
