@@ -46,6 +46,17 @@ spartacus_dataset.export('your_path/spartacus.csv')
 # Return the corrected data values for further analysis
 dataframe = spartacus_dataset.corrected_confident_data_values
 ```
+
+You may have noticed some computations have been done to align the data. Here is an overview of the process:
+![Aligning the data chart](docs/data_chart.png)
+You can dive into the details of each step to what kind of data has been aligned:
+- [Final dataframe structure](#final-dataframe-structure)
+- [Raw dataset Structure](#raw-dataset-structure)
+- [Dataset colums - `dataset_of_datasets.csv`](#dataset-colums---dataset_of_datasetscsv)
+- [Joint Data Columns - `dataset_clean_of_joint_data.csv`](#joint-data-columns---dataset_clean_of_joint_datacsv)
+- [Aligning the data](#aligning-the-data)
+
+
 ## Final dataframe structure:
 
 There is one line per measured data point in the dataset, where each line represents a specific measurement 
