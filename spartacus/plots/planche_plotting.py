@@ -4,6 +4,7 @@ from plotly.subplots import make_subplots
 
 from plots.constants_plot import (
     BIOMECHANICAL_DOF_LEGEND,
+    BIOMECHANICAL_DOF_LEGEND_EXTENDED,
     TRANSLATIONAL_BIOMECHANICAL_DOF_LEGEND,
     JOINT_ROW_COL_INDEX,
     AUTHORS_COLORS,
@@ -43,7 +44,9 @@ def get_color(article):
     If the article is not in the AUTHORS_COLORS dict, a random color is generated.
     """
     color = AUTHORS_COLORS.get(article)
-    opacity = 0.5
+
+    opacity = 0.3 if article == "Matsuki et al." else 0.5
+
     if color is None:
         print(f"Color not found for {article}. Generating a random color.")
         random_ints = np.random.randint(0, 255, 3).tolist()
@@ -112,7 +115,7 @@ class DataPlanchePlotting:
 
     @property
     def _rotation_titles(self) -> list[str]:
-        suplot_titles = [list(BIOMECHANICAL_DOF_LEGEND[j]) for j in self.joints]
+        suplot_titles = [list(BIOMECHANICAL_DOF_LEGEND_EXTENDED[j]) for j in self.joints]
         return [item for sublist in suplot_titles for item in sublist]
 
     @property
@@ -156,19 +159,12 @@ class DataPlanchePlotting:
 
         subjects = sub_df_ij["shoulder_id"].unique()
         nb_subjects = len(subjects)
+
         if nb_subjects > 1:
+            opacity = 0.5 if article == "Matsuki et al." else self.opacity
             for s in subjects:
                 sub_df_ij_s = sub_df_ij[sub_df_ij["shoulder_id"] == s]
-                self.plot_timeserie(
-                    sub_df_ij_s,
-                    article,
-                    row,
-                    col,
-                    color,
-                    opacity=(
-                        1 if nb_subjects < 2 else self.opacity
-                    ),  # NOTE: opacity is 1 if there are more than 2 subjects
-                )
+                self.plot_timeserie(sub_df_ij_s, article, row, col, color, opacity=opacity)
         else:
             self.plot_timeserie(sub_df_ij, article, row, col, color, opacity=1)
 
@@ -267,14 +263,21 @@ class DataPlanchePlotting:
             ),
         )
 
-        self.fig.update_xaxes(title_text="Humerothoracic angle (°)", row=self.nb_joints, col=1)
-        self.fig.update_xaxes(title_text="Humerothoracic angle (°)", row=self.nb_joints, col=2)
-        self.fig.update_xaxes(title_text="Humerothoracic angle (°)", row=self.nb_joints, col=3)
+        abscissa_label = "Thoracohumeral angle (°)"
+        self.fig.update_xaxes(title_text=abscissa_label, row=self.nb_joints, col=1)
+        self.fig.update_xaxes(title_text=abscissa_label, row=self.nb_joints, col=2)
+        self.fig.update_xaxes(title_text=abscissa_label, row=self.nb_joints, col=3)
 
         for row in range(1, self.nb_joints + 1):
             for col in range(1, 4):
                 self.fig.update_xaxes(
-                    showline=True, row=row, col=col, linecolor="black", linewidth=0.5, mirror=True, tickwidth=1.5
+                    showline=True,
+                    row=row,
+                    col=col,
+                    linecolor="black",
+                    linewidth=0.5,
+                    mirror=True,
+                    tickwidth=1.5,
                 )
                 self.fig.update_yaxes(
                     showline=True,
@@ -333,7 +336,13 @@ class DataPlanchePlotting:
         for row in range(1, self.nb_joints + 1):
             for col in range(1, 4):
                 self.fig.update_xaxes(
-                    showline=True, row=row, col=col, linecolor="black", linewidth=0.5, mirror=True, tickwidth=1.5
+                    showline=True,
+                    row=row,
+                    col=col,
+                    linecolor="black",
+                    linewidth=0.5,
+                    mirror=True,
+                    tickwidth=1.5,
                 )
                 self.fig.update_yaxes(
                     showline=True,

@@ -1,4 +1,4 @@
-import spartacus as sp
+from spartacus import Spartacus as sp
 
 
 def main():

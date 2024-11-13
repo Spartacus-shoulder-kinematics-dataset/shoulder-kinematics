@@ -3,7 +3,7 @@ import pytest
 
 import spartacus as sp
 
-spartacus_dataset = sp.load()
+spartacus_dataset = sp.Spartacus.load()
 confident_values_all = spartacus_dataset.confident_data_values
 confident_values = confident_values_all[confident_values_all["unit"] == "rad"]
 confident_values_trans = confident_values_all[confident_values_all["unit"] == "mm"]
