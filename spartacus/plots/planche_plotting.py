@@ -73,7 +73,9 @@ class DataPlanchePlotting:
 
         self.rotations = dfi.has_rotational_data
 
-        self.restrict_to_joints = restrict_to_joints
+        # make sure it follows the order even if sparse
+        check_list_order = ["glenohumeral", "scapulothoracic", "acromioclavicular", "sternoclavicular"]
+        self.restrict_to_joints = [j for j in check_list_order if j in dfi.df["joint"].unique()]
 
         self.fig = self.make_fig(rotation=self.rotations)
 
@@ -90,7 +92,11 @@ class DataPlanchePlotting:
 
     @property
     def joints(self):
-        return self.restrict_to_joints if self.restrict_to_joints is not None else BIOMECHANICAL_DOF_LEGEND.keys()
+        return (
+            self.restrict_to_joints
+            if self.restrict_to_joints is not None
+            else list(BIOMECHANICAL_DOF_LEGEND.keys())[:4]
+        )
 
     def joint_row_col_index(self, joint) -> list[tuple[int, int]]:
         """Return the row and col index of the joint. ex: [(0, 0), (0, 1), (0, 2)] for glenohumeral"""
