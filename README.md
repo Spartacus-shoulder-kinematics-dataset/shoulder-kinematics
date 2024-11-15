@@ -328,7 +328,7 @@ streamlit run app_streamlit.py
 
 Then you should get a interface like this that opens in your browser, so that you can navigate through the data:
 
-[Video to be uploaded]
+[Capture vidéo du 2024-10-25 08-07-55.webm](https://github.com/user-attachments/assets/e904e398-af7c-43fa-a735-a63fb6c7688b)
 
 # 💡 Ways to Contribute
 - Data Contributions: If you have access to new datasets or corrections for existing data, please submit them. 
