@@ -163,6 +163,8 @@ For each of the anatomical structures — thorax, humerus, scapula, and clavicle
 In the case of the humerus, the **humerus_x_direction** should be `vec(GH>EM)^vec(GH>EL)` to guarantee a postero-anterior direction.
 the other directions should remain the same. If ones wants to ignore that, the **side_as_right** column should be set to True.
 
+All the diversity of local coordinates systems are described in here: [Humerus](docs/Spartacus_Humerus_LCS.pdf), [Scapula](docs/Spartacus_Scapula_LCS.pdf), [Clavicle](docs/Spartacus_Clavicle_LCS.pdf) and [Thorax](docs/Spartacus_Thorax_LCS.pdf).
+
 ### Computing biomechanical directions from landmarks
 
 A parsing method has been developed to automatically compute the biomechanical direction from landmarks. 
