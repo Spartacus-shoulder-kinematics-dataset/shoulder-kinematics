@@ -328,3 +328,31 @@ The conversion process in this case is as follows:
 {}^{Euler}\mathbf{t}_D
 ```
 
+# Launch the streamlit app
+Download this repository and, install the dependencies on your python env:
+
+```bash
+pip install -r requirements.txt
+```
+or with conda:
+```bash
+conda install --file requirements.txt -c conda-forge
+```
+
+Then launch the streamlit app, from your terminal too:
+
+```bash
+streamlit run app_streamlit.py
+```
+
+Then you should get a interface like this that opens in your browser, so that you can navigate through the data:
+
+[Video to be uploaded]
+
+# 💡 Ways to Contribute
+- Data Contributions: If you have access to new datasets or corrections for existing data, please submit them. 
+Ensure they adhere to the expected format (refer to the Dataset Columns section in the README for details).
+- Feature Suggestions: Open an issue to suggest improvements or new features for the app or dataset processing.
+- Bug Reports: If you encounter an issue, open an issue in the repository and provide as much detail as possible (e.g., steps to reproduce, environment, error messages).
+- Documentation: Help us expand and improve the documentation. Clearer instructions and better examples are always welcome.
+
