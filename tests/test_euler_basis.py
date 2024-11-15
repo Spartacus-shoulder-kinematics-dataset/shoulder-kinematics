@@ -38,5 +38,5 @@ def test_euler_basis_translation_correction():
 
     tt = from_jcs_to_parent_frame(t, rot, seq)
 
-    expected_tt = np.array([1.        , 1.38951922, 3.21226559])
+    expected_tt = np.array([1.0, 1.38951922, 3.21226559])
     np.testing.assert_almost_equal(tt, expected_tt, decimal=8)
