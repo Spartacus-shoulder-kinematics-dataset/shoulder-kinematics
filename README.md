@@ -10,27 +10,6 @@ We will try to keep it updated as much as possible. If you have any suggestions,
 
 We assume the continuity of the data between articles. For example, if the same data is used in two articles, and some information is missing in the last one, we pick the information in the previous article.
 
-# Still a work in progress but citable
-Moissenet, F., Puchaud, P., Naaïm, A., Holzer, N., & Begon, M. (2024). Spartacus-shoulder-kinematics-dataset/shoulder-kinematics congress (0.1.0). Zenodo. https://doi.org/10.5281/zenodo.11455521
-
-```
-@software{moissenet_2024_11455521,
-  author       = {Moissenet, Florent and
-                  Puchaud, Pierre and
-                  Naaïm, Alexandre and
-                  Holzer, Nicolas and
-                  Begon, Mickael},
-  title        = {{Spartacus-shoulder-kinematics-dataset/shoulder- 
-                   kinematics congress}},
-  month        = jun,
-  year         = 2024,
-  publisher    = {Zenodo},
-  version      = {0.1.0},
-  doi          = {10.5281/zenodo.11455521},
-  url          = {https://doi.org/10.5281/zenodo.11455521}
-}
-```
-
 # Exporting the unified dataset
 The whole purpose of spartacus is to merge by correcting, aligning, frames and euler sequences of different datasets. 
 
@@ -358,3 +337,23 @@ Ensure they adhere to the expected format (refer to the Dataset Columns section 
 - Bug Reports: If you encounter an issue, open an issue in the repository and provide as much detail as possible (e.g., steps to reproduce, environment, error messages).
 - Documentation: Help us expand and improve the documentation. Clearer instructions and better examples are always welcome.
 
+# Cite this work
+Moissenet, F., Puchaud, P., Naaïm, A., Holzer, N., & Begon, M. (2024). Spartacus-shoulder-kinematics-dataset/shoulder-kinematics congress (0.1.0). Zenodo. https://doi.org/10.5281/zenodo.11455521
+
+```
+@software{moissenet_2024_11455521,
+  author       = {Moissenet, Florent and
+                  Puchaud, Pierre and
+                  Naaïm, Alexandre and
+                  Holzer, Nicolas and
+                  Begon, Mickael},
+  title        = {{Spartacus-shoulder-kinematics-dataset/shoulder- 
+                   kinematics congress}},
+  month        = jun,
+  year         = 2024,
+  publisher    = {Zenodo},
+  version      = {0.1.0},
+  doi          = {10.5281/zenodo.11455521},
+  url          = {https://doi.org/10.5281/zenodo.11455521}
+}
+```
