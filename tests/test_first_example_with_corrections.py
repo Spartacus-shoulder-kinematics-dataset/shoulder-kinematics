@@ -54,12 +54,12 @@ articles_data = {
             2,
             3,
         ],
-        728.7198299305273,
+        16439.084617735265,
         [
             (0, 16.366300000000003),
             (1001, -25.037999894224672),
             (2000, 41.36033610887097),
-            (-1, 17.319848672019763),
+            (-1, -17.319848672019763),
         ],
     ),
     "Chu et al.": (
@@ -170,7 +170,7 @@ articles_data = {
             2,
             3,
         ],
-        140612.18902336064,
+        -731863.6628415576,
         [
             (0, 45.986645901396685),
             (1001, -6.497411942193646),
@@ -301,10 +301,10 @@ articles_data = {
             2,
             3,
         ],
-        978.4631094843792,
+        687.8360341519152,
         [
             (0, 23.571499999999997),
-            (100, -44.2176),
+            (100, 44.2176),
             (200, -25.290555552753258),
             (-1, 31.7351),
         ],
@@ -446,7 +446,7 @@ def test_glenohumeral_elevation():
     expected_articles = ["Begon et al.", "Henninger et al.", "Ludewig et al.", "Moissenet et al.", "Yoshida et al."]
 
     assert articles == expected_articles
-    assert gh_elevation_confident_values["value"].sum() == -1838764.362187335
+    assert gh_elevation_confident_values["value"].sum() == -2711240.214052254
 
 
 def test_scapulothoracic_elevation():

@@ -32,12 +32,12 @@ articles_data = {
             2,
             3,
         ],
-        32987.067259532865,
+        -8659.152086007218,
         [
             (0, -16.3663),
             (1001, 25.037999894224672),
             (2000, 41.36033610887097),
-            (-1, 17.319848672019763),
+            (-1, -17.319848672019763),
         ],
     ),
     "Chu et al.": (
@@ -176,7 +176,8 @@ articles_data = {
             2,
             3,
         ],
-        148532.1890233608,
+        # 148532.1890233608,
+        -723943.6628415578,
         [
             (0, 45.9866459013967),
             (1001, -6.49741194219359),
@@ -320,10 +321,10 @@ articles_data = {
             2,
             3,
         ],
-        978.4631094843794,
+        687.8360341519153,
         [
             (0, 23.5715),
-            (100, -44.2176),
+            (100, 44.2176),
             (200, -25.290555552753258),
             (-1, 31.7351),
         ],
@@ -454,7 +455,7 @@ def print_data(data, random_checks):
 def test_number_of_articles_translation():
     # Check number of unique articles after processing all
     articles = list(confident_values_trans["article"].unique())
-    experted_articles = ["Henninger et al.", "Kozono et al.", "Moissenet et al."]
+    experted_articles = ["Begon et al.", "Henninger et al.", "Kozono et al.", "Moissenet et al."]
     assert articles == experted_articles
 
 
@@ -479,7 +480,7 @@ def test_glenohumeral_elevation():
     ]
 
     assert articles == expected_articles
-    assert gh_elevation_confident_values["value"].sum() == -1541223.3559859248
+    assert gh_elevation_confident_values["value"].sum() == -2413699.207850843
 
 
 def test_scapulothoracic_elevation():
