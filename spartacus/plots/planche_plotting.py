@@ -2,7 +2,7 @@ import numpy as np
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 
-from plots.constants_plot import (
+from .constants_plot import (
     BIOMECHANICAL_DOF_LEGEND,
     BIOMECHANICAL_DOF_LEGEND_EXTENDED,
     TRANSLATIONAL_BIOMECHANICAL_DOF_LEGEND,
@@ -10,7 +10,7 @@ from plots.constants_plot import (
     AUTHORS_COLORS,
     AUTHOR_DISPLAYED_STUDY,
 )
-from plots.dataframe_interface import DataFrameInterface
+from .dataframe_interface import DataFrameInterface
 
 
 SPLIT_DISPLAY_OPTIONS = {
