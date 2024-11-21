@@ -4,8 +4,8 @@
 </p>
 
 # Introduction
-Gathering all the literature on shoulder kinematics, and scapulo-humeral rhythm
-With this repository, We aim to gather all the literature on shoulder kinematics, and scapulo-humeral rhythm.
+Gathering all the literature on shoulder kinematics, and scapulo-humeral rhythm.
+With this repository, We aim to gather all the literature on shoulder kinematics, and scapulo-humeral rhythm with gold-standard means, such as bone pins, CT-scan, MRI, etc..
 We will try to keep it updated as much as possible. If you have any suggestions, please let us know.
 
 We assume the continuity of the data between articles. For example, if the same data is used in two articles, and some information is missing in the last one, we pick the information in the previous article.
