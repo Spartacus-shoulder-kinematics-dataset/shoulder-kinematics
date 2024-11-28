@@ -112,7 +112,7 @@ class DataPlanchePlotting:
 
     def make_fig(self, rotation: bool = True):
         return make_subplots(
-            shared_xaxes=True,
+            shared_xaxes=True if self.nb_joints > 1 else False,  # because it wont show the xticks
             shared_yaxes=True,
             rows=self.nb_joints if self.nb_joints > 1 else 2,  # 2 rows for 1 joint because legends need space, hacky...
             cols=3,
