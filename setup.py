@@ -1,4 +1,4 @@
-""" Setup.py file """
+"""Setup.py file"""
 
 from setuptools import setup, find_packages
 
