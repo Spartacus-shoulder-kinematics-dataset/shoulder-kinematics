@@ -98,6 +98,9 @@ on joint movements, particularly shoulder kinematics. Each row within the Joint 
 detailed biomechanical parameters such as joint angles, movement types, and postural data, 
 which are linked to the raw data available in the Data Folder for each degree of freedom.
 
+4. The demographic data is included in the `demographic_data.csv` file. 
+It's very sparse, it contains the individual details when available otherwise there are mean, std, min, max values.
+
 ## Dataset colums - `dataset_of_datasets.csv`
 The dataset includes the following columns:
 
