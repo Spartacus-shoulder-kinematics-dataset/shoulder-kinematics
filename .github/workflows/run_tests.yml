@@ -19,24 +19,23 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       
       - name: Setup environment
         uses: conda-incubator/setup-miniconda@v2
         with:
-          miniforge-variant: Mambaforge
           miniforge-version: latest
           use-mamba: true
           activate-environment: spartacus
           environment-file: environment.yml
         
-      - name: Print mamba info
+      - name: Print conda info
         run: | 
-          mamba info
-          mamba list
+          conda info
+          conda list
 
       - name: Install extra dependencies
-        run: mamba install pytest-cov black pytest pytest-cov codecov -cconda-forge
+        run: conda install pytest-cov black pytest pytest-cov codecov -cconda-forge
 
       - name: Run the actual tests
         run: pytest -v --color=yes --cov-report term-missing --cov=spartacus tests
@@ -48,4 +47,4 @@ jobs:
       - name: Test installed version of spartacus
         run: |
           pip install -e . --no-deps
-          mamba list
+          conda list
