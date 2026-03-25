@@ -45,7 +45,8 @@ requires-python = ">=3.10"
 "Bug Tracker" = "https://github.com/Ipuch/spartacus-shoulder-kinematics-dataset/issues"
 
 [tool.setuptools.packages.find]
-where = ["spartacus"]
+where = ["."]
+include = ["spartacus*"]
 
 [tool.setuptools.package-data]
 "*" = ["*.csv"]

@@ -14,8 +14,7 @@ setup(
     long_description=long_description,
     python_requires=">=3.10",
     zip_safe=False,
+    packages=find_packages(),
     include_package_data=True,
-    packages=find_packages(where="spartacus"),
-    package_dir={"": "spartacus"},
     package_data={"": ["*.csv"]},
 )
