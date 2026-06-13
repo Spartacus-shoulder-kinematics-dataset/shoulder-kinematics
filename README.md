@@ -3,6 +3,12 @@
 <img src="docs/logo.png" alt="Spartacus" style="width: 50%; min-width: 300px; display: block; margin: auto;">
 </p>
 
+<p align="center">
+  <a href="https://doi.org/10.1016/j.jbiomech.2025.112642">
+    <img src="https://a11ybadges.com/badge?logo=elsevier" alt="Article"/>
+  </a>
+</p>
+
 # Introduction
 Gathering all the literature on shoulder kinematics, and scapulo-humeral rhythm.
 With this repository, We aim to gather all the literature on shoulder kinematics, and scapulo-humeral rhythm with gold-standard means, such as bone pins, CT-scan, MRI, etc..

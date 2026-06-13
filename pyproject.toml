@@ -46,7 +46,8 @@ requires-python = ">=3.12"  # codebase uses PEP 701 f-strings (3.12+)
 "Bug Tracker" = "https://github.com/Ipuch/spartacus-shoulder-kinematics-dataset/issues"
 
 [tool.setuptools.packages.find]
-where = ["spartacus"]
+where = ["."]
+include = ["spartacus*"]
 
 [tool.setuptools.package-data]
 "*" = ["*.csv"]
