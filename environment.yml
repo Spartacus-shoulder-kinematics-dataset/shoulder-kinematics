@@ -4,9 +4,11 @@ channels:
 - conda-forge
 - default
 dependencies:
-- python >=3.9
-- numpy
-- pandas
+# numpy/pandas major versions are capped: pandas 3.0 changed dtype handling and silently broke
+# data loading. CI builds from this file, so the bounds keep CI on the tested stack.
+- python >=3.12  # the codebase uses PEP 701 f-strings (e.g. row_data.py), which require 3.12+
+- numpy >=2.0,<3
+- pandas >=3.0,<4
 - matplotlib
 - plotly
 - biorbd

@@ -24,8 +24,9 @@ keywords =["database",
     "clavicle",
     "scapula"]
 dependencies = [
-    "numpy",
-    "pandas",
+    # numpy/pandas majors are capped: pandas 3.0 changed dtype handling and silently broke loading.
+    "numpy>=2.0,<3",
+    "pandas>=3.0,<4",
     "matplotlib",
     "plotly",
 #    "biorbd>=1.9.9",
@@ -38,7 +39,7 @@ classifiers = [
     "License :: OSI Approved :: GPL-3.0",
     "Operating System :: OS Independent",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.12"  # codebase uses PEP 701 f-strings (3.12+)
 
 [project.urls]
 "Homepage" = "https://github.com/Ipuch/spartacus-shoulder-kinematics-dataset"

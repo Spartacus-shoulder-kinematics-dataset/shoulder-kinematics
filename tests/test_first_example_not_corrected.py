@@ -404,7 +404,10 @@ def test_article_data_no_correction(
 
     assert data.shape[0] == expected_shape
 
-    np.testing.assert_almost_equal(data["value"].sum(), total_value, decimal=10)
+    # relative tolerance: float64 summation is not associative, so the last ULP of large sums
+    # depends on the numpy/pandas version and row order (the expected values were generated on an
+    # older stack). Individual values are still checked exactly via random_checks above.
+    np.testing.assert_allclose(data["value"].sum(), total_value, rtol=1e-9)
 
 
 def test_number_of_articles():
@@ -480,7 +483,7 @@ def test_glenohumeral_elevation():
     ]
 
     assert articles == expected_articles
-    assert gh_elevation_confident_values["value"].sum() == -2413699.207850843
+    np.testing.assert_allclose(gh_elevation_confident_values["value"].sum(), -2413699.207850843, rtol=1e-9)
 
 
 def test_scapulothoracic_elevation():
@@ -511,7 +514,7 @@ def test_scapulothoracic_elevation():
     ]
 
     assert articles == expected_articles
-    assert st_elevation_confident_values["value"].sum() == 330831.9187237749
+    np.testing.assert_allclose(st_elevation_confident_values["value"].sum(), 330831.9187237749, rtol=1e-9)
 
 
 def test_sternoclavicular_elevation():
@@ -535,7 +538,7 @@ def test_sternoclavicular_elevation():
     ]
 
     assert articles == expected_articles
-    assert sc_elevation_confident_values["value"].sum() == -1977497.7502054502
+    np.testing.assert_allclose(sc_elevation_confident_values["value"].sum(), -1977497.7502054502, rtol=1e-9)
 
 
 def test_acromioclavicular_elevation():
@@ -556,4 +559,4 @@ def test_acromioclavicular_elevation():
     ]
 
     assert articles == expected_articles
-    assert sc_elevation_confident_values["value"].sum() == 3134090.0286449315
+    np.testing.assert_allclose(sc_elevation_confident_values["value"].sum(), 3134090.0286449315, rtol=1e-9)

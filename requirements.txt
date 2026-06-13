@@ -1,5 +1,10 @@
-numpy>=1.24.2
-pandas>=2.0.0
+# Pinned to the major versions the test suite is validated against.
+# pandas 3.0 changed string-column and concat dtype handling, which silently broke loading;
+# the upper bounds prevent the next major release from doing the same unnoticed.
+numpy>=2.0,<3
+pandas>=3.0,<4
+scipy>=1.10
+matplotlib>=3.7
 setuptools>=67.6.1
 biorbd>=1.9.9
 seaborn>=0.13.2
