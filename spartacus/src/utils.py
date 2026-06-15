@@ -174,8 +174,15 @@ def convert_df_to_1dof_per_line(df: pd.DataFrame) -> pd.DataFrame:
 
     first_dict = {key: df[key].values[:, np.newaxis].repeat(3, axis=1).T.flatten() for key in REPEATED_DATAFRAME_KEYS}
     second_dict = {
-        "humerothoracic_angle": df["humerothoracic_angle"].values[:, np.newaxis].repeat(3, axis=1).T.flatten(),
-        "value": df[["value_dof1", "value_dof2", "value_dof3"]].values.T.flatten(),
+        # cast to float so the numeric columns are float64 and not object: since pandas 3.0,
+        # concatenating onto an empty (object-dtype) dataframe keeps the object dtype, which would
+        # otherwise force a slower, less precise Python sum instead of numpy's float64 reduction.
+        "humerothoracic_angle": df["humerothoracic_angle"]
+        .astype(float)
+        .values[:, np.newaxis]
+        .repeat(3, axis=1)
+        .T.flatten(),
+        "value": df[["value_dof1", "value_dof2", "value_dof3"]].astype(float).values.T.flatten(),
         "legend": df[["legend_dof1", "legend_dof2", "legend_dof3"]].values.T.flatten(),
         "degree_of_freedom": np.array([[1, 2, 3]]).repeat(repeats=df.shape[0], axis=0).T.flatten(),
     }

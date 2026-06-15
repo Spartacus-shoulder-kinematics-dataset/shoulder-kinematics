@@ -19,6 +19,23 @@ from .utils_setters import (
 )
 
 
+def nan_to_none(df: pd.DataFrame) -> pd.DataFrame:
+    """Replace NaN with None in text columns, leaving numeric/boolean columns untouched.
+
+    Since pandas 3.0, text columns read from CSV default to the ``str`` dtype, where
+    ``.where(..., None)`` keeps a missing value as a float ``nan`` instead of ``None``.
+    The rest of the codebase relies on missing text cells being ``None`` (e.g. ``axis is None``
+    checks), so we cast the non-numeric columns to ``object`` to make ``None`` stick. Numeric
+    columns keep their native dtype and their missing values stay ``NaN``, as before pandas 3.0.
+    """
+    df = df.copy()
+    for col in df.columns:
+        if pd.api.types.is_numeric_dtype(df[col]):
+            continue
+        df[col] = df[col].astype(object).where(df[col].notna(), None)
+    return df
+
+
 class Spartacus:
     """
     A class to represent the Spartacus dataset and its operations.
@@ -119,9 +136,9 @@ class Spartacus:
 
     def clean_df(self):
         """Replace nans with None"""
-        self.datasets = self.datasets.where(pd.notna(self.datasets), None)
-        self.joint_data = self.joint_data.where(pd.notna(self.joint_data), None)
-        self.dataframe = self.dataframe.where(pd.notna(self.dataframe), None)
+        self.datasets = nan_to_none(self.datasets)
+        self.joint_data = nan_to_none(self.joint_data)
+        self.dataframe = nan_to_none(self.dataframe)
 
     def check_dataset_segments(self, print_warnings: bool = False) -> pd.DataFrame:
         """
