@@ -16,6 +16,27 @@ We will try to keep it updated as much as possible. If you have any suggestions,
 
 We assume the continuity of the data between articles. For example, if the same data is used in two articles, and some information is missing in the last one, we pick the information in the previous article.
 
+# Launch the streamlit app
+Then you should get a interface like this that opens in your browser, so that you can navigate through the data:
+
+[Capture vidéo du 2024-10-25 08-07-55.webm](https://github.com/user-attachments/assets/e904e398-af7c-43fa-a735-a63fb6c7688b)
+
+Download this repository and, install the dependencies on your python env:
+
+```bash
+pip install -r requirements.txt
+```
+or with conda:
+```bash
+conda install --file requirements.txt -c conda-forge
+```
+
+Then launch the streamlit app, from your terminal too:
+
+```bash
+streamlit run app_streamlit.py
+```
+
 # Exporting the unified dataset
 The whole purpose of spartacus is to merge by correcting, aligning, frames and euler sequences of different datasets. 
 
@@ -317,27 +338,6 @@ The conversion process in this case is as follows:
 {}^{P}\mathbf{T}_{Euler} \cdot \;
 {}^{Euler}\mathbf{t}_D
 ```
-
-# Launch the streamlit app
-Download this repository and, install the dependencies on your python env:
-
-```bash
-pip install -r requirements.txt
-```
-or with conda:
-```bash
-conda install --file requirements.txt -c conda-forge
-```
-
-Then launch the streamlit app, from your terminal too:
-
-```bash
-streamlit run app_streamlit.py
-```
-
-Then you should get a interface like this that opens in your browser, so that you can navigate through the data:
-
-[Capture vidéo du 2024-10-25 08-07-55.webm](https://github.com/user-attachments/assets/e904e398-af7c-43fa-a735-a63fb6c7688b)
 
 # 💡 Ways to Contribute
 - Data Contributions: If you have access to new datasets or corrections for existing data, please submit them. 
