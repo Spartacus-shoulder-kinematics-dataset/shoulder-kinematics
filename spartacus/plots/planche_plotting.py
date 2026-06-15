@@ -12,7 +12,6 @@ from .constants_plot import (
 )
 from .dataframe_interface import DataFrameInterface
 
-
 SPLIT_DISPLAY_OPTIONS = {
     "in_vivo": {"in_vivo": {True: ("In Vivo", "circle"), False: ("Ex Vivo", "diamond")}},
     "posture": {"posture": {"standing": ("Standing", "circle"), "sitting": ("Sitting", "diamond")}},

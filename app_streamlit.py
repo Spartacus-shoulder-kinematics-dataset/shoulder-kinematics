@@ -93,8 +93,7 @@ def create_side_bar_components():
     total_compliance = st.sidebar.slider("ISB compliance from 0 (Not at all) to 6 (Entirely Compliant)", 0, 6, 0)
 
     with st.sidebar.expander("Option Explanations"):
-        st.write(
-            """
+        st.write("""
             **Humeral Motions**: 
             Select the type of humeral motion to analyze. This includes various movements 
             such as elevation in different planes, which are recorded across the datasets.
@@ -132,14 +131,11 @@ def create_side_bar_components():
             as well as the joint's Euler sequence (if ISB) and thoracohumeral angle, 
             if also based on a Euler sequence or not (c4, c6).
 
-            """
-        )
+            """)
     st.sidebar.header("Cite this work")
-    st.sidebar.write(
-        """
+    st.sidebar.write("""
             **Moissenet, F., Puchaud, P., Naaïm, A., Holzer, N., & Begon, M. (2024).** *Spartacus-shoulder-kinematics-dataset/shoulder-kinematics congress (0.1.0).* Zenodo.[https://doi.org/10.5281/zenodo.11455521](https://doi.org/10.5281/zenodo.11455521)
-            """
-    )
+            """)
     return (
         selected_metric,
         selected_humeral_motion,
@@ -299,8 +295,7 @@ st.header("Upload Your Data")
 df_perso = st.file_uploader("Choose a file", type=["csv", "txt"])
 # Expander to explain the expected CSV format
 with st.expander("See the expected .csv format"):
-    st.write(
-        """
+    st.write("""
         The CSV file should have the following columns:
         
         - **article**: The reference or study associated with the data.
@@ -326,8 +321,7 @@ with st.expander("See the expected .csv format"):
         Ours,rad,scapulothoracic,sagittal plane elevation,3.0,30.5,30.7,2,False,biplane x-ray fluoroscopy,quasi-static,False,sitting,True
         Ours,rad,scapulothoracic,sagittal plane elevation,3.0,120,30.7,2,False,biplane x-ray fluoroscopy,quasi-static,False,sitting,True
         ```
-        """
-    )
+        """)
 
 if df_perso is not None:
     st.session_state.df_perso = pd.read_csv(df_perso, delimiter=",")

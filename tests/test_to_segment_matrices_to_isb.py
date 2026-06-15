@@ -6,7 +6,6 @@ from scipy.spatial.transform import Rotation
 
 from spartacus import compute_rotation_matrix_from_axes
 
-
 X = np.array([1, 0, 0])[:, np.newaxis]  # (3 x 1)
 Y = np.array([0, 1, 0])[:, np.newaxis]  # (3 x 1)
 Z = np.array([0, 0, 1])[:, np.newaxis]  # (3 x 1)
